@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SOLARIS · 手势回归测试</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <aside
+      id="lab"
+      style="
+        position: fixed;
+        z-index: 100;
+        bottom: 100px;
+        left: 16px;
+        max-width: 300px;
+        padding: 12px;
+        background: #12171eef;
+        color: #ddd;
+        border: 1px solid #456;
+        font: 12px sans-serif;
+        line-height: 1.8;
+      "
+    >
+      <strong>合成 21 关键点回放 · 不使用摄像头</strong>
+      <div id="lab-buttons">
+        <button data-pose="FIST">模拟握拳</button>
+        <button data-pose="OPEN_PALM">模拟自然张掌</button>
+        <button data-pose="POINT">指向地球</button>
+        <button data-pose="PINCH">模拟捏合</button>
+        <button data-pose="V_SIGN">模拟剪刀手</button>
+        <button data-pose="NONE">移开手</button>
+      </div>
+      <output id="lab-result"></output>
+    </aside>
+    <script type="module" src="./gesture-lab.ts"></script>
+  </body>
+</html>
