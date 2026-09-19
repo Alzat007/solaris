@@ -66,13 +66,17 @@ export class HandTrackingManager {
         release();
         return;
       }
-      const files = await FilesetResolver.forVisionTasks("/mediapipe");
+      const files = await FilesetResolver.forVisionTasks(
+        `${import.meta.env.BASE_URL}mediapipe`,
+      );
       if (expired()) {
         release();
         return;
       }
       const options = {
-        baseOptions: { modelAssetPath: "/models/hand_landmarker.task" },
+        baseOptions: {
+          modelAssetPath: `${import.meta.env.BASE_URL}models/hand_landmarker.task`,
+        },
         runningMode: "VIDEO" as const,
         numHands: 2,
         minHandDetectionConfidence: 0.65,

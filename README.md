@@ -2,6 +2,22 @@
 
 一个可本地运行、用双手拨动的太阳系。React 19 + TypeScript + Vite + Three.js / React Three Fiber，使用 GPU 粒子、GLSL 太阳、GSAP 镜头过渡和 MediaPipe Hand Landmarker。
 
+正式网站：[SOLARIS · 掌中星系](https://alzat007.github.io/solaris/)。使用 GitHub Pages 公开托管，无需登录。后续部署以 GitHub Pages 为准。
+
+## 发布更新
+
+推送 `main` 分支后，`.github/workflows/pages.yml` 自动安装依赖、运行测试、构建和校验资源，再发布到 GitHub Pages。MediaPipe 模型、WASM 和地球纹理一同发布，摄像头仅在用户主动开启后使用。
+
+本地复核 GitHub Pages 的仓库子路径：
+
+```sh
+VITE_BASE_PATH=/solaris/ npm run build
+VITE_BASE_PATH=/solaris/ node scripts/verify-static-export.mjs
+npm run preview
+```
+
+打开预览地址下的 `/solaris/`。普通本地开发仍用 `npm run dev`，默认根路径 `/`。
+
 ## 运行
 
 需要 **Node.js 20.19+ 或 22.12+**。

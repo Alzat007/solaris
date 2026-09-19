@@ -24,3 +24,10 @@ Screenshots produced during verification are in the ignored `artifacts/` directo
 - 390 × 844 layout: feedback card within x=23–367, y=75–163; information card begins y=230; document scrollWidth=390. No overlap or horizontal page overflow in this state.
 
 - Final normal-page reload: mouse Earth selection works. Fixture replay logged no JavaScript errors; final production build and all 38 tests passed.
+
+## GitHub Pages migration
+
+- The previous host returned a Cloudflare block page even with public access enabled; migrated the requested public website to GitHub Pages.
+- `VITE_BASE_PATH=/solaris/ npm run build`: passed. All 38 tests still pass.
+- `scripts/verify-static-export.mjs`: verified 4 entry assets, 7 runtime assets, valid WASM binaries, and subpath-aware runtime URLs. MediaPipe WASM, the hand model and Earth textures use Vite's deployment base.
+- GitHub Actions installs from the lockfile, copies the pinned MediaPipe runtime, tests, builds and verifies the export before publishing.

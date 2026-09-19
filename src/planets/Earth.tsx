@@ -11,8 +11,8 @@ import atmosphereFrag from "../shaders/atmosphere.frag?raw";
 import { noise } from "../shaders/noise";
 function EarthSurface() {
   const [day, night] = useTexture([
-    "/textures/earth-day.jpg",
-    "/textures/earth-night.png",
+    `${import.meta.env.BASE_URL}textures/earth-day.jpg`,
+    `${import.meta.env.BASE_URL}textures/earth-night.png`,
   ]);
   const { selected } = useSolaris();
   const uniforms = useMemo(
