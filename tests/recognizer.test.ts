@@ -12,6 +12,7 @@ for (const gesture of [
   "PINCH",
   "FIST",
   "V_SIGN",
+  "THREE",
 ] as const) {
   test(`${gesture} recognizes anatomical landmarks, rotations, mirroring and submillimetre noise`, () => {
     for (const rotation of [0, -0.4, 0.5]) {
@@ -40,7 +41,7 @@ for (const gesture of [
   });
 }
 
-for (const gesture of ["OPEN_PALM", "POINT", "V_SIGN"] as const) {
+for (const gesture of ["OPEN_PALM", "POINT", "V_SIGN", "THREE"] as const) {
   test(`${gesture} recognizes naturally relaxed fingers without first requiring rigid straight fingers`, () => {
     const recognizer = new GestureRecognizer();
     for (let frame = 0; frame < 12; frame++) {
@@ -63,6 +64,38 @@ test("a folded fist touching its thumb is not classified as pinch", () => {
   assert.equal(result.gesture, "FIST");
 });
 
+test("pointing then pinching works with the other three fingers still folded", () => {
+  for (const rotation of [0, -0.4, 0.5]) {
+    for (const mirror of [false, true]) {
+      const recognizer = new GestureRecognizer();
+      const point = handFixture("POINT", { rotation, mirror, relaxed: true });
+      assert.equal(
+        recognizer.analyze(point.points, point.world, 0).gesture,
+        "POINT",
+      );
+      const pinch = handFixture("PINCH", {
+        rotation,
+        mirror,
+        foldedPinch: true,
+      });
+      assert.equal(
+        recognizer.analyze(pinch.points, pinch.world, 50).gesture,
+        "PINCH",
+      );
+    }
+  }
+});
+
+test("thumb-index contact takes priority over three extended fingers", () => {
+  const { points, world } = handFixture("THREE");
+  points[4] = { ...points[8] };
+  world[4] = { ...world[8] };
+  assert.equal(
+    new GestureRecognizer().analyze(points, world, 0).gesture,
+    "PINCH",
+  );
+});
+
 test("switching between open fingers, folded fingers and pinch clears hysteresis", () => {
   const recognizer = new GestureRecognizer();
   const poses = [
@@ -71,6 +104,7 @@ test("switching between open fingers, folded fingers and pinch clears hysteresis
     "POINT",
     "PINCH",
     "V_SIGN",
+    "THREE",
     "OPEN_PALM",
   ] as const;
   poses.forEach((gesture, frame) => {
@@ -89,6 +123,7 @@ test("aspect-corrected screen landmarks work when world landmarks are unavailabl
     "PINCH",
     "FIST",
     "V_SIGN",
+    "THREE",
   ] as const) {
     const { points } = handFixture(gesture, { relaxed: true });
     assert.equal(

@@ -10,9 +10,12 @@ export type Gesture =
   | "PINCH"
   | "FIST"
   | "V_SIGN"
+  | "THREE"
   | "SWIPE_LEFT"
   | "SWIPE_RIGHT"
-  | "TWO_HAND_SCALE";
+  | "TWO_HAND_SCALE"
+  | "TWO_HAND_COLLAPSE"
+  | "TWO_HAND_EXPAND";
 export interface HandFeatures {
   center: { x: number; y: number };
   pointer: { x: number; y: number };

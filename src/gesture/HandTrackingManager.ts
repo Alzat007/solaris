@@ -148,6 +148,10 @@ export class HandTrackingManager {
             Math.abs(ordered[0].points[0].x - this.lastCenters[1]);
           if (crossed < straight) ordered.reverse();
         }
+        // Adding/removing a hand can change recognizer identity. Do not carry
+        // another hand's velocity or finger hysteresis into the new frame.
+        if (ordered.length !== this.lastCenters.length)
+          this.recognizers.forEach((recognizer) => recognizer.reset());
         this.lastCenters = ordered.map((o) => o.points[0].x);
         const hands = ordered.map(({ points, index }, i) =>
           this.recognizers[i].analyze(

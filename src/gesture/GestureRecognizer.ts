@@ -105,6 +105,11 @@ export class GestureRecognizer {
     } else if (index && middle && ring && pinky) {
       gesture = "OPEN_PALM";
       confidence = openness;
+    } else if (index && middle && ring && !pinky) {
+      // Three adjacent fingers keeps this distinct from a V sign whose thumb
+      // happens to rest away from the palm. Pinch has already taken priority.
+      gesture = "THREE";
+      confidence = (scores[0] + scores[1] + scores[2] + 1 - scores[3]) / 4;
     } else if (index && !middle && !ring && !pinky) {
       gesture = "POINT";
       confidence = (scores[0] + 3 - scores[1] - scores[2] - scores[3]) / 4;
@@ -175,6 +180,7 @@ export class GestureStabilizer {
       PINCH: 70,
       POINT: 100,
       V_SIGN: 300,
+      THREE: 300,
     };
     if (
       gesture !== "NONE" &&

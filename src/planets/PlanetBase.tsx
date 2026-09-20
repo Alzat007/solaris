@@ -21,8 +21,11 @@ export function PlanetBase({
   const data = planets.find((p) => p.id === id)!;
   const root = useRef<Group>(null),
     body = useRef<Group>(null);
-  const { selected, hover } = useSolaris();
+  const { selected, hover, mode } = useSolaris();
   const active = selected === id;
+  const labelsVisible = ["SOLAR_SYSTEM", "POINTER", "UNIVERSE_SCALE"].includes(
+    mode,
+  );
   const target = useMemo(() => new Vector3(), []);
   const isHover = hover === id;
   const wasActive = useRef(false),
@@ -106,7 +109,7 @@ export function PlanetBase({
         <mesh
           onPointerOver={(e) => {
             e.stopPropagation();
-            store.set({ hover: id });
+            if (interaction.machine.can("SELECT")) store.set({ hover: id });
           }}
           onPointerOut={() => store.set({ hover: null })}
           onClick={(e) => {
@@ -133,7 +136,7 @@ export function PlanetBase({
           color={data.particleColor}
         />
       )}
-      {!selected && (
+      {!selected && labelsVisible && (
         <Html
           position={[0, 1.65, 0]}
           center
@@ -145,7 +148,7 @@ export function PlanetBase({
           <i />
         </Html>
       )}
-      {isHover && !selected && (
+      {isHover && !selected && labelsVisible && (
         <mesh rotation={[Math.PI / 2, 0, 0]}>
           <ringGeometry args={[1.24, 1.27, 64]} />
           <meshBasicMaterial

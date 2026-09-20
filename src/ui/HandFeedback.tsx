@@ -8,12 +8,20 @@ function instruction(s: UIState, target: string | undefined) {
   if (s.mode === "INTRO") return "宇宙正在凝聚，完成后即可用手势探索。";
   if (s.mode === "PLANET_TRANSITION") return "正在靠近星球，请稍候。";
   if (s.mode === "BIG_BANG") return "宇宙正在重生，动画结束后可继续操作。";
-  if (s.mode === "COLLAPSE") return "张开手掌并保持片刻，释放宇宙。";
-  if (s.gesture === "NONE") return "让整只手留在镜头内，先握紧拳头试试。";
+  if (s.mode === "COLLAPSE")
+    return "张开双手五指，快速向两侧拉开，进入太阳内部；比出 ✌ 返回太阳系。";
+  if (s.mode === "SUN_INTERIOR") {
+    if (s.gesture === "V_SIGN") return "保持 ✌ 片刻，返回太阳系。";
+    if (s.gesture === "TWO_HAND_COLLAPSE")
+      return "双手向中心合拢，让星系再次坍缩。";
+    return "四周金色粒子环绕。比出 ✌ 返回太阳系，或双手合拢再次坍缩。";
+  }
+  if (s.gesture === "NONE")
+    return "让整只手留在镜头内，伸出食指，把光标移到星球上。";
   if (s.confidence < 0.5) return "姿势还不够清晰，请让整只手留在镜头内。";
   switch (s.gesture) {
     case "FIST":
-      return "保持握拳约 0.3 秒，让宇宙坍缩。";
+      return "伸出食指瞄准星球，再将拇指与食指捏合。";
     case "POINT":
       return target
         ? `已指向${target}，拇指与食指捏合即可进入。`
@@ -23,18 +31,24 @@ function instruction(s: UIState, target: string | undefined) {
         ? `保持捏合片刻，进入${target}。`
         : "还未指向星球。先伸出食指瞄准，再捏合。";
     case "OPEN_PALM":
+      return "移动手掌拨动星尘；双手合拢可坍缩，双手快速张掌拉开可进入太阳。";
+    case "THREE":
       return s.selected
-        ? "手掌保持张开并停稳，返回太阳系。"
-        : "移动手掌拨动星尘；握拳可让宇宙坍缩。";
+        ? `保持三指片刻，${s.mode === "INFO" ? "收起" : "查看"}星球资料。`
+        : "先指向并捏合进入星球，再伸出三指查看资料。";
     case "V_SIGN":
       return s.selected
-        ? `保持剪刀手约 0.3 秒，${s.mode === "INFO" ? "收起" : "查看"}星球资料。`
-        : "先指向并捏合进入星球，再用剪刀手查看资料。";
+        ? "保持 ✌ 片刻，返回太阳系。"
+        : "你已在太阳系。先指向星球，再捏合进入。";
     case "TWO_HAND_SCALE":
-      return "双手拉开或靠近，调整宇宙大小。";
+      return "双手各自保持拇食指捏合，拉开变大、靠近变小；松开结束缩放。";
+    case "TWO_HAND_COLLAPSE":
+      return "双手向中心合拢，让星系坍缩；随后快速张掌拉开，进入太阳内部。";
+    case "TWO_HAND_EXPAND":
+      return "双手快速张掌拉开，穿入太阳，被金色粒子环绕。";
     default:
       return s.selected
-        ? "左右挥手切换星球，张掌停稳返回太阳系。"
+        ? "左右滑动切换星球，三指查看资料，✌ 返回太阳系。"
         : "先用食指指向星球，再捏合进入。";
   }
 }
@@ -44,8 +58,11 @@ export function HandFeedback() {
   const s = useSolaris();
   const cursor = useRef<HTMLDivElement>(null);
   const online = s.tracking === "online";
-  const target = planetById(s.hover)?.chineseName;
-  const pointing = s.gesture === "POINT" || s.gesture === "PINCH";
+  const target =
+    s.mode === "SUN_INTERIOR" ? undefined : planetById(s.hover)?.chineseName;
+  const pointing =
+    s.mode !== "SUN_INTERIOR" &&
+    (s.gesture === "POINT" || s.gesture === "PINCH");
   const recognized = s.gesture !== "NONE";
 
   useEffect(() => {

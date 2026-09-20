@@ -9,24 +9,41 @@ import { planets } from "../src/data/planets";
 
 test("intro and transition states reject conflicting gestures", () => {
   const sm = new InteractionStateMachine();
-  assert.equal(sm.send("FIST"), false);
+  assert.equal(sm.send("COLLAPSE"), false);
   assert.equal(sm.send("READY"), true);
   assert.equal(sm.send("SELECT"), true);
-  for (const e of ["FIST", "SELECT", "RETURN", "SCALE"] as const)
+  for (const e of [
+    "COLLAPSE",
+    "SELECT",
+    "RETURN",
+    "SCALE",
+    "ENTER_SUN",
+  ] as const)
     assert.equal(sm.send(e), false);
   assert.equal(sm.send("TRANSITION_END"), true);
   assert.equal(sm.state, "PLANET_FOCUS");
 });
-test("collapse can only leave via a single Big Bang and reassembly", () => {
+test("joined hands collapse, rapid expansion enters the sun, and V can return", () => {
   const sm = new InteractionStateMachine();
   sm.send("READY");
-  sm.send("FIST");
+  sm.send("COLLAPSE");
   assert.equal(sm.state, "COLLAPSE");
   assert.equal(sm.send("SELECT"), false);
-  assert.equal(sm.send("OPEN"), true);
-  assert.equal(sm.send("OPEN"), false);
-  assert.equal(sm.send("FIST"), false);
-  assert.equal(sm.send("BANG_END"), true);
+  assert.equal(sm.send("SCALE"), false);
+  assert.equal(sm.send("ENTER_SUN"), true);
+  assert.equal(sm.state, "SUN_INTERIOR");
+  assert.equal(sm.send("ENTER_SUN"), false);
+  assert.equal(sm.send("INFO"), false);
+  assert.equal(sm.send("SELECT"), false);
+  assert.equal(sm.send("RETURN"), true);
+  assert.equal(sm.state, "SOLAR_SYSTEM");
+});
+test("the sun interior can collapse again and collapse has a direct return", () => {
+  const sm = new InteractionStateMachine();
+  sm.send("READY");
+  sm.send("ENTER_SUN");
+  assert.equal(sm.send("COLLAPSE"), true);
+  assert.equal(sm.send("RETURN"), true);
   assert.equal(sm.state, "SOLAR_SYSTEM");
 });
 test("information, scale and return have explicit exits", () => {
@@ -40,7 +57,7 @@ test("information, scale and return have explicit exits", () => {
   assert.equal(sm.state, "PLANET_FOCUS");
   sm.send("SCALE");
   sm.send("SCALE_END");
-  assert.equal(sm.state, "SOLAR_SYSTEM");
+  assert.equal(sm.state, "PLANET_FOCUS");
   assert.equal(sm.send("RETURN"), true);
 });
 test("fist needs 250 ms and fires only once while held", () => {
@@ -104,4 +121,15 @@ test("low-confidence frames interrupt a continuous gesture hold", () => {
   s.update("FIST", 200, 0.2);
   assert.equal(s.update("FIST", 260, 0.9), null);
   assert.equal(s.update("FIST", 510, 0.9), "FIST");
+});
+
+test("releasing a two-hand zoom preserves an open information panel", () => {
+  const sm = new InteractionStateMachine();
+  sm.send("READY");
+  sm.send("SELECT");
+  sm.send("TRANSITION_END");
+  sm.send("INFO");
+  assert.equal(sm.send("SCALE"), true);
+  assert.equal(sm.send("SCALE_END"), true);
+  assert.equal(sm.state, "INFO");
 });

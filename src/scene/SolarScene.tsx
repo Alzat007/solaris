@@ -10,6 +10,7 @@ import { ACESFilmicToneMapping } from "three";
 import gsap from "gsap";
 import { SolarSystem } from "./SolarSystem";
 import { StarField } from "./StarField";
+import { SunInterior } from "./SunInterior";
 import { CameraController } from "../camera/CameraController";
 import { PerformanceManager } from "../performance/PerformanceManager";
 import { InputField } from "./InputField";
@@ -67,6 +68,7 @@ function Scene() {
       <StarField />
       <SolarSystem />
       <CameraController />
+      <SunInterior />
       <InputField />
       <Intro />
       <RendererLifecycle />

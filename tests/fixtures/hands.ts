@@ -7,9 +7,16 @@ import type { Gesture, Landmark } from "../../src/gesture/GestureTypes";
 export function handFixture(
   gesture: Extract<
     Gesture,
-    "OPEN_PALM" | "POINT" | "PINCH" | "FIST" | "V_SIGN"
+    "OPEN_PALM" | "POINT" | "PINCH" | "FIST" | "V_SIGN" | "THREE"
   >,
-  { relaxed = false, noise = 0, frame = 0, rotation = 0, mirror = false } = {},
+  {
+    relaxed = false,
+    noise = 0,
+    frame = 0,
+    rotation = 0,
+    mirror = false,
+    foldedPinch = false,
+  } = {},
 ) {
   const world: Landmark[] = Array.from({ length: 21 }, () => ({
     x: 0,
@@ -35,8 +42,9 @@ export function handFixture(
     world[start] = base;
     const extended =
       gesture === "OPEN_PALM" ||
-      gesture === "PINCH" ||
+      (gesture === "PINCH" && (!foldedPinch || finger === 0)) ||
       (gesture === "POINT" && finger === 0) ||
+      (gesture === "THREE" && finger < 3) ||
       (gesture === "V_SIGN" && finger < 2);
     // A relaxed palm has 35° PIP and 10° DIP flexion, without curling its tips.
     const bends = extended

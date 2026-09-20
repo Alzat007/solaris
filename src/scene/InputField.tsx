@@ -71,14 +71,17 @@ export function InputField() {
     };
     const key = (e: KeyboardEvent) => {
       if (
-        ["Space", "ArrowRight", "ArrowLeft", "Escape", "KeyI"].includes(e.code)
+        ["Space", "ArrowRight", "ArrowLeft", "Escape", "KeyI", "KeyS"].includes(
+          e.code,
+        )
       )
         e.preventDefault();
       if (e.code === "Space" && !e.repeat) interaction.space();
       if (e.code === "ArrowRight") interaction.next(1);
       if (e.code === "ArrowLeft") interaction.next(-1);
       if (e.code === "Escape") interaction.return();
-      if (e.code === "KeyI") interaction.info();
+      if (e.code === "KeyI" && !e.repeat) interaction.info();
+      if (e.code === "KeyS" && !e.repeat) interaction.enterSun();
     };
     canvas.addEventListener("pointermove", move);
     canvas.addEventListener("pointerdown", down);
@@ -127,6 +130,14 @@ export function InputField() {
       );
     }
     if (
+      [
+        "SOLAR_SYSTEM",
+        "POINTER",
+        "PLANET_FOCUS",
+        "INFO",
+        "UNIVERSE_SCALE",
+      ].includes(store.get().mode) &&
+      particles.sunInterior < 0.05 &&
       store.get().tracking === "online" &&
       (store.get().gesture === "POINT" || store.get().gesture === "PINCH")
     ) {
@@ -137,6 +148,12 @@ export function InputField() {
         size.height,
       );
       if (store.get().hover !== best) store.set({ hover: best });
+    } else if (
+      (store.get().mode === "SUN_INTERIOR" ||
+        store.get().mode === "COLLAPSE") &&
+      store.get().hover
+    ) {
+      store.set({ hover: null });
     }
   });
   return (

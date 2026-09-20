@@ -10,8 +10,9 @@ import { PlanetInfo } from "./PlanetInfo";
 import { gestureLabels } from "./chinese";
 import { HandFeedback } from "./HandFeedback";
 export function HUD() {
-  const s = useSolaris(),
-    p = planetById(s.selected);
+  const s = useSolaris();
+  const insideSun = s.mode === "SUN_INTERIOR";
+  const p = insideSun ? undefined : planetById(s.selected);
   const [soundError, setSoundError] = useState("");
   const cameraActive = ["loading", "seeking", "online"].includes(s.tracking);
   const busy =
@@ -40,7 +41,7 @@ export function HUD() {
   }, [s.mode]);
   return (
     <div
-      className={`hud ${s.mode === "INTRO" ? "intro-hud" : ""}${s.tracking === "online" ? " hand-active" : ""}`}
+      className={`hud ${s.mode === "INTRO" ? "intro-hud" : ""}${s.tracking === "online" ? " hand-active" : ""}${insideSun ? " sun-interior-hud" : ""}`}
     >
       <header className="topbar">
         <button
@@ -85,17 +86,33 @@ export function HUD() {
         </div>
       </header>
       <div className="edge-label">
-        太阳系 <span>✦</span> 银河系
+        {insideSun ? "恒星内部" : "太阳系"} <span>✦</span>{" "}
+        {insideSun ? "粒子漫游" : "银河系"}
       </div>
       {!s.welcome && s.mode !== "COLLAPSE" && s.mode !== "BIG_BANG" && (
-        <section className="object-title" key={s.selected || "sun"}>
+        <section
+          className="object-title"
+          key={insideSun ? "sun-interior" : s.selected || "sun"}
+        >
           <p className="eyebrow">
-            {number} / {p ? "探索行星" : "太阳系的中心"}
+            {insideSun
+              ? "沉浸漫游 / 被光环绕"
+              : `${number} / ${p ? "探索行星" : "太阳系的中心"}`}
           </p>
-          <h1>{p?.chineseName || "太阳"}</h1>
+          <h1>{insideSun ? "太阳内部" : p?.chineseName || "太阳"}</h1>
           <p className="object-subtitle">
-            {p?.description || "一颗恒星，八个世界，由你掌控。"}
+            {insideSun
+              ? "四周皆是星火，每一粒光都在流动。"
+              : p?.description || "一颗恒星，八个世界，由你掌控。"}
           </p>
+          {insideSun && (
+            <button
+              className="text-action"
+              onClick={() => interaction.return()}
+            >
+              返回太阳系 <span>✌ / Esc</span>
+            </button>
+          )}
           {p && (
             <button className="text-action" onClick={() => interaction.info()}>
               {s.mode === "INFO" ? "收起资料" : "查看星球资料"}{" "}
@@ -170,27 +187,33 @@ export function HUD() {
           </p>
           <h2>{s.mode === "COLLAPSE" ? "奇点" : "重生"}</h2>
           {s.mode === "COLLAPSE" && (
-            <button onClick={() => interaction.bang()}>
-              {s.tracking === "online" ? "张开手掌" : "按下空格键"}{" "}
-              <span>让宇宙再次诞生</span>
+            <button onClick={() => interaction.enterSun()}>
+              {s.tracking === "online" ? "双手快速张掌拉开" : "进入太阳内部"}{" "}
+              <span>
+                {s.tracking === "online"
+                  ? "穿过奇点，被金色粒子环绕"
+                  : "也可以按空格键或 S"}
+              </span>
             </button>
           )}
         </div>
       )}
       {s.heldUniverse && <div className="held-universe">宇宙，尽在掌中</div>}
-      <PlanetInfo />
+      {!insideSun && <PlanetInfo />}
       <footer>
         <div className="footer-top">
           <div className="location">
             <span className="location-cross">+</span>
             <span>
-              {s.selected ? "星球聚焦" : "太阳系"}
+              {insideSun ? "太阳内部" : s.selected ? "星球聚焦" : "太阳系"}
               <small>
-                {s.mode === "COLLAPSE"
-                  ? "引力坍缩"
-                  : s.mode === "BIG_BANG"
-                    ? "宇宙正在重组"
-                    : "诞生于约 46 亿年前"}
+                {insideSun
+                  ? "金色星火 · 环绕你我"
+                  : s.mode === "COLLAPSE"
+                    ? "引力坍缩"
+                    : s.mode === "BIG_BANG"
+                      ? "宇宙正在重组"
+                      : "诞生于约 46 亿年前"}
               </small>
             </span>
           </div>
@@ -207,31 +230,45 @@ export function HUD() {
               interaction.return();
               startMouse();
             }}
-            className={!s.selected ? "active" : ""}
+            className={!s.selected && !insideSun ? "active" : ""}
             disabled={busy || s.mode === "COLLAPSE"}
           >
             <i className="sun-dot" />
-            <span>太阳</span>
+            <span>{insideSun ? "返回太阳系" : "太阳"}</span>
           </button>
-          {planets.map((planet) => (
-            <button
-              key={planet.id}
-              aria-label={`探索${planet.chineseName}`}
-              aria-current={s.selected === planet.id ? "true" : undefined}
-              disabled={busy || s.mode === "COLLAPSE"}
-              onClick={() => interaction.select(planet.id)}
-              className={s.selected === planet.id ? "active" : ""}
-            >
-              <i
-                style={{
-                  background: planet.color,
-                  boxShadow:
-                    planet.id === "saturn" ? "0 0 0 2px #b2a17a33" : "",
-                }}
-              />
-              <span>{planet.chineseName}</span>
-            </button>
-          ))}
+          {!insideSun &&
+            planets.map((planet) => (
+              <button
+                key={planet.id}
+                aria-label={`探索${planet.chineseName}`}
+                aria-current={s.selected === planet.id ? "true" : undefined}
+                disabled={busy || s.mode === "COLLAPSE"}
+                onClick={() => interaction.select(planet.id)}
+                className={s.selected === planet.id ? "active" : ""}
+              >
+                <i
+                  style={{
+                    background: planet.color,
+                    boxShadow:
+                      planet.id === "saturn" ? "0 0 0 2px #b2a17a33" : "",
+                  }}
+                />
+                <span>{planet.chineseName}</span>
+              </button>
+            ))}
+          <button
+            className={`interior-entry${insideSun ? " active" : ""}`}
+            aria-label="进入太阳内部"
+            aria-current={insideSun ? "page" : undefined}
+            disabled={busy || insideSun}
+            onClick={() => {
+              interaction.enterSun();
+              startMouse();
+            }}
+          >
+            <span aria-hidden="true">✦</span>
+            <span>{insideSun ? "太阳粒子漫游" : "太阳内部"}</span>
+          </button>
           <button
             className="help-toggle"
             aria-label="操作指南"
@@ -257,25 +294,31 @@ export function HUD() {
             <div>
               <h3>手势操作</h3>
               <p>
-                先指向，再捏合 <span>选择星球</span>
+                ① 食指瞄准 → 捏一下
+                <span>光圈变金色后，拇指碰食指，进入星球</span>
               </p>
               <p>
-                向左或向右挥手 <span>切换星球</span>
+                ② 伸出三根手指
+                <span>食指、中指、无名指伸直，查看 / 收起资料</span>
               </p>
               <p>
-                张开手掌 <span>返回太阳系</span>
+                ③ 比出 ✌ <span>保持片刻，返回太阳系</span>
               </p>
               <p>
-                握紧拳头 <span>让宇宙坍缩</span>
+                ④ 手向左 / 向右滑动 <span>进入星球后，切换相邻星球</span>
               </p>
               <p>
-                握拳后张开手掌 <span>触发宇宙大爆炸</span>
+                ⑤ 双手捏合，再拉开 / 靠近
+                <span>
+                  太阳系 / 星球视角中，两手各自拇指碰食指，拉开变大、靠近变小
+                </span>
               </p>
               <p>
-                比出剪刀手 ✌ <span>查看星球资料</span>
+                ⑥ 双手向中心合拢 <span>张开五指，让整个星系向中心坍缩</span>
               </p>
               <p>
-                双手拉开或靠近 <span>调整宇宙大小</span>
+                ⑦ 双手快速张掌拉开
+                <span>进入太阳内部，在环绕四周的金色粒子中漫游</span>
               </p>
             </div>
             <div>
@@ -290,21 +333,25 @@ export function HUD() {
                 ← / → <span>切换星球</span>
               </p>
               <p>
-                滚动滚轮 <span>调整宇宙大小</span>
+                滚动滚轮 <span>太阳系 / 星球视角中调整大小</span>
               </p>
               <p>
-                空格键，再按空格键 <span>坍缩，然后重生</span>
+                空格键，再按空格键 <span>坍缩，然后进入太阳内部</span>
+              </p>
+              <p>
+                S / 点击「太阳内部」 <span>直接体验太阳粒子漫游</span>
               </p>
               <p>
                 Esc / I <span>返回 / 查看资料</span>
               </p>
               <p>
-                单指拖动 <span>旋转视角 · 双指缩放</span>
+                单指拖动 <span>太阳系 / 星球视角中旋转 · 双指缩放</span>
               </p>
             </div>
           </div>
           <p className="help-note">
-            请让整只手掌保持在镜头内。张掌返回，快速横向挥手切换星球。摄像头画面始终留在本机。
+            双手操作时，两只手都要完整留在镜头内。捏合双手用于缩放，张开五指用于合拢
+            / 拉开；做完动作稍停一下。摄像头画面始终留在本机。
           </p>
         </section>
       )}

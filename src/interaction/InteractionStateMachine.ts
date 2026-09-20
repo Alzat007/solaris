@@ -7,7 +7,8 @@ export type InteractionState =
   | "INFO"
   | "COLLAPSE"
   | "BIG_BANG"
-  | "UNIVERSE_SCALE";
+  | "UNIVERSE_SCALE"
+  | "SUN_INTERIOR";
 export type InteractionEvent =
   | "READY"
   | "POINT"
@@ -15,7 +16,8 @@ export type InteractionEvent =
   | "TRANSITION_END"
   | "RETURN"
   | "INFO"
-  | "FIST"
+  | "COLLAPSE"
+  | "ENTER_SUN"
   | "OPEN"
   | "BANG_END"
   | "SCALE"
@@ -28,13 +30,15 @@ const transitions: Partial<
     RETURN: "SOLAR_SYSTEM",
     POINT: "POINTER",
     SELECT: "PLANET_TRANSITION",
-    FIST: "COLLAPSE",
+    COLLAPSE: "COLLAPSE",
+    ENTER_SUN: "SUN_INTERIOR",
     SCALE: "UNIVERSE_SCALE",
   },
   POINTER: {
     SELECT: "PLANET_TRANSITION",
     RETURN: "SOLAR_SYSTEM",
-    FIST: "COLLAPSE",
+    COLLAPSE: "COLLAPSE",
+    ENTER_SUN: "SUN_INTERIOR",
     SCALE: "UNIVERSE_SCALE",
   },
   PLANET_TRANSITION: { TRANSITION_END: "PLANET_FOCUS" },
@@ -42,33 +46,42 @@ const transitions: Partial<
     SELECT: "PLANET_TRANSITION",
     RETURN: "SOLAR_SYSTEM",
     INFO: "INFO",
-    FIST: "COLLAPSE",
+    COLLAPSE: "COLLAPSE",
+    ENTER_SUN: "SUN_INTERIOR",
     SCALE: "UNIVERSE_SCALE",
   },
   INFO: {
+    SCALE: "UNIVERSE_SCALE",
     INFO: "PLANET_FOCUS",
     SELECT: "PLANET_TRANSITION",
     RETURN: "SOLAR_SYSTEM",
-    FIST: "COLLAPSE",
+    COLLAPSE: "COLLAPSE",
+    ENTER_SUN: "SUN_INTERIOR",
   },
-  COLLAPSE: { OPEN: "BIG_BANG" },
+  COLLAPSE: { ENTER_SUN: "SUN_INTERIOR", RETURN: "SOLAR_SYSTEM" },
+  SUN_INTERIOR: { RETURN: "SOLAR_SYSTEM", COLLAPSE: "COLLAPSE" },
   BIG_BANG: { BANG_END: "SOLAR_SYSTEM" },
   UNIVERSE_SCALE: {
     SCALE_END: "SOLAR_SYSTEM",
     RETURN: "SOLAR_SYSTEM",
-    FIST: "COLLAPSE",
+    COLLAPSE: "COLLAPSE",
+    ENTER_SUN: "SUN_INTERIOR",
     SELECT: "PLANET_TRANSITION",
   },
 };
 export class InteractionStateMachine {
   state: InteractionState = "INTRO";
+  private scaleOrigin: InteractionState = "SOLAR_SYSTEM";
   can(event: InteractionEvent) {
     return !!transitions[this.state]?.[event];
   }
   send(event: InteractionEvent) {
     const next = transitions[this.state]?.[event];
     if (!next) return false;
-    this.state = next;
+    if (event === "SCALE") {
+      this.scaleOrigin = this.state === "POINTER" ? "SOLAR_SYSTEM" : this.state;
+    }
+    this.state = event === "SCALE_END" ? this.scaleOrigin : next;
     return true;
   }
 }

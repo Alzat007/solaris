@@ -1166,8 +1166,56 @@ footer {
 }
 .help-panel {
   z-index: 6;
+  max-height: calc(100% - 180px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: #8c7753 transparent;
+  scrollbar-width: thin;
+}
+.planet-nav .interior-entry {
+  color: #d6b27d;
+  gap: 7px;
+}
+.planet-nav .interior-entry > span:first-child {
+  color: #ffd8a0;
+  text-shadow: 0 0 10px #f3a75070;
+}
+.sun-interior-hud .object-title h1 {
+  font-size: clamp(30px, 3.8vw, 54px);
+}
+.sun-interior-hud .object-title {
+  bottom: 25%;
+  text-shadow: 0 2px 16px #130801;
+}
+.sun-interior-hud .object-subtitle,
+.sun-interior-hud .eyebrow {
+  color: #d0baa1;
+}
+.sun-interior-hud .planet-nav {
+  justify-content: flex-start;
+  gap: 35px;
+}
+.sun-interior-hud .help-toggle {
+  margin-left: auto;
+}
+.sun-interior-hud .hand-feedback {
+  background: linear-gradient(120deg, #21140dd9, #0d0804cc);
+  border-color: #d8a56440;
 }
 @media (max-width: 700px) {
+  .help-panel {
+    max-height: calc(100% - 150px);
+    bottom: 110px;
+  }
+  .sun-interior-hud .planet-nav {
+    gap: 18px;
+  }
+  .sun-interior-hud .object-title h1 {
+    font-size: 34px;
+  }
+  .sun-interior-hud .gesture-hints > div:first-of-type {
+    display: none;
+  }
   .hand-feedback {
     top: 75px;
     left: 6%;
@@ -1191,6 +1239,15 @@ footer {
   }
   .hand-active .planet-info {
     top: max(25%, 230px);
+  }
+}
+@media (max-width: 460px) {
+  .help-columns {
+    grid-template-columns: 1fr;
+  }
+  .help-columns h3 {
+    margin-top: 0;
+    margin-bottom: 14px;
   }
 }
 @media (max-height: 600px) and (min-width: 701px) {

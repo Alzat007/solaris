@@ -31,3 +31,15 @@ Screenshots produced during verification are in the ignored `artifacts/` directo
 - `VITE_BASE_PATH=/solaris/ npm run build`: passed. All 38 tests still pass.
 - `scripts/verify-static-export.mjs`: verified 4 entry assets, 7 runtime assets, valid WASM binaries, and subpath-aware runtime URLs. MediaPipe WASM, the hand model and Earth textures use Vite's deployment base.
 - GitHub Actions installs from the lockfile, copies the pinned MediaPipe runtime, tests, builds and verifies the export before publishing.
+
+## Gesture redesign and Sun interior · 2026-09-20
+
+This section describes the current version; earlier gesture mappings above are historical.
+
+- Replaced the old single-fist/open-palm/V mappings with THREE for information, V for return, dual pinch for scale, joined hands for collapse, and rapid bilateral open-hand separation for Sun entry. Point-to-pinch selection and horizontal switching remain supported.
+- Two-hand motion uses a recent distance window, bilateral movement, confidence checks and fresh baselines after occlusion. Pinched zoom cannot become a collapse; releasing one hand after a zoom cannot accidentally select a planet. Hand-count changes reset recognizer velocity and finger hysteresis.
+- Added a Sun interior state, 3D volume star particles at three depth ranges, animated plasma filaments, a warm nebula and entry trails. Entering hides the external Sun/planets, returning restores them. Particle counts scale from 12,000 to 32,000 by quality.
+- All 62 tests passed, including anatomical THREE and folded-finger pinch, new action mappings, two-hand motion/reacquisition safeguards, animation interruption and preserved zoom/selection. TypeScript and GitHub Pages production build passed; static export verified 4 entry assets and 7 runtime assets under `/solaris/`.
+- Browser replay at 1280 × 720 exercised the actual recognizer, gesture routing, planet picking and rendered animations using synthetic 21-point landmarks: POINT → Earth → PINCH → PLANET_FOCUS → THREE → INFO → V → SOLAR_SYSTEM. Dual pinch enlarged to 1.75 and reduced to 0.81; releasing kept 0.81. Joined hands triggered COLLAPSE; rapid bilateral expansion entered SUN_INTERIOR; V returned. No console or shader errors were observed.
+- Browser screenshots confirmed a visible central contraction and a surrounding gold/orange particle field with flowing filaments. Camera input was not opened for these checks; these are synthetic integration checks, not measurements of real-camera accuracy.
+- At 390 × 844, the seven-step Chinese teaching panel fits inside the viewport and scrolls: panel x=19.5, width=351, clientHeight=692, scrollHeight=1196; document width remains 390.

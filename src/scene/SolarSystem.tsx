@@ -23,6 +23,9 @@ export function SolarSystem() {
       (particles.targetRotation - particles.rotation) * (1 - Math.exp(-dt * 4));
     particles.anchor.lerp(particles.targetAnchor, 1 - Math.exp(-dt * 5));
     if (root.current) {
+      // The bright entry veil covers this handoff before the camera reaches
+      // the Sun's opaque surface. Keep its whole hierarchy out of the interior.
+      root.current.visible = particles.sunInterior < 0.55;
       root.current.scale.setScalar(particles.scale);
       root.current.position.copy(particles.anchor);
     }

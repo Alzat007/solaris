@@ -9,13 +9,20 @@ import { particles } from "../src/particles/ParticleEngine";
 
 let pose: Parameters<typeof handFixture>[0] | "NONE" = "NONE";
 const recognizer = new GestureRecognizer();
+const secondRecognizer = new GestureRecognizer();
+let motion = "";
+let motionStarted = 0;
 let target = { x: 0.5, y: 0.5 };
 document.getElementById("lab-buttons")!.addEventListener("click", (event) => {
   const button = (event.target as HTMLElement).closest<HTMLButtonElement>(
     "button",
   );
   if (!button) return;
-  pose = button.dataset.pose as typeof pose;
+  pose = (button.dataset.pose ?? "NONE") as typeof pose;
+  motion = button.dataset.motion ?? "";
+  motionStarted = performance.now();
+  recognizer.reset();
+  secondRecognizer.reset();
   if (pose === "POINT") {
     const label = [
       ...document.querySelectorAll<HTMLElement>(".planet-label"),
@@ -32,7 +39,38 @@ document.getElementById("lab-buttons")!.addEventListener("click", (event) => {
 });
 const timer = window.setInterval(() => {
   const time = performance.now();
-  if (pose !== "NONE") {
+  if (motion) {
+    const elapsed = time - motionStarted;
+    const zooming = motion.startsWith("zoom");
+    const progress = Math.max(
+      0,
+      Math.min(1, (elapsed - 450) / (motion === "expand" ? 240 : 1100)),
+    );
+    const distance =
+      motion === "join"
+        ? 0.6 - 0.48 * progress
+        : motion === "expand"
+          ? 0.2 + 0.56 * progress
+          : motion === "zoom-in"
+            ? 0.3 + 0.35 * progress
+            : 0.65 - 0.35 * progress;
+    const hands = [recognizer, secondRecognizer].map((r, i) => {
+      const { points, world } = handFixture(zooming ? "PINCH" : "OPEN_PALM", {
+        relaxed: true,
+        mirror: i === 1,
+      });
+      const palmX = [0, 5, 9, 13, 17].reduce(
+        (sum, index) => sum + points[index].x / 5,
+        0,
+      );
+      const desiredX = 0.5 + ((i === 0 ? -1 : 1) * distance) / 2;
+      points.forEach((p) => {
+        p.x += 1 - desiredX - palmX;
+      });
+      return r.analyze(points, world, time);
+    });
+    gestures.update({ hands, time });
+  } else if (pose !== "NONE") {
     const { points, world } = handFixture(pose, {
       relaxed: true,
       noise: 0.0003,
@@ -50,6 +88,6 @@ const timer = window.setInterval(() => {
   }
   const s = store.get();
   document.getElementById("lab-result")!.textContent =
-    `识别 ${s.gesture} · ${Math.round(s.confidence * 100)}% | 状态 ${s.mode} / ${interaction.machine.state} | 命中 ${s.hover ?? "无"} | 已选 ${s.selected ?? "无"} | 坍缩 ${particles.collapse.toFixed(2)}`;
+    `识别 ${s.gesture} · ${Math.round(s.confidence * 100)}% | 状态 ${s.mode} / ${interaction.machine.state} | 命中 ${s.hover ?? "无"} | 已选 ${s.selected ?? "无"} | 坍缩 ${particles.collapse.toFixed(2)} | 内部 ${particles.sunInterior.toFixed(2)} | 缩放 ${particles.targetScale.toFixed(2)}`;
 }, 50);
 window.addEventListener("pagehide", () => clearInterval(timer), { once: true });
