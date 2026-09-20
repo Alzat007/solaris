@@ -22,7 +22,7 @@ const hand = (gesture: Gesture, x = 0.3, id = "left"): HandFeatures => ({
   gesture,
   confidence: 0.95,
   trackingConfidence: 1,
-  indexAngle: gesture === "FIST" || gesture === "PINCH" ? 95 : 165,
+  indexAngle: gesture === "FIST" ? 75 : gesture === "PINCH" ? 95 : 165,
   indexAngleValid: true,
   indexAngularVelocity: 0,
   indexState: gesture === "FIST" || gesture === "PINCH" ? "BENT" : "EXTENDED",
@@ -129,11 +129,11 @@ function scenario(
   }
 }
 
-const pressed = (angle = 105, gesture: Gesture = "NONE"): HandFeatures => ({
+const pressed = (angle = 75, gesture: Gesture = "NONE"): HandFeatures => ({
   ...hand(gesture),
   indexAngle: angle,
   indexAngularVelocity: -180,
-  indexState: angle < 115 ? "BENT" : "EXTENDED",
+  indexState: angle < 85 ? "BENT" : "EXTENDED",
 });
 test("pointing without bending only locks and never selects, rotates or zooms", () =>
   scenario(({ warm, hold, calls }) => {
@@ -146,7 +146,7 @@ test("pointing without bending only locks and never selects, rotates or zooms", 
     assert.equal(particles.targetScale, 1);
   }));
 for (const target of ["earth", "sun"] as const)
-  test(`stable aim and one light index press selects ${target} exactly once`, () =>
+  test(`stable aim and one full index curl selects ${target} exactly once`, () =>
     scenario(({ warm, send, hold, calls }) => {
       warm();
       gestureTargets.set({ kind: "body", id: target, label: target });
@@ -285,7 +285,7 @@ test("locked index press outranks a fist-like closing frame and held press never
     gestureTargets.set({ kind: "body", id: "mars", label: "火星" });
     hold([hand("POINT")], 300);
     send([pressed(135)]);
-    send([pressed(105, "FIST")]);
+    send([pressed(75, "FIST")]);
     hold([hand("FIST")], 1600);
     assert.deepEqual(calls, ["select:mars"]);
     hold([hand("OPEN_PALM")], 200);

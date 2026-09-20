@@ -1041,7 +1041,7 @@ test("index-dominant pointing accepts naturally half-bent fingers and a free thu
 });
 
 test("index PIP measurement is a true MCP-PIP-DIP joint angle under rotation, mirror and screen fallback", () => {
-  for (const indexPipAngle of [170, 155, 135, 110, 105, 80]) {
+  for (const indexPipAngle of [170, 155, 135, 105, 90, 75]) {
     for (const mirror of [false, true]) {
       const fixture = handFixture("POINT", {
         indexPipAngle,
@@ -1085,9 +1085,12 @@ test("index state uses separate press/release thresholds and retains its state i
     [130, "BETWEEN"],
     [160, "EXTENDED"],
     [144, "EXTENDED"],
-    [116, "EXTENDED"],
-    [114, "BENT"],
-    [116, "BENT"],
+    [105, "EXTENDED"],
+    [90, "EXTENDED"],
+    [86, "EXTENDED"],
+    [84, "BENT"],
+    [86, "BENT"],
+    [105, "BENT"],
     [144, "BENT"],
     [146, "EXTENDED"],
   ] as const;
@@ -1101,7 +1104,7 @@ test("index state uses separate press/release thresholds and retains its state i
   });
 });
 
-test("a light 160-to-105-degree index curl provides negative angular velocity without requiring a fist", () => {
+test("a full 160-to-75-degree index curl provides negative angular velocity without requiring all fingers to form a fist", () => {
   const recognizer = new GestureRecognizer();
   let time = 0;
   const send = (indexPipAngle: number) => {
@@ -1112,15 +1115,16 @@ test("a light 160-to-105-degree index curl provides negative angular velocity wi
     return recognizer.analyze(fixture.points, fixture.world, (time += 50));
   };
   assert.equal(send(160).indexAngularVelocity, 0);
-  for (const angle of [145, 130, 110, 105]) {
+  for (const angle of [145, 130, 105, 90, 75]) {
     const hand = send(angle);
     assert.ok(
       hand.indexAngularVelocity! < -gestureConfig.INDEX_PRESS_MIN_VELOCITY,
     );
     assert.notEqual(hand.gesture, "FIST");
+    assert.equal(hand.indexState, angle >= 85 ? "EXTENDED" : "BENT");
   }
-  let held = send(105);
-  for (let frame = 0; frame < 14; frame++) held = send(105);
+  let held = send(75);
+  for (let frame = 0; frame < 14; frame++) held = send(75);
   assert.ok(
     Math.abs(held.indexAngularVelocity!) < 0.1,
     "held curls carry no ongoing press velocity",
@@ -1133,12 +1137,12 @@ test("a light 160-to-105-degree index curl provides negative angular velocity wi
 test("degenerate PIP geometry and long frame gaps clear derivative history instead of creating a press spike", () => {
   const recognizer = new GestureRecognizer();
   const straight = handFixture("POINT", { indexPipAngle: 160 });
-  const bent = handFixture("POINT", { indexPipAngle: 105 });
+  const bent = handFixture("POINT", { indexPipAngle: 75 });
   recognizer.analyze(straight.points, straight.world, 0);
   assert.ok(
     recognizer.analyze(bent.points, bent.world, 50).indexAngularVelocity! < 0,
   );
-  const degenerate = handFixture("POINT", { indexPipAngle: 105 });
+  const degenerate = handFixture("POINT", { indexPipAngle: 75 });
   degenerate.world[6] = { ...degenerate.world[5] };
   const invalid = recognizer.analyze(degenerate.points, degenerate.world, 100);
   assert.equal(invalid.indexAngleValid, false);
@@ -1160,7 +1164,7 @@ test("degenerate PIP geometry and long frame gaps clear derivative history inste
 
 test("natural landmark jitter cannot toggle index state while its PIP stays inside the hysteresis band", () => {
   const recognizer = new GestureRecognizer();
-  for (const start of [160, 105]) {
+  for (const start of [160, 75]) {
     recognizer.reset();
     const initial = handFixture("POINT", { indexPipAngle: start });
     recognizer.analyze(initial.points, initial.world, 0);

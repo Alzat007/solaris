@@ -107,8 +107,14 @@ function setup(t: TestContext, mirror = false) {
     assert.equal(gestureFeedback.get().lockedTarget?.id, target.id);
   };
   const press = () => {
-    send("POINT", { indexPipAngle: 135 });
-    return send("POINT", { indexPipAngle: 105 });
+    const beforePulse = gestureFeedback.get().pulseId;
+    send("POINT", { indexPipAngle: 105 });
+    assert.equal(
+      gestureFeedback.get().pulseId,
+      beforePulse,
+      "a moderate bend cannot press",
+    );
+    return send("POINT", { indexPipAngle: 75 });
   };
   const finish = () => {
     assert.ok(timeline(), "a real scene animation must have started");
@@ -173,7 +179,7 @@ for (const mirror of [false, true]) {
         target.id === "earth" ? "earth" : null,
       );
       assert.equal(interaction.isLocked(), true);
-      s.hold("POINT", 700, { indexPipAngle: 105 });
+      s.hold("POINT", 700, { indexPipAngle: 75 });
       assert.equal(
         gestureFeedback.get().pulseId,
         beforePulse + 1,
@@ -188,6 +194,37 @@ for (const mirror of [false, true]) {
   }
 }
 
+for (const mirror of [false, true]) {
+  test(`${mirror ? "left" : "right"} locked index stays outside Earth at 105 and 90 degrees and enters only after a full 75-degree curl`, (t) => {
+    const s = setup(t, mirror);
+    s.warm();
+    s.lock(earth);
+    const pulse = gestureFeedback.get().pulseId;
+    for (const indexPipAngle of [105, 90]) {
+      for (let frame = 0; frame < 3; frame++) {
+        const hand = s.send("POINT", { indexPipAngle });
+        assert.ok(Math.abs(hand.indexAngle! - indexPipAngle) < 1e-8);
+        assert.equal(
+          hand.indexState,
+          "EXTENDED",
+          "85/145 hysteresis must not press at a moderate bend",
+        );
+        assert.equal(store.get().mode, "SOLAR_SYSTEM");
+        assert.equal(store.get().selected, null);
+        assert.equal(gestureFeedback.get().pulseId, pulse);
+        assert.equal(gestureFeedback.get().indexNeedsRelease, false);
+        assert.equal(gestureFeedback.get().lockedTarget?.id, "earth");
+      }
+    }
+    const fullCurl = s.send("POINT", { indexPipAngle: 75 });
+    assert.equal(fullCurl.indexState, "BENT");
+    assert.equal(store.get().selected, "earth");
+    assert.equal(store.get().mode, "PLANET_TRANSITION");
+    assert.equal(gestureFeedback.get().lastAction, "INDEX_PRESS");
+    assert.equal(gestureFeedback.get().pulseId, pulse + 1);
+  });
+}
+
 test("a fast scan and an early index curl cannot lock or select an incidental target", (t) => {
   const s = setup(t);
   s.warm();
@@ -197,7 +234,7 @@ test("a fast scan and an early index curl cannot lock or select an incidental ta
   assert.notEqual(gestureFeedback.get().indexPhase, "TARGET_LOCKED");
   gestureTargets.set(mars);
   s.send("POINT", { indexPipAngle: 135 });
-  s.send("POINT", { indexPipAngle: 105 });
+  s.send("POINT", { indexPipAngle: 75 });
   assert.equal(store.get().selected, null);
   assert.equal(store.get().mode, "SOLAR_SYSTEM");
   assert.equal(gestureFeedback.get().lockedTarget, null);
@@ -208,11 +245,11 @@ test("a locked Earth remains selected when index flexion moves the tip and hover
   s.warm();
   s.lock(earth);
   gestureTargets.set(null);
-  s.send("POINT", { indexPipAngle: 135 }, 0.025);
+  s.send("POINT", { indexPipAngle: 105 }, 0.025);
   assert.equal(gestureFeedback.get().indexPhase, "INDEX_PRESSING");
   assert.equal(gestureFeedback.get().lockedTarget?.id, "earth");
   gestureTargets.set(mars);
-  s.send("POINT", { indexPipAngle: 105 }, 0.035);
+  s.send("POINT", { indexPipAngle: 75 }, 0.035);
   assert.equal(store.get().selected, "earth");
   assert.equal(store.get().mode, "PLANET_TRANSITION");
 });
@@ -232,10 +269,10 @@ test("the transition blocks every competing action and a held bend cannot return
     assert.equal(particles.targetScale, 1);
     assert.equal(gestureFeedback.get().pulseId, pulse);
   }
-  s.hold("POINT", 200, { indexPipAngle: 105 });
+  s.hold("POINT", 200, { indexPipAngle: 75 });
   s.finish();
   gestureTargets.set(mars);
-  s.hold("POINT", 800, { indexPipAngle: 105 });
+  s.hold("POINT", 800, { indexPipAngle: 75 });
   assert.equal(store.get().mode, "PLANET_FOCUS");
   assert.equal(store.get().selected, "earth");
   assert.equal(gestureFeedback.get().pulseId, pulse);
@@ -246,7 +283,7 @@ test("a full 100ms explicit extension permits a new lock and a second deliberate
   s.warm();
   s.lock();
   s.press();
-  s.hold("POINT", 700, { indexPipAngle: 105 });
+  s.hold("POINT", 700, { indexPipAngle: 75 });
   s.finish();
   gestureTargets.set(mars);
   s.send("POINT");
@@ -300,7 +337,7 @@ test("ordinary Fist holds return after 600ms, while an already locked index pres
   s.hold("POINT", 500);
   s.finish();
   s.lock(mars);
-  s.send("FIST");
+  s.send("FIST", { indexPipAngle: 75 });
   assert.equal(gestureFeedback.get().lastAction, "INDEX_PRESS");
   assert.equal(store.get().mode, "PLANET_TRANSITION");
   assert.equal(store.get().selected, "mars");
@@ -324,7 +361,7 @@ test("a locked index excludes V zoom, and an owned V dial excludes a new index l
   gestureTargets.set(earth);
   s.send("POINT");
   s.send("POINT", { indexPipAngle: 135 });
-  s.send("POINT", { indexPipAngle: 105 });
+  s.send("POINT", { indexPipAngle: 75 });
   assert.equal(gestureFeedback.get().lockedTarget, null);
   assert.equal(store.get().selected, null);
   assert.equal(gestureFeedback.get().lastAction, "V_ZOOM");
@@ -338,15 +375,15 @@ test("losing a locked hand discards its target and enforces a fresh 250ms re-ent
   s.empty();
   assert.equal(gestureFeedback.get().lockedTarget, null);
   gestureTargets.set(earth);
-  const returning = s.send("POINT", { indexPipAngle: 105 });
+  const returning = s.send("POINT", { indexPipAngle: 75 });
   assert.notEqual(returning.id, oldHand.id);
   for (let elapsed = 50; elapsed < config.HAND_REENTRY_DELAY; elapsed += 50) {
-    s.send("POINT", { indexPipAngle: 105 });
+    s.send("POINT", { indexPipAngle: 75 });
     assert.equal(gestureFeedback.get().readiness, "RECONNECTING");
     assert.equal(gestureFeedback.get().lockedTarget, null);
     assert.equal(store.get().selected, null);
   }
-  s.send("POINT", { indexPipAngle: 105 });
+  s.send("POINT", { indexPipAngle: 75 });
   assert.equal(gestureFeedback.get().readiness, "READY");
   assert.equal(gestureFeedback.get().indexNeedsRelease, true);
   assert.equal(store.get().selected, null);
@@ -412,9 +449,9 @@ test("a locked index crossing that is too slow to select still cannot turn its h
   const s = setup(t);
   s.focusEarth();
   s.lock(mars);
-  s.send("POINT", { indexPipAngle: 116 });
-  s.hold("POINT", 350, { indexPipAngle: 116 });
-  s.send("POINT", { indexPipAngle: 114 });
+  s.send("POINT", { indexPipAngle: 86 });
+  s.hold("POINT", 350, { indexPipAngle: 86 });
+  s.send("POINT", { indexPipAngle: 84 });
   assert.equal(gestureFeedback.get().indexNeedsRelease, true);
   assert.equal(gestureFeedback.get().indexPhase, "INDEX_PRESSING");
   assert.equal(

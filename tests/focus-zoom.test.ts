@@ -121,8 +121,13 @@ function setup(t: TestContext, fixtureOptions: Geometry = {}) {
     gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
     hold("POINT", config.TARGET_LOCK_TIME + 50);
     assert.equal(gestureFeedback.get().indexPhase, "TARGET_LOCKED");
-    send("POINT", { indexPipAngle: 135 });
     send("POINT", { indexPipAngle: 105 });
+    assert.equal(
+      store.get().selected,
+      null,
+      "a moderate bend cannot enter Earth",
+    );
+    send("POINT", { indexPipAngle: 75 });
     assert.equal(store.get().selected, "earth");
     assert.equal(store.get().mode, "PLANET_TRANSITION");
     assert.equal(interaction.isLocked(), true);
@@ -272,18 +277,23 @@ test("releasing V stops immediately, preserves facts, returns to focus, and perm
 test("a bent index held across entry cannot select another planet until explicit release and a new lock", (t) => {
   const s = setup(t);
   s.selectEarth();
-  s.hold("POINT", 800, { indexPipAngle: 105 });
+  s.hold("POINT", 800, { indexPipAngle: 75 });
   s.finishAndRevealFacts();
   gestureTargets.set({ kind: "body", id: "mars", label: "火星" });
-  s.hold("POINT", 800, { indexPipAngle: 105 });
+  s.hold("POINT", 800, { indexPipAngle: 75 });
   assert.equal(store.get().selected, "earth");
   assert.equal(store.get().mode, "PLANET_FOCUS");
   assert.equal(gestureFeedback.get().zoomMode, "IDLE");
   assert.equal(particles.targetScale, 1);
   s.hold("POINT", config.INDEX_RELEASE_HOLD + config.TARGET_LOCK_TIME + 150);
   assert.equal(gestureFeedback.get().indexPhase, "TARGET_LOCKED");
-  s.send("POINT", { indexPipAngle: 135 });
   s.send("POINT", { indexPipAngle: 105 });
+  assert.equal(
+    store.get().selected,
+    "earth",
+    "a moderate bend cannot select Mars",
+  );
+  s.send("POINT", { indexPipAngle: 75 });
   assert.equal(store.get().selected, "mars");
   assert.equal(store.get().mode, "PLANET_TRANSITION");
 });

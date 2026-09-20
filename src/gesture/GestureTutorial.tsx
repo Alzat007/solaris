@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSolaris } from "../interaction/store";
 import { useGestureFeedback } from "./gestureFeedback";
 
-const completionKey = "solarisIndexTriggerTutorialCompleted";
+const completionKey = "solarisIndexCurlTutorialCompleted";
 function isCompleted() {
   try {
     return localStorage.getItem(completionKey) === "true";
@@ -54,13 +54,13 @@ export function GestureTutorial() {
     ? "重新伸直食指"
     : ready
       ? f.lockedTarget?.kind === "body"
-        ? "轻弯食指进入"
-        : "轻弯食指确认"
+        ? "完全弯曲食指进入"
+        : "完全弯曲食指确认"
       : "指向星球";
   const detail = releasing
     ? "伸直后，可继续选择"
     : ready
-      ? "保持手掌稳定，弯一下食指"
+      ? "稳住手掌，只弯食指，不必握拳"
       : "食指伸直，等星球圆环填满";
   return (
     <div className="gesture-tutorial" role="status" aria-live="polite">

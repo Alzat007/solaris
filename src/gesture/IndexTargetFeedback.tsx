@@ -62,9 +62,9 @@ export function IndexTargetFeedback() {
       : f.indexNeedsRelease
         ? "伸直食指"
         : f.indexPhase === "INDEX_PRESSING"
-          ? "轻弯确认"
+          ? "弯到底确认"
           : locked
-            ? "轻弯食指"
+            ? "食指弯到底"
             : "保持指向";
   const style = {
     "--target-lock-progress": Math.max(0, Math.min(1, f.targetLockProgress)),

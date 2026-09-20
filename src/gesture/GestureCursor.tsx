@@ -77,9 +77,9 @@ export function GestureCursor() {
           : f.indexNeedsRelease
             ? "伸直食指"
             : f.indexPhase === "INDEX_PRESSING"
-              ? "轻弯 · 确认"
+              ? "弯到底 · 确认"
               : f.lockedTarget
-                ? `${f.lockedTarget.label} · 轻弯食指`
+                ? `${f.lockedTarget.label} · 食指弯到底`
                 : f.target?.label;
   const style = {
     "--pinch-progress": zooming

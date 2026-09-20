@@ -43,7 +43,7 @@ const flex = (
   hand({
     gesture: "NONE",
     indexAngle: angle,
-    indexState: angle < 115 ? "BENT" : "BETWEEN",
+    indexState: angle < config.INDEX_PRESS_THRESHOLD_DEG ? "BENT" : "BETWEEN",
     indexAngularVelocity: velocity,
     ...overrides,
   });
@@ -75,7 +75,7 @@ function press(selection: IndexTriggerSelection, start = 250) {
     undefined,
   );
   assert.equal(selection.state, "INDEX_PRESSING");
-  return selection.update(flex(110), mars, start + 150);
+  return selection.update(flex(75), mars, start + 150);
 }
 
 test("stable pointing exposes hover and locking before acquiring one target at 250 ms", () => {
@@ -177,12 +177,12 @@ test("a quick bend before locking can never trigger a selection", () => {
   const selection = new IndexTriggerSelection();
   selection.update(hand(), earth, 0);
   selection.update(hand(), earth, 100);
-  assert.equal(selection.update(flex(110), earth, 150).triggered, undefined);
+  assert.equal(selection.update(flex(75), earth, 150).triggered, undefined);
   assert.equal(selection.lockedTarget, null);
   assert.equal(selection.owned, false);
 });
 
-test("a light press selects the captured body or HUD even when the fingertip leaves it", () => {
+test("a full index curl selects the captured body or HUD even when the fingertip leaves it", () => {
   for (const target of [earth, sun, help]) {
     const selection = new IndexTriggerSelection();
     lock(selection, target);
@@ -197,12 +197,31 @@ test("a light press selects the captured body or HUD even when the fingertip lea
   }
 });
 
+test("light and right-angle bends cannot select before a full curl below 85 degrees", () => {
+  const selection = new IndexTriggerSelection();
+  lock(selection);
+  for (const [angle, time] of [
+    [135, 300],
+    [110, 350],
+    [90, 400],
+    [85, 450],
+  ]) {
+    assert.equal(
+      selection.update(flex(angle), null, time).triggered,
+      undefined,
+    );
+    assert.equal(selection.lockedTarget?.id, "earth");
+    assert.equal(selection.needsRelease, false);
+  }
+  assert.equal(selection.update(flex(75), null, 500).triggered?.id, "earth");
+});
+
 test("a held bend triggers only once, then WAIT_RELEASE does not own other gestures", () => {
   const selection = new IndexTriggerSelection();
   lock(selection);
   assert.equal(press(selection).triggered?.id, "earth");
   for (let time = 450; time <= 1800; time += 50) {
-    const result = selection.update(flex(105, 0), mars, time);
+    const result = selection.update(flex(70, 0), mars, time);
     assert.equal(result.triggered, undefined);
     assert.equal(result.owned, false);
     assert.equal(selection.state, "WAIT_RELEASE");
@@ -228,17 +247,17 @@ test("release needs more than 145 degrees continuously for 100 ms before the nex
   selection.update(hand(), mars, 850);
   selection.update(hand(), mars, 900);
   assert.equal(selection.lockedTarget?.id, "mars");
-  assert.equal(selection.update(flex(110), null, 950).triggered?.id, "mars");
+  assert.equal(selection.update(flex(75), null, 950).triggered?.id, "mars");
 });
 
 test("press and release use their own hysteresis rather than a geometry-state label", () => {
   const selection = new IndexTriggerSelection();
   lock(selection, earth, 0, { indexState: "BENT" });
-  assert.equal(selection.update(flex(115), earth, 300).triggered, undefined);
+  assert.equal(selection.update(flex(85), earth, 300).triggered, undefined);
   assert.equal(selection.state, "INDEX_PRESSING");
   assert.equal(selection.needsRelease, false);
   assert.equal(
-    selection.update(flex(114, -80, { indexState: "EXTENDED" }), earth, 350)
+    selection.update(flex(84, -80, { indexState: "EXTENDED" }), earth, 350)
       .triggered?.id,
     "earth",
   );
@@ -276,14 +295,13 @@ test("small angle jitter and slow relaxation cannot fire or turn into a delayed 
     undefined,
   );
   assert.equal(
-    selection.update(flex(114, -20), earth, 750).triggered,
+    selection.update(flex(84, -20), earth, 750).triggered,
     undefined,
   );
   assert.equal(selection.needsRelease, true);
   for (let time = 800; time <= 1050; time += 50)
     assert.equal(
-      selection.update(flex(time % 100 ? 114 : 116, -100), earth, time)
-        .triggered,
+      selection.update(flex(time % 100 ? 84 : 86, -100), earth, time).triggered,
       undefined,
     );
 });
@@ -291,23 +309,23 @@ test("small angle jitter and slow relaxation cannot fire or turn into a delayed 
 test("stationary bent geometry with stale negative velocity cannot count as a fresh press", () => {
   const selection = new IndexTriggerSelection();
   lock(selection);
-  selection.update(flex(110, 0), earth, 300);
+  selection.update(flex(75, 0), earth, 300);
   assert.equal(
-    selection.update(flex(110, -500), earth, 350).triggered,
+    selection.update(flex(75, -500), earth, 350).triggered,
     undefined,
   );
   assert.equal(
-    selection.update(flex(111, -500), earth, 400).triggered,
+    selection.update(flex(76, -500), earth, 400).triggered,
     undefined,
   );
 });
 
-test("POINT, contextual NONE/FIST and INDEX_PRESS can complete a locked light press", () => {
+test("POINT, contextual NONE/FIST and INDEX_PRESS can complete a locked full index curl", () => {
   for (const gesture of ["POINT", "NONE", "FIST", "INDEX_PRESS"] as const) {
     const selection = new IndexTriggerSelection();
     lock(selection);
     const result = selection.update(
-      flex(110, -300, { gesture, pointConfidence: 0 }),
+      flex(75, -300, { gesture, pointConfidence: 0 }),
       null,
       300,
     );
@@ -327,13 +345,13 @@ test("V, open palms and pinches cannot trigger index selection or steal an exist
     const selection = new IndexTriggerSelection();
     lock(selection);
     for (let time = 300; time < 750; time += 50) {
-      const result = selection.update(flex(100, -300, { gesture }), mars, time);
+      const result = selection.update(flex(70, -300, { gesture }), mars, time);
       assert.equal(result.triggered, undefined, gesture);
       assert.equal(result.owned, true, gesture);
       assert.equal(selection.lockedTarget?.id, "earth");
     }
     assert.equal(
-      selection.update(flex(100, -300, { gesture }), mars, 750).owned,
+      selection.update(flex(70, -300, { gesture }), mars, 750).owned,
       false,
     );
     assert.equal(selection.lockedTarget, null);
@@ -352,7 +370,7 @@ test("an unlocked full fist, V or pinch never starts a press latch that would bl
     const selection = new IndexTriggerSelection();
     for (let time = 0; time <= 1000; time += 50) {
       assert.equal(
-        selection.update(flex(100, -100, { gesture }), earth, time).triggered,
+        selection.update(flex(70, -100, { gesture }), earth, time).triggered,
         undefined,
       );
       assert.equal(selection.owned, false);
@@ -371,7 +389,7 @@ test("the first hover departure starts a fixed grace deadline that re-hover cann
   selection.update(hand(), earth, 600);
   selection.update(hand(), earth, 700);
   assert.equal(selection.lockedTarget?.id, "earth");
-  assert.equal(selection.update(flex(110), earth, 750).triggered, undefined);
+  assert.equal(selection.update(flex(75), earth, 750).triggered, undefined);
   assert.equal(selection.lockedTarget, null);
   assert.equal(selection.needsRelease, true);
 });
@@ -402,7 +420,7 @@ test("straight-finger jitter cannot start a grace timeout while stable on the sa
     assert.equal(result.owned, true);
     assert.equal(selection.state, "TARGET_LOCKED");
   }
-  assert.equal(selection.update(flex(110), null, 2550).triggered?.id, "earth");
+  assert.equal(selection.update(flex(75), null, 2550).triggered?.id, "earth");
 });
 
 test("disabled scene frames clear locks, observe release and never accumulate a new hold", () => {
@@ -433,7 +451,7 @@ test("selection-triggered animation can observe a straight release without selec
   const selection = new IndexTriggerSelection();
   lock(selection);
   press(selection);
-  selection.update(flex(110, 0), mars, 450, false);
+  selection.update(flex(75, 0), mars, 450, false);
   selection.update(hand(), mars, 500, false);
   selection.update(hand(), mars, 600, false);
   assert.equal(selection.needsRelease, false);
@@ -452,14 +470,14 @@ test("hand loss clears the frozen target and requires release plus a fresh enabl
   assert.equal(selection.needsRelease, true);
   for (let time = 350; time <= 550; time += 50)
     assert.equal(
-      selection.update(flex(100), earth, time, false).triggered,
+      selection.update(flex(70), earth, time, false).triggered,
       undefined,
     );
   selection.update(hand(), earth, 600, false);
   selection.update(hand(), earth, 700, false);
   assert.equal(selection.needsRelease, false);
   lock(selection, earth, 750);
-  assert.equal(selection.update(flex(110), null, 1050).triggered?.id, "earth");
+  assert.equal(selection.update(flex(75), null, 1050).triggered?.id, "earth");
 });
 
 test("invalid or transient angle geometry cancels immediately instead of triggering", () => {
@@ -476,7 +494,7 @@ test("invalid or transient angle geometry cancels immediately instead of trigger
     const selection = new IndexTriggerSelection();
     lock(selection);
     assert.equal(
-      selection.update(flex(110, -500, overrides), earth, 300).triggered,
+      selection.update(flex(75, -500, overrides), earth, 300).triggered,
       undefined,
     );
     assert.equal(selection.lockedTarget, null);
@@ -489,13 +507,13 @@ test("long frame gaps, reversed clocks and duplicate timestamps cannot invent a 
   for (const time of [500, 200, NaN]) {
     const selection = new IndexTriggerSelection();
     lock(selection);
-    assert.equal(selection.update(flex(100), earth, time).triggered, undefined);
+    assert.equal(selection.update(flex(70), earth, time).triggered, undefined);
     assert.equal(selection.lockedTarget, null);
     assert.equal(selection.needsRelease, true);
   }
   const selection = new IndexTriggerSelection();
   lock(selection);
-  assert.equal(selection.update(flex(100), earth, 250).triggered, undefined);
+  assert.equal(selection.update(flex(70), earth, 250).triggered, undefined);
   assert.equal(selection.state, "TARGET_LOCKED");
   assert.equal(selection.needsRelease, false);
   const pending = new IndexTriggerSelection();
@@ -555,7 +573,7 @@ test("left and right hands share exactly the same angle-based selection and rele
     const selection = new IndexTriggerSelection();
     lock(selection, earth, 0, { handedness });
     const result = selection.update(
-      flex(110, -180, {
+      flex(75, -180, {
         handedness,
         pointer: { x: handedness === "Left" ? 0.1 : 0.9, y: 0.6 },
       }),

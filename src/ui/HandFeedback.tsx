@@ -55,9 +55,9 @@ export function HandFeedback() {
     if (f.indexNeedsRelease || f.indexPhase === "WAIT_RELEASE")
       return "伸直食指，准备下一次选择";
     if (f.indexPhase === "INDEX_TRIGGERED") return "已确认";
-    if (f.indexPhase === "INDEX_PRESSING") return "轻弯食指 · 正在确认";
+    if (f.indexPhase === "INDEX_PRESSING") return "食指弯到底 · 正在确认";
     if (f.indexPhase === "TARGET_LOCKED")
-      return `${f.lockedTarget?.label || "已就绪"} · 轻弯食指${f.lockedTarget?.kind === "body" ? "进入" : "确认"}`;
+      return `${f.lockedTarget?.label || "已就绪"} · 食指弯到底${f.lockedTarget?.kind === "body" ? "进入" : "确认"}`;
     if (f.indexPhase === "TARGET_LOCKING")
       return `${f.hoverTarget?.label || "已指向"} · 保持片刻`;
     if (f.needsRelease) return "松开手指，再抓住空白拖动";

@@ -150,10 +150,12 @@ const timer = window.setInterval(() => {
       motion === "index-release"
         ? 165
         : motion === "index-slow"
-          ? 165 - 60 * clamp(elapsed / 5000)
+          ? 165 - 90 * clamp(elapsed / 5000)
           : motion === "index-jitter"
             ? 162 + Math.sin(elapsed / 90) * 3
-            : 165 - 62 * clamp(elapsed / 250);
+            : motion === "index-partial"
+              ? 165 - 60 * clamp(elapsed / 250)
+              : 165 - 90 * clamp(elapsed / 350);
     hands = [feature("POINT", target.x, target.y, time, 0, false, 0, angle)];
   } else if (motion === "focus-v") {
     if (interaction.isLocked()) {

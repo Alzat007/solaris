@@ -23,7 +23,8 @@ export const gestureConfig = {
   SWIPE_AXIS_RATIO: 2,
   TARGET_LOCK_TIME: 250,
   TARGET_LOCK_GRACE: 450,
-  INDEX_PRESS_THRESHOLD_DEG: 115,
+  // Require a deep index curl; a light or right-angle bend is not a press.
+  INDEX_PRESS_THRESHOLD_DEG: 85,
   INDEX_RELEASE_THRESHOLD_DEG: 145,
   INDEX_RELEASE_HOLD: 100,
   INDEX_PRESS_MIN_VELOCITY: 25,
