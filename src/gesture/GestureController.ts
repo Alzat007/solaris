@@ -1,359 +1,461 @@
 import { particles } from "../particles/ParticleEngine";
 import { store } from "../interaction/store";
 import { interaction } from "../interaction/InteractionController";
-import { GestureStabilizer } from "./GestureRecognizer";
+import { rotation } from "../interaction/rotation";
+import { gestureConfig as config } from "./gestureConfig";
+import {
+  gestureFeedback,
+  type GestureAction,
+  type GestureTarget,
+} from "./gestureFeedback";
+import { gestureTargets } from "./gestureTargets";
+import { HoldStateMachine, PinchStateMachine } from "./GestureStateMachine";
+import { SolarEffectGesture, SwipeTracker } from "./GestureMotion";
 import type { HandFeatures, HandFrame } from "./GestureTypes";
-import type { PlanetId } from "../data/planets";
-class GestureController {
-  stabilizer = new GestureStabilizer();
-  private lastSwipe = 0;
-  private hover: PlanetId | null = null;
-  private hoverTime = 0;
-  private pinchReady = false;
-  private pinchSelected = false;
-  private samples: { x: number; y: number; t: number }[] = [];
-  private two: {
-    started: number;
-    last: number;
-    samples: {
-      distance: number;
-      time: number;
-      left: HandFeatures["center"];
-      right: HandFeatures["center"];
-    }[];
-    scale: { distance: number; value: number; started: number } | null;
-    closeSince: number | null;
-    collapsed: boolean;
-    mustSeparate: boolean;
-    scaleReleased: number;
-  } | null = null;
-  private lastTwoAction = -Infinity;
-  private clearTwo() {
-    if (this.two?.scale) interaction.endScale();
-    this.two = null;
+
+const overview = (mode: string) =>
+  mode === "SOLAR_SYSTEM" || mode === "POINTER";
+const focused = (mode: string) => mode === "PLANET_FOCUS" || mode === "INFO";
+
+/** Arbitration only. Geometry, pinch lifecycle, effects, targets and rendering
+ * live in separate modules. One winning action owns each detection frame. */
+export class GestureController {
+  private pinches = new Map<string, PinchStateMachine>();
+  private fist = new HoldStateMachine();
+  private swipe = new SwipeTracker();
+  private special = new SolarEffectGesture();
+  private visible = false;
+  private handSignature = "";
+  private readyAt = 0;
+  private lastFrame = 0;
+  private cooldownUntil = 0;
+  private triggeredUntil = 0;
+  private pointTarget: GestureTarget | null = null;
+  private pointAt = 0;
+  private captured: GestureTarget | null = null;
+  private pinchContext: "select" | "blank" | "drag" | "consumed" | null = null;
+  private pinchOriginX = 0;
+  private pinchOriginY = 0;
+  private dragLastX = 0;
+  private dragLastTime = 0;
+  private zoomDistance = 0;
+  private zoomScale = 1;
+  private fistId = "";
+  private fistNeedsRelease = false;
+  private pairedReleaseAt = -Infinity;
+
+  private id(hand: HandFeatures, index: number) {
+    return hand.id ?? hand.handedness ?? String(index);
   }
-  /** A pair is tracked by distance, independent of detector hand ordering.
-   * Re-acquisition creates a fresh baseline; missing frames never add speed.
-   */
-  private updateTwo(hands: HandFeatures[], time: number) {
-    const [left, right] = [...hands].sort((a, b) => a.center.x - b.center.x);
-    if (hands.some((hand) => hand.confidence < 0.6)) {
-      this.clearTwo();
-      return true;
+  private pinch(id: string) {
+    let machine = this.pinches.get(id);
+    if (!machine) {
+      machine = new PinchStateMachine();
+      this.pinches.set(id, machine);
     }
-    if (this.two && time - this.two.last > 130) this.clearTwo();
-    const distance = Math.hypot(
-      left.center.x - right.center.x,
-      left.center.y - right.center.y,
-    );
-    if (!this.two)
-      this.two = {
-        started: time,
-        last: time,
-        samples: [],
-        scale: null,
-        closeSince: null,
-        collapsed: false,
-        mustSeparate: false,
-        scaleReleased: -Infinity,
-      };
-    const two = this.two;
-    two.last = time;
-    const closeThreshold = Math.max(
-      0.09,
-      Math.min(0.22, (left.scale + right.scale) * 0.45),
-    );
-    const bothPinched = hands.every((hand) => hand.gesture === "PINCH");
-    const anyPinched = hands.some((hand) => hand.gesture === "PINCH");
-    const mode = store.get().mode;
-    if (bothPinched) {
-      two.closeSince = null;
-      two.samples = [];
-      // Releasing a small zoom must not turn into a collapse. Separate the
-      // hands before arming that distinct action again.
-      two.mustSeparate = true;
-      if (mode !== "SUN_INTERIOR" && mode !== "COLLAPSE") {
-        if (!two.scale)
-          two.scale = { distance, value: particles.targetScale, started: time };
-        if (time - two.scale.started >= 100)
-          interaction.scale(
-            (two.scale.value * distance) / Math.max(two.scale.distance, 0.08),
-          );
-        store.set({ gesture: "TWO_HAND_SCALE" });
-      }
-      return true;
-    }
-    if (two.scale) {
-      interaction.endScale();
-      two.scale = null;
-      two.scaleReleased = time;
-    }
-    if (distance > closeThreshold * 1.4) {
-      two.collapsed = false;
-      two.mustSeparate = false;
-    }
-    if (anyPinched || time - two.scaleReleased < 300) {
-      two.samples = [];
-      two.closeSince = null;
-      return true;
-    }
-    two.samples.push({
-      distance,
-      time,
-      left: { ...left.center },
-      right: { ...right.center },
+    return machine;
+  }
+  private stopMotion() {
+    rotation.end();
+    if (this.zoomDistance) interaction.endScale();
+    this.zoomDistance = 0;
+    this.captured = null;
+    this.pinchContext = null;
+    this.fist.reset();
+    this.swipe.reset();
+    this.special.reset();
+  }
+  private enterReentry(time: number) {
+    this.stopMotion();
+    rotation.stop();
+    this.pinches.clear();
+    this.pointTarget = null;
+    this.readyAt = time + config.HAND_REENTRY_DELAY;
+  }
+  private trigger(
+    action: GestureAction,
+    time: number,
+    cooldown: number,
+    direction: -1 | 0 | 1 = 0,
+  ) {
+    this.cooldownUntil = time + cooldown;
+    this.triggeredUntil = time + config.TRIGGER_FEEDBACK_TIME;
+    particles.gesturePulse = 1;
+    gestureFeedback.set({
+      lastAction: action,
+      actionAt: time,
+      pulseId: gestureFeedback.get().pulseId + 1,
+      swipeDirection: direction,
     });
-    two.samples = two.samples.filter((sample) => time - sample.time <= 320);
-    const axis = {
-      x: right.center.x - left.center.x,
-      y: right.center.y - left.center.y,
-    };
-    const quicklyOpened =
-      two.samples.length >= 3 &&
-      two.samples.some((first) => {
-        const duration = (time - first.time) / 1000;
-        const opening = distance - first.distance;
-        const leftTravel =
-          ((first.left.x - left.center.x) * axis.x +
-            (first.left.y - left.center.y) * axis.y) /
-          Math.max(distance, 0.01);
-        const rightTravel =
-          ((right.center.x - first.right.x) * axis.x +
-            (right.center.y - first.right.y) * axis.y) /
-          Math.max(distance, 0.01);
-        return (
-          duration >= 0.1 &&
-          opening >= 0.14 &&
-          opening / duration >= 0.85 &&
-          leftTravel >= 0.035 &&
-          rightTravel >= 0.035 &&
-          first.distance <= Math.max(0.32, closeThreshold * 1.8)
-        );
-      });
-    if (
-      mode !== "SUN_INTERIOR" &&
-      time - this.lastTwoAction >= 650 &&
-      hands.every((hand) => hand.gesture === "OPEN_PALM") &&
-      distance >= 0.3 &&
-      quicklyOpened
-    ) {
-      this.lastTwoAction = time;
-      two.samples = [];
-      two.closeSince = null;
-      interaction.enterSun();
-      store.set({ gesture: "TWO_HAND_EXPAND" });
-      return true;
-    }
-    const symbolic = hands.some(
-      (hand) => hand.gesture === "V_SIGN" || hand.gesture === "THREE",
-    );
-    if (distance <= closeThreshold && !two.mustSeparate && !symbolic) {
-      if (two.closeSince === null) two.closeSince = time;
-      store.set({ gesture: "TWO_HAND_COLLAPSE" });
-      if (
-        mode !== "COLLAPSE" &&
-        !two.collapsed &&
-        time - two.started >= 350 &&
-        time - two.closeSince >= 250
-      ) {
-        two.collapsed = true;
-        // Keep distance samples through collapse so the next quick opening
-        // can enter the Sun, without having to remove and show the hands again.
-        interaction.collapse();
-      }
-      return true;
-    }
-    two.closeSince = null;
-    return false;
   }
-  private lastSeen = 0;
-  private seen = false;
+  private select(target: GestureTarget, time: number) {
+    const applied =
+      target.kind === "body"
+        ? interaction.selectBody(target.id)
+        : gestureTargets.activateUI(target.id);
+    if (applied) this.trigger("PINCH_SELECT", time, config.SELECT_COOLDOWN);
+    return applied;
+  }
   update({ hands, time }: HandFrame) {
     if (!hands.length) {
-      this.clearTwo();
-      this.samples = [];
-      if (time - this.lastSeen > 180) {
-        particles.active = false;
-        this.stabilizer.reset();
-        this.samples = [];
-        this.clearTwo();
-        this.hover = null;
-        this.hoverTime = 0;
-        this.pinchReady = false;
-        this.pinchSelected = false;
-        if (store.get().tracking === "online")
-          store.set({
-            tracking: "seeking",
-            gesture: "NONE",
-            confidence: 0,
-            hover: null,
-          });
-        interaction.endScale();
-      }
+      this.stopMotion();
+      rotation.stop();
+      this.visible = false;
+      this.handSignature = "";
+      this.pinches.clear();
+      this.pointTarget = null;
+      particles.cursorVisible = false;
+      particles.active = false;
+      gestureTargets.set(null);
+      if (store.get().tracking === "online")
+        store.set({
+          tracking: "seeking",
+          gesture: "NONE",
+          confidence: 0,
+          hover: null,
+        });
+      gestureFeedback.set({
+        presence: "NO_HAND",
+        readiness: "RECONNECTING",
+        action: "NONE",
+        handCount: 0,
+        target: null,
+        pinchPhase: "IDLE",
+        pinchProgress: 0,
+        fistProgress: 0,
+        specialProgress: 0,
+        needsRelease: false,
+        locked: interaction.isLocked(),
+        cooldownMs: Math.max(0, this.cooldownUntil - time),
+        updatedAt: time,
+      });
+      this.lastFrame = time;
       return;
     }
-    if (time - this.lastSeen > 180) this.clearTwo();
-    this.lastSeen = time;
-    if (store.get().tracking !== "online") {
-      store.set({ tracking: "online" });
-      if (!this.seen) {
-        interaction.online();
-        this.seen = true;
-      }
-    }
-    const hand = hands[0];
-    if (hand.gesture !== "PINCH") {
-      this.pinchReady = false;
-      this.pinchSelected = false;
-    } else if (hand.confidence < 0.5) {
-      // Disarm the pending selection and its hold together so confidence
-      // recovery can re-arm it. Keep pinchSelected until the hand releases.
-      this.pinchReady = false;
-      this.stabilizer.reset();
-    }
+    const first = hands[0],
+      second = hands[1];
+    const firstId = this.id(first, 0),
+      secondId = second ? this.id(second, 1) : "";
+    const signature = second ? [firstId, secondId].sort().join("|") : firstId;
+    const reappeared =
+      !this.visible ||
+      signature !== this.handSignature ||
+      time - this.lastFrame > config.FRAME_GAP_RESET;
+    if (reappeared) this.enterReentry(time);
+    this.visible = true;
+    this.handSignature = signature;
+    this.lastFrame = time;
+    const confidence = second
+      ? Math.min(first.confidence, second.confidence)
+      : first.confidence;
+    const confidenceReady =
+      confidence >=
+      (second ? config.TWO_HAND_MIN_CONFIDENCE : config.MIN_CONFIDENCE);
+    if (!confidenceReady) this.enterReentry(time);
+    const pointer =
+      first.gesture === "POINT" || first.gesture === "PINCH"
+        ? first.pointer
+        : first.center;
+    particles.handTargetNDC.set(pointer.x * 2 - 1, 1 - pointer.y * 2);
+    if (reappeared) particles.handNDC.copy(particles.handTargetNDC);
+    particles.cursorVisible = true;
     particles.active = true;
     particles.interactionTime = time;
-    const pointer =
-      hand.gesture === "POINT" || hand.gesture === "PINCH"
-        ? hand.pointer
-        : hand.center;
-    particles.handNDC.set(pointer.x * 2 - 1, 1 - pointer.y * 2);
-    particles.handDirection.set(...hand.palmDirection).normalize();
-    particles.handOpenness = hand.openness;
-    particles.pinchStrength = hand.pinchStrength;
-    if (hand.gesture === "POINT" && store.get().hover) {
-      this.hover = store.get().hover;
-      this.hoverTime = time;
-    } else if (
-      hand.gesture !== "POINT" &&
-      hand.gesture !== "PINCH" &&
-      store.get().hover
-    )
-      store.set({ hover: null });
-    store.set({ gesture: hand.gesture, confidence: hand.confidence });
+    particles.handDirection.set(...first.palmDirection).normalize();
+    particles.handOpenness = first.openness;
+    particles.pinchStrength = first.pinchStrength;
+    const snapshot = store.get();
+    if (snapshot.tracking !== "online" || snapshot.gesture !== first.gesture)
+      store.set({
+        tracking: "online",
+        gesture: first.gesture,
+        confidence: first.confidence,
+      });
     const mode = store.get().mode;
-    if (["INTRO", "PLANET_TRANSITION", "BIG_BANG"].includes(mode)) {
-      this.stabilizer.reset();
-      this.clearTwo();
-      this.pinchReady = false;
+    const locked = interaction.isLocked();
+    const ready = confidenceReady && time >= this.readyAt;
+    const cooldownMs = Math.max(0, this.cooldownUntil - time);
+    const enabled = ready && !locked && cooldownMs === 0;
+    const p0 = this.pinch(firstId);
+    const p1 = second ? this.pinch(secondId) : null;
+    p0.update(
+      first.pinchDistance,
+      first.confidence,
+      time,
+      enabled,
+      first.gesture === "PINCH",
+    );
+    if (second && p1)
+      p1.update(
+        second.pinchDistance,
+        second.confidence,
+        time,
+        enabled,
+        second.gesture === "PINCH",
+      );
+    const currentTarget =
+      first.gesture === "POINT" || first.gesture === "PINCH"
+        ? gestureTargets.get()
+        : null;
+    if (first.gesture === "POINT") {
+      this.pointTarget = currentTarget;
+      this.pointAt = time;
+    }
+    if (first.gesture !== "FIST" && (!second || second.gesture !== "FIST"))
+      this.fistNeedsRelease = false;
+    let action: GestureAction = first.gesture === "POINT" ? "POINT" : "NONE";
+    let specialProgress = 0;
+    let pinchProgress = Math.max(p0.progress, p1?.progress ?? 0);
+
+    const report = () => {
+      const armed =
+        p0.phase === "PINCH_START" ||
+        p1?.phase === "PINCH_START" ||
+        this.fist.progress > 0 ||
+        specialProgress > 0;
+      const target =
+        this.pinchContext === "drag" || this.zoomDistance
+          ? null
+          : currentTarget;
+      const fingers = first.fingerState;
+      gestureFeedback.set({
+        presence:
+          time < this.triggeredUntil
+            ? "GESTURE_TRIGGERED"
+            : armed
+              ? "GESTURE_ARMED"
+              : target
+                ? "TARGET_HOVER"
+                : "HAND_VISIBLE",
+        readiness: ready ? "READY" : "RECONNECTING",
+        action,
+        pinchPhase: p0.phase,
+        pinchProgress,
+        fistProgress: this.fist.progress,
+        specialProgress,
+        needsRelease:
+          p0.needsRelease || !!p1?.needsRelease || this.fistNeedsRelease,
+        handCount: hands.length,
+        confidence,
+        handedness: first.handedness ?? firstId,
+        pinchDistance: first.pinchDistance,
+        palmX: first.center.x,
+        palmY: first.center.y,
+        fingers: fingers
+          ? `拇${+fingers.thumb} 食${+fingers.index} 中${+fingers.middle} 无${+fingers.ring} 小${+fingers.pinky}`
+          : "—",
+        target,
+        locked: interaction.isLocked(),
+        cooldownMs: Math.max(0, this.cooldownUntil - time),
+        updatedAt: time,
+      });
+    };
+    if (!enabled) {
+      this.stopMotion();
+      rotation.stop();
+      if (locked || !ready) this.pointTarget = null;
+      if (first.gesture === "FIST" || second?.gesture === "FIST")
+        this.fistNeedsRelease = true;
+      report();
       return;
     }
-    if (hands.length === 2) {
-      this.pinchReady = false;
-      // A pinch used with two hands is consumed until the remaining hand
-      // releases, so removing one hand cannot unexpectedly select a planet.
-      if (hands.some((h) => h.gesture === "PINCH")) this.pinchSelected = true;
-      this.samples = [];
-      if (this.updateTwo(hands, time)) {
-        this.stabilizer.reset();
+
+    // Priority 1: the optional two-open-palm collapse / rebirth effect.
+    if (
+      second &&
+      first.gesture === "OPEN_PALM" &&
+      second.gesture === "OPEN_PALM" &&
+      (overview(mode) || mode === "COLLAPSE") &&
+      time - this.pairedReleaseAt >= config.SELECT_COOLDOWN
+    ) {
+      const event = this.special.update(
+        first,
+        second,
+        mode === "COLLAPSE" ? "collapse" : "overview",
+        time,
+      );
+      specialProgress = this.special.progress;
+      if (event || specialProgress > 0) {
+        action = mode === "COLLAPSE" ? "REBIRTH" : "COLLAPSE";
+        this.fist.reset();
+        this.swipe.reset();
+        if (
+          event &&
+          (event === "COLLAPSE"
+            ? interaction.collapse()
+            : interaction.rebirth())
+        )
+          this.trigger(event, time, config.SPECIAL_COOLDOWN);
+        report();
         return;
       }
-      // A stationary symbolic gesture can still work with a second idle hand
-      // in view, but never competes with a deliberate paired movement.
-      const symbol = hands.find(
-        (h) => h.gesture === "V_SIGN" || h.gesture === "THREE",
-      );
-      const event = this.stabilizer.update(
-        symbol?.gesture ?? "NONE",
-        time,
-        symbol?.confidence ?? 1,
-      );
-      if (event === "V_SIGN") interaction.return();
-      else if (
-        event === "THREE" &&
-        mode !== "SUN_INTERIOR" &&
-        mode !== "COLLAPSE"
-      )
-        interaction.info();
-      return;
-    }
-    this.clearTwo();
-    if (mode === "SUN_INTERIOR" || mode === "COLLAPSE") {
-      const event = this.stabilizer.update(hand.gesture, time, hand.confidence);
-      if (event === "V_SIGN") interaction.return();
-      this.samples = [];
-      return;
-    }
-    if (!["COLLAPSE", "BIG_BANG", "PLANET_TRANSITION"].includes(mode)) {
-      particles.setState(
-        hand.pinchStrength > 0.65
-          ? "ATTRACT"
-          : Math.hypot(hand.velocity.x, hand.velocity.y) > 0.6
-            ? "VORTEX"
-            : "REPEL",
-      );
-    }
-    this.samples.push({ x: hand.center.x, y: hand.center.y, t: time });
-    this.samples = this.samples.filter((s) => time - s.t < 190);
-    const first = this.samples[0];
-    const dx = hand.center.x - first.x,
-      dy = hand.center.y - first.y;
-    const swipeCandidate =
-      Math.abs(dx) > 0.1 && Math.abs(dx) > Math.abs(dy) * 1.8;
-    if (
-      (mode === "PLANET_FOCUS" || mode === "INFO") &&
-      this.samples.length >= 3 &&
-      swipeCandidate &&
-      Math.abs(hand.velocity.x) > 0.65 &&
-      time - this.lastSwipe > 900
-    ) {
-      interaction.next(dx > 0 ? 1 : -1);
-      this.lastSwipe = time;
-      this.stabilizer.reset();
-      this.samples = [];
-      store.set({ gesture: dx > 0 ? "SWIPE_RIGHT" : "SWIPE_LEFT" });
-      return;
-    }
-    let gesture = hand.gesture;
-    if (
-      (gesture === "V_SIGN" || gesture === "THREE") &&
-      (swipeCandidate ||
-        Math.hypot(hand.velocity.x, hand.velocity.y) > 0.22 ||
-        time - this.lastSwipe < 550)
-    )
-      gesture = "NONE";
-    const event = this.stabilizer.update(gesture, time, hand.confidence);
-    if (event === "PINCH") this.pinchReady = true;
-    // A stable pinch stays armed while moving onto a target, but selects only
-    // once until released. The current hit also supports pinching directly.
-    if (this.pinchReady && !this.pinchSelected && hand.confidence > 0.5) {
-      const target =
-        store.get().hover ?? (time - this.hoverTime < 500 ? this.hover : null);
-      if (target && interaction.machine.can("SELECT")) {
-        this.pinchSelected = true;
-        interaction.select(target);
+    } else this.special.reset();
+
+    // Priority 2: a zoom owns both pinches; neither may later turn into a click.
+    if (second && p1) {
+      this.pinchContext = "consumed";
+      this.captured = null;
+      this.swipe.reset();
+      if (
+        p0.phase === "PINCH_HOLD" &&
+        p1.phase === "PINCH_HOLD" &&
+        (overview(mode) || focused(mode) || mode === "UNIVERSE_SCALE")
+      ) {
+        const a = first.pinchPoint ?? first.pointer,
+          b = second.pinchPoint ?? second.pointer;
+        const distance = Math.hypot(a.x - b.x, a.y - b.y);
+        if (!this.zoomDistance) {
+          this.zoomDistance = Math.max(distance, config.ZOOM_MIN_DISTANCE);
+          this.zoomScale = particles.targetScale;
+          rotation.stop();
+        }
+        interaction.scale((this.zoomScale * distance) / this.zoomDistance);
+        particles.zoomIntensity = 1;
+        action = "TWO_HAND_ZOOM";
+        this.fist.reset();
+        report();
+        return;
+      }
+      if (this.zoomDistance) {
+        interaction.endScale();
+        this.zoomDistance = 0;
+        this.pairedReleaseAt = time;
+      }
+      if (
+        p0.phase === "PINCH_START" ||
+        p1.phase === "PINCH_START" ||
+        p0.phase === "PINCH_HOLD" ||
+        p1.phase === "PINCH_HOLD"
+      ) {
+        this.fist.reset();
+        action = "TWO_HAND_ZOOM";
+        report();
+        return;
       }
     }
-    if (!event) return;
-    if (event === "POINT") interaction.point();
-    else if (event === "PINCH") {
-      if (interaction.machine.state !== "PLANET_TRANSITION")
-        particles.setState("ATTRACT");
-    } else if (event === "THREE") interaction.info();
-    else if (event === "V_SIGN") interaction.return();
+
+    // Priorities 3/4: a pinch captures exactly one target OR empty space.
+    // Crossing a body while holding an empty-space pinch can only drag.
+    if (!second) {
+      if (p0.justReleased || first.gesture !== "PINCH") {
+        if (this.pinchContext === "drag") rotation.end();
+        this.pinchContext = null;
+        this.captured = null;
+      }
+      if (p0.justStarted) {
+        this.captured =
+          currentTarget ??
+          (time - this.pointAt <= config.TARGET_GRACE_TIME
+            ? this.pointTarget
+            : null);
+        this.pinchContext = this.captured ? "select" : "blank";
+        this.pinchOriginX = this.dragLastX = first.pointer.x;
+        this.pinchOriginY = first.pointer.y;
+        this.dragLastTime = time;
+      }
+      if (p0.phase === "PINCH_START" || p0.phase === "PINCH_HOLD") {
+        this.fist.reset();
+        this.swipe.reset();
+        if (p0.justHeld && this.pinchContext === "select") {
+          if (
+            this.captured &&
+            (this.captured.kind === "ui" || overview(mode) || focused(mode))
+          )
+            this.select(this.captured, time);
+          this.pinchContext = "consumed";
+          action = "PINCH_SELECT";
+        } else if (
+          p0.phase === "PINCH_HOLD" &&
+          overview(mode) &&
+          (this.pinchContext === "blank" || this.pinchContext === "drag")
+        ) {
+          if (
+            this.pinchContext === "blank" &&
+            Math.hypot(
+              first.pointer.x - this.pinchOriginX,
+              first.pointer.y - this.pinchOriginY,
+            ) >= config.DRAG_START_DISTANCE
+          ) {
+            this.pinchContext = "drag";
+            rotation.start();
+            this.dragLastX = first.pointer.x;
+            this.dragLastTime = time;
+            gestureFeedback.set({ lastAction: "PINCH_DRAG", actionAt: time });
+          }
+          if (this.pinchContext === "drag") {
+            rotation.move(
+              first.pointer.x - this.dragLastX,
+              (time - this.dragLastTime) / 1000,
+            );
+            this.dragLastX = first.pointer.x;
+            this.dragLastTime = time;
+            action = "PINCH_DRAG";
+          }
+        } else action = "PINCH_SELECT";
+        report();
+        return;
+      }
+    }
+
+    // Priority 5: a deliberate 600 ms fist returns, with cancellable progress.
+    const fistHand =
+      first.gesture === "FIST"
+        ? first
+        : second?.gesture === "FIST"
+          ? second
+          : null;
+    const canBack = !overview(mode) && mode !== "UNIVERSE_SCALE";
+    if (fistHand && canBack && !this.fistNeedsRelease) {
+      const id = fistHand.id ?? fistHand.handedness ?? "fist";
+      if (id !== this.fistId) {
+        this.fist.reset();
+        this.fistId = id;
+      }
+      action = "FIST_BACK";
+      this.swipe.reset();
+      if (
+        this.fist.update(true, time, config.FIST_HOLD_TIME) &&
+        interaction.return()
+      ) {
+        this.fistNeedsRelease = true;
+        this.trigger("FIST_BACK", time, config.BACK_COOLDOWN);
+      }
+      report();
+      return;
+    }
+    this.fist.reset();
+
+    // Priority 6: only an open-hand flick in an already focused planet view.
+    // POINT movement, pinches, fists and overview movement never switch worlds.
+    if (!second && focused(mode) && first.gesture === "OPEN_PALM") {
+      const direction = this.swipe.update(first, time);
+      if (direction && interaction.next(direction < 0 ? 1 : -1)) {
+        action = "SWIPE";
+        this.trigger("SWIPE", time, config.SWIPE_COOLDOWN, direction);
+      }
+    } else this.swipe.reset();
+    report();
   }
   reset() {
-    this.stabilizer.reset();
-    this.clearTwo();
-    this.lastTwoAction = -Infinity;
-    this.samples = [];
-    this.seen = false;
-    this.lastSeen = 0;
-    this.lastSwipe = 0;
-    this.hover = null;
-    this.hoverTime = 0;
-    this.pinchReady = false;
-    this.pinchSelected = false;
-    store.set({ hover: null });
-    particles.active = false;
+    this.stopMotion();
+    rotation.stop();
+    this.pinches.clear();
+    this.visible = false;
+    this.handSignature = "";
+    this.readyAt = 0;
+    this.lastFrame = 0;
+    this.cooldownUntil = this.triggeredUntil = 0;
+    this.pointTarget = null;
+    this.pointAt = 0;
+    this.fistId = "";
+    this.fistNeedsRelease = false;
+    this.pairedReleaseAt = -Infinity;
+    particles.cursorVisible = particles.active = false;
     particles.pinchStrength = 0;
     particles.handVelocity.set(0, 0, 0);
-    if (
-      !["COLLAPSE", "BIG_BANG", "PLANET_TRANSITION", "SUN_INTERIOR"].includes(
-        store.get().mode,
-      )
-    )
-      particles.setState("REST");
+    gestureTargets.set(null);
+    gestureFeedback.reset();
+    if (store.get().hover) store.set({ hover: null });
   }
 }
 export const gestures = new GestureController();

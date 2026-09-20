@@ -1,17 +1,22 @@
-import test from "node:test";
+import test, { type TestContext } from "node:test";
 import assert from "node:assert/strict";
 import { gsap } from "gsap";
-import { interaction } from "../src/interaction/InteractionController";
+import { InteractionController } from "../src/interaction/InteractionController";
 import { particles } from "../src/particles/ParticleEngine";
 import { store } from "../src/interaction/store";
+import { gestureConfig as config } from "../src/gesture/gestureConfig";
 
-function reset() {
-  gsap.killTweensOf(particles);
-  interaction.machine.state = "SOLAR_SYSTEM";
+function setup(t: TestContext) {
+  gsap.globalTimeline.clear();
+  gsap.ticker.sleep();
+  const controller = new InteractionController();
+  controller.machine.send("READY");
   store.set({
     mode: "SOLAR_SYSTEM",
     selected: null,
     hover: null,
+    transitioning: false,
+    infoVisible: false,
     heldUniverse: false,
     sound: false,
   });
@@ -21,61 +26,142 @@ function reset() {
     focus: 0,
     explosion: 0,
     targetScale: 1,
+    dragging: false,
+    rotationVelocity: 0,
   });
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  t.after(() => {
+    gsap.globalTimeline.clear();
+    gsap.ticker.sleep();
+    t.mock.timers.reset();
+  });
+  return controller;
 }
-function finishMotion() {
-  for (const tween of gsap.getTweensOf(particles)) tween.progress(1);
+function timeline(controller: InteractionController) {
+  return (controller as unknown as { transition: gsap.core.Timeline })
+    .transition;
 }
-
-test("entering the sun during collapse cancels contraction and clears selection", () => {
-  reset();
-  store.set({ selected: "earth", hover: "mars" });
-  interaction.collapse();
-  interaction.enterSun();
-  finishMotion();
+function finish(controller: InteractionController) {
+  timeline(controller).progress(1);
+  gsap.ticker.sleep();
+}
+function rejected(controller: InteractionController) {
+  assert.equal(controller.isLocked(), true);
+  assert.equal(store.get().transitioning, true);
+  assert.equal(controller.return(), false);
+  assert.equal(controller.selectBody("earth"), false);
+  assert.equal(controller.selectBody("sun"), false);
+  assert.equal(controller.collapse(), false);
+  assert.equal(controller.rebirth(), false);
+  assert.equal(controller.scale(1.3), false);
+  assert.equal(controller.next(1), false);
+  assert.equal(controller.info(), false);
+}
+test("selecting Sun flies inward, and entry and return both retain the full animation lock", (t) => {
+  const controller = setup(t);
+  assert.equal(controller.selectBody("sun"), true);
+  assert.equal(store.get().mode, "SUN_FOCUS");
+  timeline(controller).progress(0.8);
+  rejected(controller);
+  finish(controller);
   assert.equal(store.get().mode, "SUN_INTERIOR");
-  assert.equal(store.get().selected, null);
-  assert.equal(store.get().hover, null);
+  assert.equal(controller.isLocked(), false);
   assert.equal(particles.sunInterior, 1);
-  assert.equal(particles.collapse, 0);
-  interaction.return();
-  finishMotion();
+  assert.equal(controller.scale(1.3), false);
+  assert.equal(controller.selectBody("earth"), false);
+  assert.equal(controller.return(), true);
+  timeline(controller).progress(0.8);
+  rejected(controller);
+  finish(controller);
   assert.equal(store.get().mode, "SOLAR_SYSTEM");
-  assert.equal(particles.sunInterior, 0);
-  assert.equal(particles.collapse, 0);
-  assert.equal(particles.targetScale, 1);
-  reset();
-});
-
-test("a return during sun entry wins over the unfinished entry animation", () => {
-  reset();
-  interaction.enterSun();
-  interaction.return();
-  finishMotion();
-  assert.equal(interaction.machine.state, "SOLAR_SYSTEM");
-  assert.equal(particles.sunInterior, 0);
-  reset();
-});
-
-test("sun interior ignores zoom and planet selection until it is exited", () => {
-  reset();
-  interaction.enterSun();
-  interaction.scale(0.2);
-  interaction.select("earth");
-  assert.equal(particles.targetScale, 1);
   assert.equal(store.get().selected, null);
-  assert.equal(interaction.machine.state, "SUN_INTERIOR");
-  reset();
+  assert.equal(particles.sunInterior, 0);
 });
-
-test("releasing zoom keeps its size and selected planet", () => {
-  reset();
-  interaction.machine.state = "PLANET_FOCUS";
-  store.set({ mode: "PLANET_FOCUS", selected: "earth" });
-  interaction.scale(0.3);
-  interaction.endScale();
-  assert.equal(particles.targetScale, 0.3);
+test("planet data fades in only 400 ms after the camera finishes", (t) => {
+  const controller = setup(t);
+  controller.selectBody("earth");
+  timeline(controller).progress(0.99);
+  rejected(controller);
+  t.mock.timers.tick(1000);
+  assert.equal(store.get().infoVisible, false);
+  finish(controller);
+  assert.equal(store.get().mode, "PLANET_FOCUS");
+  t.mock.timers.tick(config.INFO_REVEAL_DELAY - 1);
+  assert.equal(store.get().infoVisible, false);
+  t.mock.timers.tick(1);
+  assert.equal(store.get().infoVisible, true);
+});
+test("a stale pending info reveal is cancelled on switching or returning", (t) => {
+  const controller = setup(t);
+  controller.select("earth");
+  finish(controller);
+  t.mock.timers.tick(250);
+  assert.equal(controller.next(1), true);
+  assert.equal(store.get().selected, "mars");
+  t.mock.timers.tick(400);
+  assert.equal(store.get().infoVisible, false);
+  finish(controller);
+  assert.equal(controller.return(), true);
+  t.mock.timers.tick(500);
+  assert.equal(store.get().infoVisible, false);
+  finish(controller);
+  t.mock.timers.tick(500);
+  assert.equal(store.get().infoVisible, false);
+});
+test("swipes do nothing in overview, and left/right navigation follows next/previous order", (t) => {
+  const controller = setup(t);
+  assert.equal(controller.next(1), false);
+  controller.select("earth");
+  finish(controller);
+  assert.equal(controller.next(1), true);
+  assert.equal(store.get().selected, "mars");
+  finish(controller);
+  assert.equal(controller.next(-1), true);
+  assert.equal(store.get().selected, "earth");
+});
+test("collapse and 3.8-second rebirth stay locked through their whole effects", (t) => {
+  const controller = setup(t);
+  controller.collapse();
+  timeline(controller).progress(0.99);
+  rejected(controller);
+  finish(controller);
+  assert.equal(store.get().mode, "COLLAPSE");
+  assert.equal(particles.collapse, 1);
+  assert.equal(controller.selectBody("sun"), false);
+  assert.equal(controller.rebirth(), true);
+  assert.equal(timeline(controller).duration(), 3.8);
+  timeline(controller).progress(0.8);
+  rejected(controller);
+  assert.equal(particles.state, "EXPLODE");
+  finish(controller);
+  assert.equal(controller.isLocked(), false);
+  assert.equal(store.get().mode, "SOLAR_SYSTEM");
+  assert.equal(particles.collapse, 0);
+  assert.equal(particles.explosion, 0);
+  assert.equal(particles.sunInterior, 0);
+});
+test("zoom clamps bounds and releasing preserves size, selection and automatic information", (t) => {
+  const controller = setup(t);
+  controller.select("earth");
+  finish(controller);
+  t.mock.timers.tick(400);
+  assert.equal(controller.scale(0.01), true);
+  assert.equal(particles.targetScale, config.ZOOM_MIN);
+  assert.equal(controller.select("mars"), false);
+  controller.scale(100);
+  assert.equal(particles.targetScale, config.ZOOM_MAX);
+  controller.scale(0.65);
+  assert.equal(controller.endScale(), true);
+  assert.equal(particles.targetScale, 0.65);
   assert.equal(store.get().selected, "earth");
   assert.equal(store.get().mode, "PLANET_FOCUS");
-  reset();
+  assert.equal(store.get().infoVisible, true);
+});
+test("pointing and invalid zoom samples cannot alter navigation", (t) => {
+  const controller = setup(t);
+  controller.point();
+  assert.equal(store.get().mode, "SOLAR_SYSTEM");
+  assert.equal(controller.scale(NaN), false);
+  assert.equal(controller.scale(Infinity), false);
+  assert.equal(particles.targetScale, 1);
 });

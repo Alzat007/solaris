@@ -13,12 +13,17 @@ import { Uranus } from "../planets/Uranus";
 import { Neptune } from "../planets/Neptune";
 import { OrbitSystem } from "./OrbitSystem";
 import { ParticleField } from "../particles/ParticleField";
+import { rotation } from "../interaction/rotation";
+import { store } from "../interaction/store";
+import { gestureConfig } from "../gesture/gestureConfig";
 import { particles } from "../particles/ParticleEngine";
 export function SolarSystem() {
   const root = useRef<Group>(null);
   useFrame((_, dt) => {
+    rotation.update(dt, store.get().transitioning);
     particles.scale +=
-      (particles.targetScale - particles.scale) * (1 - Math.exp(-dt * 5));
+      (particles.targetScale - particles.scale) *
+      (1 - Math.exp(-dt * gestureConfig.ZOOM_RESPONSE));
     particles.rotation +=
       (particles.targetRotation - particles.rotation) * (1 - Math.exp(-dt * 4));
     particles.anchor.lerp(particles.targetAnchor, 1 - Math.exp(-dt * 5));

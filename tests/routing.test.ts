@@ -1,529 +1,391 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { gestures } from "../src/gesture/GestureController";
+import { GestureController } from "../src/gesture/GestureController";
 import { interaction } from "../src/interaction/InteractionController";
 import { store } from "../src/interaction/store";
 import { particles } from "../src/particles/ParticleEngine";
+import { gestureFeedback } from "../src/gesture/gestureFeedback";
+import { gestureTargets } from "../src/gesture/gestureTargets";
 import type { HandFeatures, Gesture } from "../src/gesture/GestureTypes";
-import type { PlanetId } from "../src/data/planets";
-const hand = (gesture: Gesture, x = 0.3): HandFeatures => ({
+import { rotation } from "../src/interaction/rotation";
+
+const hand = (gesture: Gesture, x = 0.3, id = "left"): HandFeatures => ({
+  id,
   center: { x, y: 0.5 },
   pointer: { x, y: 0.3 },
+  pinchPoint: { x, y: 0.3 },
   velocity: { x: 0, y: 0 },
   scale: 0.2,
-  openness: 1,
-  pinchDistance: 1,
-  pinchStrength: 0,
+  openness: gesture === "FIST" ? 0 : 1,
+  pinchDistance: gesture === "PINCH" || gesture === "FIST" ? 0.1 : 0.7,
+  pinchStrength: gesture === "PINCH" ? 1 : 0,
   gesture,
   confidence: 0.95,
   landmarks: [],
   palmFacing: true,
   palmDirection: [0, 0, 1],
 });
-const reset = () => {
-  gestures.reset();
-  store.set({
-    tracking: "online",
-    mode: "SOLAR_SYSTEM",
-    hover: null,
-    selected: null,
-    heldUniverse: false,
-  });
-  interaction.machine.state = "SOLAR_SYSTEM";
-  particles.targetAnchor.set(0, 0, 0);
-  particles.targetScale = 1;
-};
-const withSelections = (run: (selected: PlanetId[]) => void) => {
-  reset();
-  const selected: PlanetId[] = [];
-  const original = interaction.select;
-  interaction.select = (id) => {
-    selected.push(id);
-  };
-  try {
-    run(selected);
-  } finally {
-    interaction.select = original;
-    reset();
-  }
-};
-test("two-hand motion cannot change the anchor during Big Bang", () => {
-  reset();
-  store.set({ mode: "BIG_BANG" });
-  interaction.machine.state = "BIG_BANG";
-  for (let i = 0; i < 20; i++)
-    gestures.update({
-      hands: [
-        hand("OPEN_PALM", 0.1 + i * 0.015),
-        hand("OPEN_PALM", 0.9 - i * 0.015),
-      ],
-      time: 2000 + i * 60,
-    });
-  assert.deepEqual(particles.targetAnchor.toArray(), [0, 0, 0]);
-  assert.equal(store.get().heldUniverse, false);
-  reset();
-});
-test("an old pointer target expires instead of being refreshed by unrelated gestures", () => {
-  reset();
-  let selected = 0;
-  const original = interaction.select;
-  interaction.select = () => {
-    selected++;
-  };
-  try {
-    store.set({ hover: "earth" });
-    gestures.update({ hands: [hand("POINT")], time: 1000 });
-    gestures.update({ hands: [hand("NONE")], time: 1200 });
-    gestures.update({ hands: [hand("PINCH")], time: 1800 });
-    gestures.update({ hands: [hand("PINCH")], time: 1900 });
-    assert.equal(selected, 0);
-  } finally {
-    interaction.select = original;
-    reset();
-  }
-});
-test("a direct pinch selects the currently targeted planet without pointing first", () => {
-  withSelections((selected) => {
-    store.set({ hover: "earth" });
-    gestures.update({ hands: [hand("PINCH")], time: 1000 });
-    gestures.update({ hands: [hand("PINCH")], time: 1100 });
-    assert.deepEqual(selected, ["earth"]);
-  });
-});
-test("a slow point-to-pinch motion can select the current target after the pointer cache expires", () => {
-  withSelections((selected) => {
-    store.set({ hover: "earth" });
-    gestures.update({ hands: [hand("POINT")], time: 1000 });
-    gestures.update({ hands: [hand("PINCH")], time: 1500 });
-    gestures.update({ hands: [hand("PINCH")], time: 1600 });
-    assert.deepEqual(selected, ["earth"]);
-  });
-});
-test("a held pinch can enter a target later and selects only once until released", () => {
-  withSelections((selected) => {
-    gestures.update({ hands: [hand("PINCH")], time: 1000 });
-    gestures.update({ hands: [hand("PINCH")], time: 1100 });
-    assert.deepEqual(selected, []);
-    store.set({ hover: "mars" });
-    gestures.update({ hands: [hand("PINCH")], time: 1200 });
-    assert.deepEqual(selected, ["mars"]);
-    store.set({ hover: "venus", mode: "PLANET_TRANSITION" });
-    interaction.machine.state = "PLANET_TRANSITION";
-    gestures.update({ hands: [hand("PINCH")], time: 1300 });
-    store.set({ mode: "PLANET_FOCUS" });
-    interaction.machine.state = "PLANET_FOCUS";
-    gestures.update({ hands: [hand("PINCH")], time: 1500 });
-    gestures.update({ hands: [hand("PINCH")], time: 1600 });
-    assert.deepEqual(selected, ["mars"]);
-    gestures.update({ hands: [hand("NONE")], time: 1700 });
-    store.set({ hover: "venus" });
-    gestures.update({ hands: [hand("PINCH")], time: 1800 });
-    gestures.update({ hands: [hand("PINCH")], time: 1900 });
-    assert.deepEqual(selected, ["mars", "venus"]);
-  });
-});
-test("a current pinch target takes precedence over the recent pointer target", () => {
-  withSelections((selected) => {
-    store.set({ hover: "earth" });
-    gestures.update({ hands: [hand("POINT")], time: 1000 });
-    store.set({ hover: "jupiter" });
-    gestures.update({ hands: [hand("PINCH")], time: 1100 });
-    gestures.update({ hands: [hand("PINCH")], time: 1200 });
-    assert.deepEqual(selected, ["jupiter"]);
-  });
-});
-test("low confidence disarms a pending pinch until another stable hold", () => {
-  withSelections((selected) => {
-    gestures.update({ hands: [hand("PINCH")], time: 1000 });
-    gestures.update({ hands: [hand("PINCH")], time: 1100 });
-    store.set({ hover: "earth" });
-    gestures.update({
-      hands: [{ ...hand("PINCH"), confidence: 0.2 }],
-      time: 1200,
-    });
-    gestures.update({ hands: [hand("PINCH")], time: 1300 });
-    assert.deepEqual(selected, []);
-    gestures.update({ hands: [hand("PINCH")], time: 1400 });
-    assert.deepEqual(selected, ["earth"]);
-  });
-});
-test("a marginal confidence dip can re-arm a pending pinch without selecting twice", () => {
-  withSelections((selected) => {
-    gestures.update({ hands: [hand("PINCH")], time: 1000 });
-    gestures.update({ hands: [hand("PINCH")], time: 1100 });
-    store.set({ hover: "earth" });
-    gestures.update({
-      hands: [{ ...hand("PINCH"), confidence: 0.48 }],
-      time: 1150,
-    });
-    assert.deepEqual(selected, []);
-    gestures.update({ hands: [hand("PINCH")], time: 1200 });
-    gestures.update({ hands: [hand("PINCH")], time: 1300 });
-    assert.deepEqual(selected, ["earth"]);
-    store.set({ hover: "venus" });
-    gestures.update({
-      hands: [{ ...hand("PINCH"), confidence: 0.48 }],
-      time: 1350,
-    });
-    gestures.update({ hands: [hand("PINCH")], time: 1400 });
-    gestures.update({ hands: [hand("PINCH")], time: 1500 });
-    assert.deepEqual(selected, ["earth"]);
-  });
-});
-test("sustained marginal confidence requires a new stable hold before selecting", () => {
-  withSelections((selected) => {
-    gestures.update({ hands: [hand("PINCH")], time: 1000 });
-    gestures.update({ hands: [hand("PINCH")], time: 1100 });
-    store.set({ hover: "earth" });
-    for (const time of [1150, 1200, 1250])
-      gestures.update({
-        hands: [{ ...hand("PINCH"), confidence: 0.48 }],
-        time,
-      });
-    gestures.update({ hands: [hand("PINCH")], time: 1300 });
-    assert.deepEqual(selected, []);
-    gestures.update({ hands: [hand("PINCH")], time: 1400 });
-    assert.deepEqual(selected, ["earth"]);
-  });
-});
-test("reset clears the cached pointer target and pending pinch", () => {
-  withSelections((selected) => {
-    store.set({ hover: "earth" });
-    gestures.update({ hands: [hand("POINT")], time: 1000 });
-    gestures.reset();
-    gestures.update({ hands: [hand("PINCH")], time: 1100 });
-    gestures.update({ hands: [hand("PINCH")], time: 1200 });
-    assert.deepEqual(selected, []);
-  });
-});
-test("lost tracking clears cached and current targets before a new pinch", () => {
-  withSelections((selected) => {
-    store.set({ hover: "earth" });
-    gestures.update({ hands: [hand("POINT")], time: 1000 });
-    gestures.update({ hands: [], time: 1200 });
-    assert.equal(store.get().hover, null);
-    // Avoid the connection animation while exercising only gesture routing.
-    store.set({ tracking: "online" });
-    gestures.update({ hands: [hand("PINCH")], time: 1300 });
-    gestures.update({ hands: [hand("PINCH")], time: 1400 });
-    assert.deepEqual(selected, []);
-  });
-});
-
-const pair = (gesture: Gesture, distance: number): HandFeatures[] => [
+const pair = (gesture: Gesture, distance: number) => [
   hand(gesture, 0.5 - distance / 2),
-  hand(gesture, 0.5 + distance / 2),
+  hand(gesture, 0.5 + distance / 2, "right"),
 ];
-const withActions = (
-  run: (calls: {
-    collapse: number;
-    enter: number;
-    info: number;
-    back: number;
-    scales: number[];
-    ended: number;
-    next: number[];
+function scenario(
+  run: (s: {
+    send: (hands: HandFeatures[], dt?: number) => void;
+    warm: (two?: boolean) => void;
+    hold: (hands: HandFeatures[], duration: number) => void;
+    calls: string[];
+    controller: GestureController;
   }) => void,
-) => {
-  reset();
-  const calls = {
-    collapse: 0,
-    enter: 0,
-    info: 0,
-    back: 0,
-    scales: [] as number[],
-    ended: 0,
-    next: [] as number[],
-  };
-  const original = {
-    collapse: interaction.collapse,
-    enterSun: interaction.enterSun,
-    info: interaction.info,
+) {
+  const controller = new GestureController();
+  const originalActivateUI = gestureTargets.activateUI;
+  const originals = {
+    selectBody: interaction.selectBody,
+    next: interaction.next,
     return: interaction.return,
+    collapse: interaction.collapse,
+    rebirth: interaction.rebirth,
     scale: interaction.scale,
     endScale: interaction.endScale,
-    next: interaction.next,
+    isLocked: interaction.isLocked,
   };
-  interaction.collapse = () => {
-    calls.collapse++;
-    store.set({ mode: "COLLAPSE" });
-    interaction.machine.state = "COLLAPSE";
+  const calls: string[] = [];
+  gestureTargets.activateUI = (id) => {
+    calls.push(`ui:${id}`);
+    return true;
   };
-  interaction.enterSun = () => {
-    calls.enter++;
-    store.set({ mode: "SUN_INTERIOR" });
-    interaction.machine.state = "SUN_INTERIOR";
-  };
-  interaction.info = () => {
-    calls.info++;
-  };
-  interaction.return = () => {
-    calls.back++;
-  };
-  interaction.scale = (value) => {
-    calls.scales.push(value);
-    particles.targetScale = value;
-  };
-  interaction.endScale = () => {
-    calls.ended++;
+  interaction.selectBody = (id) => {
+    calls.push(`select:${id}`);
+    return true;
   };
   interaction.next = (direction) => {
-    calls.next.push(direction);
+    calls.push(`swipe:${direction}`);
+    return true;
   };
+  interaction.return = () => {
+    calls.push("back");
+    return true;
+  };
+  interaction.collapse = () => {
+    calls.push("collapse");
+    store.set({ mode: "COLLAPSE" });
+    return true;
+  };
+  interaction.rebirth = () => {
+    calls.push("rebirth");
+    return true;
+  };
+  interaction.scale = (value) => {
+    calls.push("zoom");
+    particles.targetScale = Math.max(0.35, Math.min(1.75, value));
+    return true;
+  };
+  interaction.endScale = () => true;
+  interaction.isLocked = () =>
+    store.get().transitioning || store.get().mode === "INTRO";
+  store.set({
+    mode: "SOLAR_SYSTEM",
+    tracking: "online",
+    transitioning: false,
+    infoVisible: false,
+    selected: null,
+    hover: null,
+  });
+  Object.assign(particles, {
+    targetScale: 1,
+    targetRotation: 0,
+    rotationVelocity: 0,
+    dragging: false,
+  });
+  controller.reset();
+  let time = 1000;
+  const send = (hands: HandFeatures[], dt = 50) => {
+    time += dt;
+    controller.update({ hands, time });
+  };
+  const hold = (hands: HandFeatures[], duration: number) => {
+    for (let n = 0; n <= duration; n += 50) send(hands);
+  };
+  const warm = (two = false) =>
+    hold(two ? pair("OPEN_PALM", 0.6) : [hand("OPEN_PALM")], 300);
   try {
-    run(calls);
+    run({ send, hold, warm, calls, controller });
   } finally {
-    Object.assign(interaction, original);
-    reset();
+    controller.reset();
+    Object.assign(interaction, originals);
+    gestureTargets.activateUI = originalActivateUI;
+    gestureTargets.set(null);
   }
-};
+}
 
-test("three fingers show information while V returns, with one action per hold", () => {
-  withActions((calls) => {
+test("moving a pointing finger never selects, swipes, returns, rotates or zooms", () =>
+  scenario(({ warm, send, calls }) => {
+    warm();
     store.set({ mode: "PLANET_FOCUS", selected: "earth" });
-    interaction.machine.state = "PLANET_FOCUS";
-    for (const time of [1000, 1100, 1200])
-      gestures.update({ hands: [hand("THREE")], time });
-    assert.equal(calls.info, 0);
-    for (const time of [1300, 1400, 1500])
-      gestures.update({ hands: [hand("THREE")], time });
-    assert.equal(calls.info, 1);
-    for (const time of [1600, 1700, 1800, 1900, 2000])
-      gestures.update({ hands: [hand("V_SIGN")], time });
-    assert.equal(calls.back, 1);
-  });
-});
-
-test("single fists and open palms no longer collapse, return or enter the Sun", () => {
-  withActions((calls) => {
-    for (const [gesture, start] of [
-      ["FIST", 1000],
-      ["OPEN_PALM", 1700],
-    ] as const)
-      for (let i = 0; i < 10; i++)
-        gestures.update({ hands: [hand(gesture)], time: start + i * 50 });
-    assert.equal(calls.collapse, 0);
-    assert.equal(calls.enter, 0);
-    assert.equal(calls.back, 0);
-  });
-});
-
-test("two open hands at a fixed separation do not zoom or enter the Sun", () => {
-  withActions((calls) => {
-    for (let i = 0; i < 20; i++)
-      gestures.update({ hands: pair("OPEN_PALM", 0.6), time: 1000 + i * 50 });
-    assert.deepEqual(calls.scales, []);
-    assert.equal(calls.enter, 0);
-    assert.equal(calls.collapse, 0);
-  });
-});
-
-test("dual pinches zoom relative to their captured size and releasing either hand stops scaling", () => {
-  withActions((calls) => {
-    for (const [time, distance] of [
-      [1000, 0.4],
-      [1050, 0.4],
-      [1100, 0.6],
-      [1150, 0.2],
-    ])
-      gestures.update({ hands: pair("PINCH", distance), time });
-    assert.deepEqual(
-      calls.scales.map((value) => Math.round(value * 100)),
-      [150, 50],
-    );
-    gestures.update({
-      hands: [hand("PINCH", 0.4), hand("OPEN_PALM", 0.6)],
-      time: 1200,
-    });
-    assert.equal(calls.ended, 1);
-    assert.equal(calls.scales.length, 2);
-    assert.equal(calls.collapse, 0);
-    assert.equal(calls.enter, 0);
-  });
-});
-
-test("removing one hand after dual pinch requires release before selecting a planet", () => {
-  withSelections((selected) => {
-    store.set({ hover: "earth" });
-    for (const time of [1000, 1050, 1100])
-      gestures.update({ hands: pair("PINCH", 0.4), time });
-    for (const time of [1150, 1200, 1300])
-      gestures.update({ hands: [hand("PINCH")], time });
-    assert.deepEqual(selected, []);
-    gestures.update({ hands: [hand("POINT")], time: 1400 });
-    store.set({ hover: "earth" });
-    gestures.update({ hands: [hand("PINCH")], time: 1450 });
-    gestures.update({ hands: [hand("PINCH")], time: 1550 });
-    assert.deepEqual(selected, ["earth"]);
-  });
-});
-
-test("shrinking with dual pinches and releasing nearby never turns into collapse", () => {
-  withActions((calls) => {
-    for (let i = 0; i < 12; i++)
-      gestures.update({
-        hands: pair("PINCH", Math.max(0.1, 0.4 - i * 0.05)),
-        time: 1000 + i * 50,
-      });
-    for (let i = 0; i < 15; i++)
-      gestures.update({ hands: pair("OPEN_PALM", 0.1), time: 1600 + i * 50 });
-    assert.equal(calls.collapse, 0);
-    assert.equal(calls.enter, 0);
-  });
-});
-
-test("holding both hands together collapses once; one near frame cannot collapse", () => {
-  withActions((calls) => {
-    for (const [time, distance] of [
-      [1000, 0.4],
-      [1050, 0.3],
-      [1100, 0.2],
-      [1150, 0.14],
-    ])
-      gestures.update({ hands: pair("OPEN_PALM", distance), time });
-    assert.equal(calls.collapse, 0);
-    for (let i = 0; i < 15; i++)
-      gestures.update({ hands: pair("OPEN_PALM", 0.14), time: 1200 + i * 50 });
-    assert.equal(calls.collapse, 1);
-    assert.equal(store.get().gesture, "TWO_HAND_COLLAPSE");
-  });
-});
-
-test("quickly spreading two open hands enters the Sun from the solar system", () => {
-  withActions((calls) => {
-    for (const [time, distance] of [
-      [1000, 0.2],
-      [1050, 0.28],
-      [1100, 0.4],
-    ])
-      gestures.update({ hands: pair("OPEN_PALM", distance), time });
-    assert.equal(calls.enter, 1);
-    assert.equal(store.get().gesture, "TWO_HAND_EXPAND");
-    assert.equal(calls.collapse, 0);
-  });
-});
-
-test("collapse keeps paired motion history so immediately spreading both palms enters the Sun", () => {
-  withActions((calls) => {
-    for (let i = 0; i < 9; i++)
-      gestures.update({ hands: pair("OPEN_PALM", 0.14), time: 1000 + i * 50 });
-    assert.equal(calls.collapse, 1);
-    gestures.update({ hands: pair("OPEN_PALM", 0.24), time: 1450 });
-    gestures.update({ hands: pair("OPEN_PALM", 0.4), time: 1500 });
-    assert.equal(calls.enter, 1);
-  });
-});
-
-test("slow separation, moving only one hand, and closed-hand spreading do not enter the Sun", () => {
-  withActions((calls) => {
-    for (let i = 0; i < 20; i++)
-      gestures.update({
-        hands: pair("OPEN_PALM", 0.2 + i * 0.01),
-        time: 1000 + i * 50,
-      });
-    assert.equal(calls.enter, 0);
-    gestures.reset();
-    for (const [time, x] of [
-      [3000, 0.5],
-      [3050, 0.6],
-      [3100, 0.7],
-    ])
-      gestures.update({
-        hands: [hand("OPEN_PALM", 0.3), hand("OPEN_PALM", x)],
-        time,
-      });
-    assert.equal(calls.enter, 0);
-    gestures.reset();
-    for (const [time, distance] of [
-      [4000, 0.2],
-      [4050, 0.28],
-      [4100, 0.4],
-    ])
-      gestures.update({ hands: pair("FIST", distance), time });
-    assert.equal(calls.enter, 0);
-  });
-});
-
-test("one uncertain hand discards motion history before a later wide separation", () => {
-  withActions((calls) => {
-    gestures.update({ hands: pair("OPEN_PALM", 0.2), time: 1000 });
-    const uncertain = pair("OPEN_PALM", 0.3);
-    uncertain[1].confidence = 0.3;
-    gestures.update({ hands: uncertain, time: 1050 });
-    gestures.update({ hands: pair("OPEN_PALM", 0.5), time: 1100 });
-    gestures.update({ hands: pair("OPEN_PALM", 0.6), time: 1150 });
-    assert.equal(calls.enter, 0);
-  });
-});
-
-test("brief occlusion, one remaining hand, and dropped frames cannot manufacture an opening", () => {
-  withActions((calls) => {
-    for (const missing of [[], [hand("OPEN_PALM")]]) {
-      gestures.reset();
-      gestures.update({ hands: pair("OPEN_PALM", 0.2), time: 1000 });
-      gestures.update({ hands: missing, time: 1050 });
-      gestures.update({ hands: pair("OPEN_PALM", 0.5), time: 1100 });
-      gestures.update({ hands: pair("OPEN_PALM", 0.6), time: 1150 });
-      assert.equal(calls.enter, 0);
+    for (let i = 0; i < 20; i++) {
+      const h = hand("POINT", 0.15 + i * 0.03);
+      h.velocity.x = 2;
+      send([h]);
     }
-    gestures.reset();
-    gestures.update({ hands: pair("OPEN_PALM", 0.2), time: 2000 });
-    gestures.update({ hands: pair("OPEN_PALM", 0.4), time: 2400 });
-    gestures.update({ hands: pair("OPEN_PALM", 0.5), time: 2450 });
-    assert.equal(calls.enter, 0);
-  });
-});
-
-test("hand detection ordering changes do not affect a two-hand opening", () => {
-  withActions((calls) => {
-    gestures.update({ hands: pair("OPEN_PALM", 0.2), time: 1000 });
-    gestures.update({ hands: pair("OPEN_PALM", 0.28).reverse(), time: 1050 });
-    gestures.update({ hands: pair("OPEN_PALM", 0.4), time: 1100 });
-    assert.equal(calls.enter, 1);
-  });
-});
-
-test("inside the Sun, three fingers and pinches are inert; V returns and joined hands collapse", () => {
-  withActions((calls) => {
-    store.set({ mode: "SUN_INTERIOR" });
-    interaction.machine.state = "SUN_INTERIOR";
-    for (const [gesture, start] of [
-      ["THREE", 1000],
-      ["PINCH", 1700],
-    ] as const)
-      for (let i = 0; i < 10; i++)
-        gestures.update({ hands: [hand(gesture)], time: start + i * 50 });
-    assert.equal(calls.info, 0);
-    for (let i = 0; i < 8; i++)
-      gestures.update({ hands: [hand("V_SIGN")], time: 2300 + i * 50 });
-    assert.equal(calls.back, 1);
-    for (const [time, distance] of [
-      [3000, 0.2],
-      [3050, 0.28],
-      [3100, 0.4],
-    ])
-      gestures.update({ hands: pair("OPEN_PALM", distance), time });
-    assert.equal(calls.enter, 0);
-    for (let i = 0; i < 10; i++)
-      gestures.update({ hands: pair("OPEN_PALM", 0.14), time: 3150 + i * 50 });
-    assert.equal(calls.collapse, 1);
-  });
-});
-
-test("horizontal swipes still switch planets and do not accidentally trigger V return", () => {
-  withActions((calls) => {
+    assert.deepEqual(calls, []);
+    assert.equal(particles.targetRotation, 0);
+    assert.equal(particles.targetScale, 1);
+  }));
+for (const target of ["earth", "sun"] as const)
+  test(`point and one stable pinch selects ${target} exactly once`, () =>
+    scenario(({ warm, send, hold, calls }) => {
+      warm();
+      gestureTargets.set({ kind: "body", id: target, label: target });
+      send([hand("POINT")]);
+      hold([hand("PINCH")], 1000);
+      assert.deepEqual(calls, [`select:${target}`]);
+      send([hand("POINT")]);
+      hold([hand("PINCH")], 200);
+      assert.deepEqual(calls, [`select:${target}`, `select:${target}`]);
+    }));
+test("a brief accidental pinch cannot select", () =>
+  scenario(({ warm, send, calls }) => {
+    warm();
+    gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
+    send([hand("POINT")]);
+    send([hand("PINCH")]);
+    send([hand("POINT")]);
+    assert.deepEqual(calls, []);
+  }));
+test("pinch captures the original target instead of jumping to a neighbour mid-hold", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm();
+    gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
+    send([hand("POINT")]);
+    send([hand("PINCH")]);
+    gestureTargets.set({ kind: "body", id: "mars", label: "火星" });
+    hold([hand("PINCH")], 200);
+    assert.deepEqual(calls, ["select:earth"]);
+  }));
+test("an empty-space pinch dragged across a planet rotates instead of selecting", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm();
+    send([hand("POINT")]);
+    hold([hand("PINCH")], 200);
+    gestureTargets.set({ kind: "body", id: "mars", label: "火星" });
+    for (let i = 1; i < 8; i++) send([hand("PINCH", 0.3 + i * 0.025)]);
+    assert.deepEqual(calls, []);
+    assert.ok(particles.targetRotation > 0);
+    assert.equal(gestureFeedback.get().action, "PINCH_DRAG");
+    send([hand("OPEN_PALM", 0.5)]);
+    const before = particles.targetRotation;
+    rotation.update(0.05);
+    assert.ok(particles.targetRotation > before);
+    assert.ok(particles.rotationVelocity > 0);
+    assert.ok(particles.rotationVelocity <= 2.4);
+  }));
+test("pointing away to empty space clears a recent body target before pinching", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm();
+    gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
+    send([hand("POINT")]);
+    gestureTargets.set(null);
+    send([hand("POINT", 0.8)]);
+    hold([hand("PINCH", 0.8)], 250);
+    assert.deepEqual(calls, []);
+  }));
+test("a held pinch that first appears in the camera must release after the re-entry delay", () =>
+  scenario(({ send, hold, calls }) => {
+    gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
+    hold([hand("PINCH")], 500);
+    assert.deepEqual(calls, []);
+    assert.equal(gestureFeedback.get().needsRelease, true);
+    send([hand("POINT")]);
+    hold([hand("PINCH")], 200);
+    assert.deepEqual(calls, ["select:earth"]);
+  }));
+test("re-entry blocks fist, swipe, zoom and effects as well as clicks", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm();
+    send([]);
     store.set({ mode: "PLANET_FOCUS", selected: "earth" });
-    interaction.machine.state = "PLANET_FOCUS";
-    for (const [time, x] of [
-      [1000, 0.2],
-      [1050, 0.27],
-      [1100, 0.36],
-    ])
-      gestures.update({
-        hands: [{ ...hand("V_SIGN", x), velocity: { x: 0.9, y: 0.02 } }],
-        time,
-      });
-    assert.deepEqual(calls.next, [1]);
-    assert.equal(calls.back, 0);
-  });
-});
+    hold([hand("FIST")], 200);
+    assert.deepEqual(calls, []);
+    assert.equal(gestureFeedback.get().readiness, "RECONNECTING");
+    send([]);
+    hold(pair("PINCH", 0.2), 200);
+    assert.deepEqual(calls, []);
+  }));
+test("all actions are locked throughout a scene transition; held pinches do not fire on unlock", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm();
+    gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
+    store.set({ transitioning: true });
+    hold([hand("PINCH")], 300);
+    hold([hand("FIST")], 650);
+    hold(pair("OPEN_PALM", 0.18), 1100);
+    assert.deepEqual(calls, []);
+    hold([hand("PINCH")], 350);
+    store.set({ transitioning: false });
+    hold([hand("PINCH")], 400);
+    assert.deepEqual(calls, []);
+    send([hand("POINT")]);
+    hold([hand("PINCH")], 200);
+    assert.deepEqual(calls, ["select:earth"]);
+  }));
+for (const mode of ["SUN_INTERIOR", "COLLAPSE"] as const)
+  test(`one pinch can confirm a HUD target in ${mode} without enabling body selection`, () =>
+    scenario(({ warm, send, hold, calls }) => {
+      warm();
+      store.set({ mode });
+      gestureTargets.set({ kind: "ui", id: "show-help", label: "操作指南" });
+      send([hand("POINT")]);
+      hold([hand("PINCH")], 1000);
+      assert.deepEqual(calls, ["ui:show-help"]);
+      gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
+      send([hand("POINT")]);
+      hold([hand("PINCH")], 200);
+      assert.deepEqual(calls, ["ui:show-help"]);
+    }));
+test("HUD pinch confirmation stays locked through transitions and requires release on unlock", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm();
+    store.set({ mode: "SUN_INTERIOR", transitioning: true });
+    gestureTargets.set({
+      kind: "ui",
+      id: "back-from-sun",
+      label: "返回太阳系",
+    });
+    hold([hand("PINCH")], 350);
+    assert.deepEqual(calls, []);
+    store.set({ transitioning: false });
+    hold([hand("PINCH")], 400);
+    assert.deepEqual(calls, []);
+    send([hand("POINT")]);
+    hold([hand("PINCH")], 200);
+    assert.deepEqual(calls, ["ui:back-from-sun"]);
+  }));
+test("only two confirmed pinch holds zoom, using pinch midpoints instead of palm separation", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm(true);
+    hold(pair("OPEN_PALM", 0.6), 300);
+    assert.deepEqual(calls, []);
+    send(pair("PINCH", 0.4));
+    send(pair("PINCH", 0.4));
+    assert.deepEqual(calls, []);
+    hold(pair("PINCH", 0.4), 150);
+    const moved = pair("PINCH", 0.4);
+    moved[0].pinchPoint!.x = 0.1;
+    moved[1].pinchPoint!.x = 0.9;
+    send(moved);
+    assert.equal(particles.targetScale, 1.75);
+    assert.equal(gestureFeedback.get().action, "TWO_HAND_ZOOM");
+    assert.equal(
+      calls.some((c: string) => c.startsWith("select")),
+      false,
+    );
+  }));
+test("ending a zoom with a single held pinch cannot select a target", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm(true);
+    hold(pair("PINCH", 0.4), 250);
+    gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
+    hold([hand("PINCH")], 600);
+    assert.equal(
+      calls.some((c: string) => c.startsWith("select")),
+      false,
+    );
+    send([hand("POINT")]);
+    hold([hand("PINCH")], 200);
+    assert.equal(calls.filter((c) => c.startsWith("select")).length, 1);
+  }));
+test("zooming small and releasing close palms does not collapse", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm(true);
+    hold(pair("PINCH", 0.6), 200);
+    for (let i = 0; i < 10; i++) send(pair("PINCH", 0.6 - i * 0.045));
+    hold(pair("OPEN_PALM", 0.15), 1300);
+    assert.equal(calls.includes("collapse"), false);
+  }));
+for (const mode of ["PLANET_FOCUS", "SUN_INTERIOR", "COLLAPSE"] as const)
+  test(`a 600ms fist returns from ${mode}, but cancelling halfway does nothing`, () =>
+    scenario(({ warm, send, hold, calls }) => {
+      warm();
+      store.set({ mode });
+      hold([hand("FIST")], 300);
+      assert.ok(gestureFeedback.get().fistProgress > 0);
+      send([hand("OPEN_PALM")]);
+      assert.equal(gestureFeedback.get().fistProgress, 0);
+      assert.deepEqual(calls, []);
+      hold([hand("FIST")], 650);
+      assert.deepEqual(calls, ["back"]);
+      hold([hand("FIST")], 1000);
+      assert.deepEqual(calls, ["back"]);
+    }));
+test("legacy V and THREE poses do not navigate", () =>
+  scenario(({ warm, hold, calls }) => {
+    warm();
+    store.set({ mode: "PLANET_FOCUS" });
+    hold([hand("V_SIGN")], 800);
+    hold([hand("THREE")], 800);
+    assert.deepEqual(calls, []);
+  }));
+for (const direction of [-1, 1])
+  test(`open-hand flick ${direction} switches only a focused planet with the requested direction`, () =>
+    scenario(({ warm, send, hold, calls }) => {
+      warm();
+      const flick = () => {
+        for (let i = 0; i < 5; i++) {
+          const h = hand("OPEN_PALM", 0.5 + direction * i * 0.05);
+          h.velocity.x = direction * 1.2;
+          send([h]);
+        }
+      };
+      flick();
+      assert.deepEqual(calls, []);
+      store.set({ mode: "PLANET_FOCUS", selected: "earth" });
+      hold([hand("OPEN_PALM", 0.5)], 300);
+      flick();
+      assert.deepEqual(calls, [`swipe:${-direction}`]);
+      flick();
+      assert.equal(calls.length, 1);
+    }));
+test("open palms must deliberately approach for a second to collapse, then spread to rebirth", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm(true);
+    hold(pair("OPEN_PALM", 0.6), 300);
+    assert.deepEqual(calls, []);
+    for (let i = 1; i <= 26; i++) send(pair("OPEN_PALM", 0.6 - i * 0.016));
+    assert.deepEqual(calls, ["collapse"]);
+    hold(pair("OPEN_PALM", 0.18), 1100);
+    for (let i = 1; i <= 10; i++) send(pair("OPEN_PALM", 0.18 + i * 0.03));
+    assert.deepEqual(calls, ["collapse", "rebirth"]);
+  }));
+test("static near palms, fast closure, and outward palms in overview never trigger navigation", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm(true);
+    send(pair("OPEN_PALM", 0.16));
+    hold(pair("OPEN_PALM", 0.16), 1500);
+    for (let i = 1; i < 8; i++) send(pair("OPEN_PALM", 0.16 + i * 0.08));
+    assert.deepEqual(calls, []);
+  }));
+test("low confidence interrupts a pinch and requires a fresh stable release", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm();
+    gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
+    send([hand("POINT")]);
+    send([hand("PINCH")]);
+    send([{ ...hand("PINCH"), confidence: 0.3 }]);
+    hold([hand("PINCH")], 500);
+    assert.deepEqual(calls, []);
+    send([hand("POINT")]);
+    hold([hand("PINCH")], 200);
+    assert.deepEqual(calls, ["select:earth"]);
+  }));
+test("a long frame gap is treated as reconnecting and cannot generate a swipe", () =>
+  scenario(({ warm, send, calls }) => {
+    warm();
+    store.set({ mode: "PLANET_FOCUS" });
+    send([hand("OPEN_PALM", 0.2)]);
+    const h = hand("OPEN_PALM", 0.8);
+    h.velocity.x = 5;
+    send([h], 500);
+    assert.deepEqual(calls, []);
+    assert.equal(gestureFeedback.get().readiness, "RECONNECTING");
+  }));

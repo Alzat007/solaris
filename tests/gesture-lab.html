@@ -25,16 +25,21 @@
     >
       <strong>合成 21 关键点回放 · 不使用摄像头</strong>
       <div id="lab-buttons">
-        <button data-pose="FIST">模拟握拳</button>
-        <button data-pose="OPEN_PALM">模拟自然张掌</button>
-        <button data-pose="POINT">指向地球</button>
-        <button data-pose="PINCH">模拟捏合</button>
-        <button data-pose="THREE">三指查看资料</button>
-        <button data-pose="V_SIGN">剪刀手返回</button>
-        <button data-motion="join">双手合拢</button>
-        <button data-motion="expand">双手快速张开</button>
-        <button data-motion="zoom-in">双捏合拉开</button>
-        <button data-motion="zoom-out">双捏合靠近</button>
+        <button data-target="earth">指向地球</button>
+        <button data-target="sun">指向太阳</button>
+        <button data-target="help">指向帮助</button>
+        <button data-target="blank">指向空白</button>
+        <button data-pose="PINCH">捏合保持</button>
+        <button data-pose="OPEN_PALM">松开张掌</button>
+        <button data-pose="FIST">握拳返回</button>
+        <button data-motion="drag">空白捏住拖动</button>
+        <button data-motion="swipe-left">向左拨动</button>
+        <button data-motion="swipe-right">向右拨动</button>
+        <button data-motion="join">双掌缓慢合拢</button>
+        <button data-motion="expand">双掌展开重生</button>
+        <button data-motion="zoom-in">双捏合放大</button>
+        <button data-motion="zoom-out">双捏合缩小</button>
+        <button data-motion="reentry">捏着重新入镜</button>
         <button data-pose="NONE">移开手</button>
       </div>
       <output id="lab-result"></output>

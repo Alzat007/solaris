@@ -1,9 +1,9 @@
 import { planetById } from "../data/planets";
 import { useSolaris } from "../interaction/store";
 export function PlanetInfo() {
-  const { selected, mode } = useSolaris();
+  const { selected, infoVisible, transitioning } = useSolaris();
   const p = planetById(selected);
-  if (!p || mode !== "INFO") return null;
+  if (!p || !infoVisible || transitioning) return null;
   return (
     <section className="planet-info" aria-label={`${p.chineseName}资料`}>
       <div className="info-line" />

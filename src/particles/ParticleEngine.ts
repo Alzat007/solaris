@@ -21,6 +21,13 @@ export class ParticleEngine {
   state: ParticleState = "REST";
   handPosition3D = new Vector3(0, 0, 100);
   handNDC = new Vector2();
+  handTargetNDC = new Vector2();
+  cursorVisible = false;
+  gesturePulse = 0;
+  dragging = false;
+  dragIntensity = 0;
+  zoomIntensity = 0;
+  rotationVelocity = 0;
   handVelocity = new Vector3();
   handDirection = new Vector3(0, 1, 0);
   handOpenness = 1;

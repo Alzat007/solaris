@@ -34,7 +34,7 @@ Screenshots produced during verification are in the ignored `artifacts/` directo
 
 ## Gesture redesign and Sun interior · 2026-09-20
 
-This section describes the current version; earlier gesture mappings above are historical.
+This section records the pre-V2 version. Its gesture mappings and interruption behavior have been superseded by Gesture System V2 below.
 
 - Replaced the old single-fist/open-palm/V mappings with THREE for information, V for return, dual pinch for scale, joined hands for collapse, and rapid bilateral open-hand separation for Sun entry. Point-to-pinch selection and horizontal switching remain supported.
 - Two-hand motion uses a recent distance window, bilateral movement, confidence checks and fresh baselines after occlusion. Pinched zoom cannot become a collapse; releasing one hand after a zoom cannot accidentally select a planet. Hand-count changes reset recognizer velocity and finger hysteresis.
@@ -43,3 +43,19 @@ This section describes the current version; earlier gesture mappings above are h
 - Browser replay at 1280 × 720 exercised the actual recognizer, gesture routing, planet picking and rendered animations using synthetic 21-point landmarks: POINT → Earth → PINCH → PLANET_FOCUS → THREE → INFO → V → SOLAR_SYSTEM. Dual pinch enlarged to 1.75 and reduced to 0.81; releasing kept 0.81. Joined hands triggered COLLAPSE; rapid bilateral expansion entered SUN_INTERIOR; V returned. No console or shader errors were observed.
 - Browser screenshots confirmed a visible central contraction and a surrounding gold/orange particle field with flowing filaments. Camera input was not opened for these checks; these are synthetic integration checks, not measurements of real-camera accuracy.
 - At 390 × 844, the seven-step Chinese teaching panel fits inside the viewport and scrolls: panel x=19.5, width=351, clientHeight=692, scrollHeight=1196; document width remains 390.
+
+## Gesture System V2 · 2026-09-20
+
+This is the current interaction contract; all earlier gesture mappings above are historical.
+
+- `npm test`: all 86 tests pass. Coverage includes explicit pinch edges and hysteresis, one confirmation per pinch, cancelled holds, low-confidence and re-entry protection, identity/order/crossing handling, animation locks, UI confirmation in secondary scenes, blank-space drag ownership, midpoint-only two-hand zoom, focus-only directional swipes, Fist Back, deliberate collapse/rebirth, unified Sun picking, automatic information and mouse/touch fallback sequences.
+- Desktop in-app-browser replay at 1280 × 720 exercised real recognizer/controller/rendering code with anatomical synthetic 21-point landmarks. POINT on Earth followed by PINCH entered PLANET_FOCUS, displayed information automatically and remained there while the same pinch stayed held. No repeated selection occurred.
+- POINT on Sun followed by PINCH entered locked SUN_FOCUS, then SUN_INTERIOR. Fist returned to SOLAR_SYSTEM. The retained gold particle volume and plasma filaments were visible. A world-space hand marker could appear enlarged against the interior camera; it is now hidden during entry/interior, leaving the small screen-space cursor. A second interior screenshot verified the marker no longer obscures the scene.
+- Dual pinch reached both configured zoom bounds, 1.75 and 0.35; releasing preserved the current size. Blank pinch-drag changed targetRotation from 0.00 to 2.22 radians without selecting a planet. Unit tests separately verify post-release inertia and damping.
+- Slow bilateral open-palm contraction produced COLLAPSE with collapse=1 and sunInterior=0. Spreading palms from the core triggered rebirth and restored SOLAR_SYSTEM with collapse=0 and sunInterior=0.
+- After mouse selection of Earth, a leftward open-palm replay selected Mars; a rightward replay selected Earth. The same routing tests reject overview swipes, slow/vertical travel, pointing motion and cooldown repeats.
+- A held pinch disappearing and reappearing remained in SOLAR_SYSTEM after READY with needsRelease=true. Releasing restored eligibility. Pointing at the help HUD target and pinching opened the Chinese operation guide.
+- Tutorial prompted Pinch after a body hover, Fist after first Sun entry, and disappeared following a successful Fist return. The normal page hid debug UI; `?debugGesture=true` exposed phase, distance, finger states, readiness, lock, cooldown, target and FPS. The synthetic replay showed 60 FPS on this desktop; this is not a device-wide performance guarantee.
+- At a 390 × 844 viewport, the Chinese help panel measured x=19.5, y=40, width=351, height=694; clientHeight=692 and scrollHeight=863. Document scrollWidth=390. Long help content scrolls within the viewport. Temporary viewport settings were reset after verification.
+- No console warnings/errors were captured in the final desktop replay. Camera permissions were not requested in this verification pass; synthetic integration and input-sequence tests do not establish real-hand accuracy or physical phone performance.
+- Final TypeScript check and `VITE_BASE_PATH=/solaris/ npm run build` passed. Static export verification passed for 4 entry assets and 7 runtime assets using the `/solaris/` base path.

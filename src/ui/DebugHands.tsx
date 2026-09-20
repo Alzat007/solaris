@@ -1,7 +1,5 @@
 import { useEffect, useRef } from "react";
 import { handTracking } from "../gesture/HandTrackingManager";
-import { gestureLabels, qualityLabels } from "./chinese";
-import { useSolaris } from "../interaction/store";
 const bones = [
   [0, 1, 2, 3, 4],
   [0, 5, 6, 7, 8],
@@ -12,7 +10,6 @@ const bones = [
 ];
 export function DebugHands() {
   const canvas = useRef<HTMLCanvasElement>(null);
-  const state = useSolaris();
   useEffect(() => {
     let raf = 0;
     const paint = () => {
@@ -57,18 +54,12 @@ export function DebugHands() {
     paint();
     return () => cancelAnimationFrame(raf);
   }, []);
-  const h = handTracking.frame.hands[0];
   return (
-    <aside className="debug">
-      <canvas ref={canvas} width={320} height={240} />
-      <pre>
-        手势：{gestureLabels[state.gesture] ?? "等待手势"} · 置信度{" "}
-        {Math.round(state.confidence * 100)}%{"\n"}
-        {state.fps} 帧/秒 · {qualityLabels[state.quality]}画质
-        {"\n"}移动速度：{" "}
-        {h ? Math.hypot(h.velocity.x, h.velocity.y).toFixed(2) : "0"}
-        {"\n"}捏合距离：{h?.pinchDistance.toFixed(2) || "—"}
-      </pre>
-    </aside>
+    <canvas
+      ref={canvas}
+      width={320}
+      height={240}
+      aria-label="摄像头与手部骨架调试预览"
+    />
   );
 }

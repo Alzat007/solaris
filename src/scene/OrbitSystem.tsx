@@ -43,7 +43,11 @@ export function OrbitSystem() {
         (particles.explosion > 0
           ? Math.max(0, (particles.explosion - 0.65) / 0.35)
           : 1);
-    group.current?.scale.setScalar(1 - particles.collapse * 0.997);
+    group.current?.scale.set(
+      (1 - particles.collapse * 0.997) * (1 + particles.dragIntensity * 0.025),
+      1 - particles.collapse * 0.997,
+      1 - particles.collapse * 0.997,
+    );
   });
   return (
     <group ref={group}>

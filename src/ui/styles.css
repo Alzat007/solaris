@@ -1051,118 +1051,236 @@ footer {
   }
 }
 
-/* Gesture recognition remains visible even when the compact footer is hidden. */
+/* Gesture System V2 keeps feedback quiet and tied to the selected target. */
 .hand-feedback {
   position: absolute;
   top: 94px;
   right: 3.4%;
-  width: 300px;
-  padding: 15px 18px;
-  border: 1px solid #b5ac8c30;
-  background: linear-gradient(120deg, #10150fed, #070a09e8);
-  backdrop-filter: blur(14px);
-  color: #d9d8cb;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #9badb5;
+  font-size: 11px;
+  letter-spacing: 0.08em;
   pointer-events: none;
   z-index: 4;
+  text-shadow: 0 2px 9px #000;
 }
-.hand-feedback-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 9px;
-  font-size: 10px;
-  line-height: 1.5;
-}
-.hand-feedback-label {
-  color: #aebda6;
-  letter-spacing: 0.12em;
-}
-.hand-confidence {
-  color: #92988b;
-  font-variant-numeric: tabular-nums;
-}
-.hand-feedback strong {
-  display: block;
-  font-size: 15px;
-  font-weight: 400;
-  letter-spacing: 0.05em;
-  line-height: 1.5;
-}
-.hand-feedback p {
-  margin: 7px 0 0;
-  font-size: 12px;
-  line-height: 1.7;
-  color: #a0a697;
-}
-.hand-target {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-top: 10px;
-  padding-top: 9px;
-  border-top: 1px solid #b5ac8c1f;
-  color: #989b8d;
-  font-size: 11px;
-  line-height: 1.5;
-}
-.hand-target i {
+.hand-feedback > i {
   width: 4px;
   height: 4px;
-  border: 1px solid currentColor;
   border-radius: 50%;
+  background: #7cd8ee;
+  box-shadow: 0 0 9px #63cff766;
 }
-.hand-target.has-target {
-  color: #e1c496;
+.hand-feedback[data-state="GESTURE_ARMED"],
+.hand-feedback[data-state="GESTURE_TRIGGERED"] {
+  color: #c1e6ef;
 }
-.hand-target.has-target i {
-  background: currentColor;
-  box-shadow: 0 0 8px #e1c49666;
-}
-.hand-cursor {
+.gesture-cursor {
   position: absolute;
   top: 0;
   left: 0;
-  width: 26px;
-  height: 26px;
-  margin: -13px 0 0 -13px;
-  border: 1px solid #d4dfc580;
-  border-radius: 50%;
-  color: #d4dfc5;
-  background: #0b130d40;
-  box-shadow: 0 0 15px #d4dfc520;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  color: #83d9f1;
   pointer-events: none;
   will-change: transform;
-  z-index: 3;
+  z-index: 12;
 }
-.hand-cursor i {
+.gesture-cursor-ring {
   position: absolute;
-  inset: 10px;
+  inset: 0;
+  border: 1px solid #84d6ee88;
+  border-radius: 50%;
+  box-shadow: 0 0 14px #4abdd629;
+  background: #62d8ff04;
+  transform: scale(calc(1 - var(--pinch-progress, 0) * 0.36));
+  transition:
+    transform 70ms linear,
+    border-color 130ms,
+    box-shadow 130ms;
+}
+.gesture-cursor-ring > i {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  left: calc(50% - 1.5px);
+  top: calc(50% - 1.5px);
   border-radius: 50%;
   background: currentColor;
 }
-.hand-cursor span {
+.gesture-cursor.has-target .gesture-cursor-ring {
+  border-color: #c5f2ff;
+  box-shadow:
+    0 0 0 4px #7edffb0c,
+    0 0 20px #6ce0ff50;
+}
+.gesture-cursor[data-readiness="RECONNECTING"] .gesture-cursor-ring {
+  border-style: dashed;
+  opacity: 0.55;
+}
+.gesture-target-name {
   position: absolute;
-  left: 33px;
-  top: 3px;
-  font-size: 10px;
-  line-height: 18px;
+  top: 4px;
+  left: 39px;
+  font-size: 11px;
+  line-height: 20px;
   letter-spacing: 0.1em;
   white-space: nowrap;
-  text-shadow: 0 1px 4px #000;
+  text-shadow: 0 1px 8px #000;
 }
-.hand-cursor.is-pointing {
-  border-color: #d4dfc5;
+.gesture-progress-ring {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  top: -8px;
+  left: -8px;
+  transform: rotate(-90deg);
 }
-.hand-cursor.has-target {
-  color: #ffe0a0;
-  border-color: #ffe0a0;
+.gesture-progress-ring circle {
+  fill: none;
+  stroke: #d5f3fc;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--gesture-progress, 0));
+  transition: stroke-dashoffset 65ms linear;
+  filter: drop-shadow(0 0 3px #61e1ff88);
+}
+.gesture-pulse {
+  position: absolute;
+  inset: 0;
+  border: 1px solid #c4efff;
+  border-radius: 50%;
+  animation: gesture-pulse 620ms ease-out both;
+}
+.gesture-pulse:after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border: 2px dotted #b8e5f7;
+  border-radius: 50%;
+}
+@keyframes gesture-pulse {
+  from {
+    transform: scale(0.6);
+    opacity: 0.85;
+  }
+  to {
+    transform: scale(3.1);
+    opacity: 0;
+  }
+}
+.gesture-space-feedback {
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 350ms,
+    box-shadow 400ms;
+}
+.gesture-space-feedback.is-zooming {
+  opacity: 1;
+  box-shadow: inset 0 0 75px -24px #61b7df27;
+  border-color: #78d6fb24;
+}
+.gesture-space-feedback.is-dragging {
+  opacity: 0.6;
   box-shadow:
-    0 0 0 4px #ffe0a020,
-    0 0 22px #ffe0a040;
+    inset 40px 0 95px -90px #7bdfff,
+    inset -40px 0 95px -90px #7bdfff;
 }
-.hand-cursor.is-pinching i {
-  inset: 7px;
+.gesture-swipe-cue {
+  position: absolute;
+  top: 47%;
+  font-size: 32px;
+  font-weight: 300;
+  color: #b5e4f094;
+  pointer-events: none;
+  animation: gesture-swipe 700ms ease-out both;
+}
+.gesture-swipe-cue.to-left {
+  left: 28%;
+  --swipe-offset: -25px;
+}
+.gesture-swipe-cue.to-right {
+  right: 28%;
+  --swipe-offset: 25px;
+}
+@keyframes gesture-swipe {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  20% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(var(--swipe-offset));
+  }
+}
+.gesture-tutorial {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #c0dce4;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+  text-shadow: 0 2px 12px #000;
+  animation: arrive 450ms both;
+}
+.tutorial-symbol {
+  color: #9bdeef;
+  font-size: 25px;
+  font-weight: 300;
+}
+.gesture-tutorial small {
+  display: block;
+  margin-top: 6px;
+  font-size: 8px;
+  color: #7a98a3;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+}
+.gesture-tutorial > i {
+  color: #57727c;
+  font-size: 8px;
+  font-style: normal;
+  margin-left: 4px;
+}
+.hud button[data-gesture-hover="true"] {
+  color: #c4f2ff;
+  text-shadow: 0 0 12px #6adaff80;
+  outline: 1px solid #96dcf54d;
+  outline-offset: 5px;
+}
+.debug {
+  width: 320px;
+  max-height: calc(100% - 130px);
+  overflow: auto;
+  pointer-events: auto;
+  scrollbar-width: thin;
+}
+.debug pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 10px;
+  line-height: 1.5;
+  color: #b6d2da;
+}
+.debug canvas {
+  max-height: 190px;
+  object-fit: contain;
 }
 .help-panel {
   z-index: 6;
@@ -1198,10 +1316,6 @@ footer {
 .sun-interior-hud .help-toggle {
   margin-left: auto;
 }
-.sun-interior-hud .hand-feedback {
-  background: linear-gradient(120deg, #21140dd9, #0d0804cc);
-  border-color: #d8a56440;
-}
 @media (max-width: 700px) {
   .help-panel {
     max-height: calc(100% - 150px);
@@ -1217,28 +1331,23 @@ footer {
     display: none;
   }
   .hand-feedback {
-    top: 75px;
-    left: 6%;
+    top: 77px;
     right: 6%;
-    width: auto;
-    padding: 11px 14px;
+    font-size: 10px;
   }
-  .hand-feedback-heading {
-    margin-bottom: 5px;
+  .gesture-tutorial {
+    top: 19%;
+    font-size: 12px;
   }
-  .hand-feedback strong {
-    font-size: 14px;
-  }
-  .hand-feedback p {
-    margin-top: 4px;
-    font-size: 11px;
-  }
-  .hand-target {
-    margin-top: 6px;
-    padding-top: 6px;
+  .gesture-tutorial small {
+    font-size: 7px;
   }
   .hand-active .planet-info {
-    top: max(25%, 230px);
+    top: 27%;
+  }
+  .debug {
+    width: min(310px, 88vw);
+    max-height: calc(100% - 100px);
   }
 }
 @media (max-width: 460px) {
@@ -1253,6 +1362,5 @@ footer {
 @media (max-height: 600px) and (min-width: 701px) {
   .hand-feedback {
     top: 83px;
-    padding: 10px 14px;
   }
 }

@@ -105,7 +105,7 @@ export function ParticleField({
           : 0;
     u.uCollapse.value = kind === "dust" ? particles.collapse : 0;
     u.uExplosion.value = particles.explosion;
-    u.uBurst.value = particles.burst;
+    u.uBurst.value = particles.burst + particles.gesturePulse * 0.28;
     u.uIntro.value = particles.intro;
     u.uInfluence.value = particles.influence;
     u.uPinch.value = particles.pinchStrength;

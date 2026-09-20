@@ -1,5 +1,6 @@
 import type { HandLandmarker } from "@mediapipe/tasks-vision";
-import { GestureRecognizer } from "./GestureRecognizer";
+import { HandIdentityTracker } from "./HandIdentityTracker";
+import { gestureConfig } from "./gestureConfig";
 import { gestures } from "./GestureController";
 import { interaction } from "../interaction/InteractionController";
 import { store } from "../interaction/store";
@@ -13,8 +14,8 @@ export class HandTrackingManager {
   private running = false;
   private generation = 0;
   private lastVideo = -1;
-  private recognizers = [new GestureRecognizer(), new GestureRecognizer()];
-  private lastCenters: number[] = [];
+  private identities = new HandIdentityTracker();
+  private lastFrameTime = 0;
   frame: HandFrame = { hands: [], time: 0 };
   async start() {
     if (this.running || store.get().tracking === "loading") return;
@@ -79,9 +80,9 @@ export class HandTrackingManager {
         },
         runningMode: "VIDEO" as const,
         numHands: 2,
-        minHandDetectionConfidence: 0.65,
-        minHandPresenceConfidence: 0.65,
-        minTrackingConfidence: 0.65,
+        minHandDetectionConfidence: gestureConfig.CAMERA_DETECTION_CONFIDENCE,
+        minHandPresenceConfidence: gestureConfig.CAMERA_PRESENCE_CONFIDENCE,
+        minTrackingConfidence: gestureConfig.CAMERA_TRACKING_CONFIDENCE,
       };
       try {
         localModel = await HandLandmarker.createFromOptions(files, {
@@ -134,34 +135,20 @@ export class HandTrackingManager {
       ) {
         this.lastVideo = this.video.currentTime;
         const result = this.model.detectForVideo(this.video, start);
-        // Match to previous horizontal positions; MediaPipe may reorder detections between frames.
-        let ordered = result.landmarks.map((points, index) => ({
-          points,
-          index,
-        }));
-        if (ordered.length === 2 && this.lastCenters.length === 2) {
-          const straight =
-            Math.abs(ordered[0].points[0].x - this.lastCenters[0]) +
-            Math.abs(ordered[1].points[0].x - this.lastCenters[1]);
-          const crossed =
-            Math.abs(ordered[1].points[0].x - this.lastCenters[0]) +
-            Math.abs(ordered[0].points[0].x - this.lastCenters[1]);
-          if (crossed < straight) ordered.reverse();
-        }
-        // Adding/removing a hand can change recognizer identity. Do not carry
-        // another hand's velocity or finger hysteresis into the new frame.
-        if (ordered.length !== this.lastCenters.length)
-          this.recognizers.forEach((recognizer) => recognizer.reset());
-        this.lastCenters = ordered.map((o) => o.points[0].x);
-        const hands = ordered.map(({ points, index }, i) =>
-          this.recognizers[i].analyze(
-            points,
-            result.worldLandmarks[index],
-            start,
-            this.video!.videoWidth / this.video!.videoHeight,
-          ),
+        const hands = this.identities.update(
+          result,
+          start,
+          this.video.videoWidth / this.video.videoHeight,
         );
+        this.lastFrameTime = start;
         this.frame = { hands, time: start };
+        // Empty/rejected detections reach the state machine immediately so it
+        // can release drag/zoom and arm its hand re-entry lock.
+        gestures.update(this.frame);
+      } else if (start - this.lastFrameTime > gestureConfig.FRAME_GAP_RESET) {
+        // A frozen video feed must not leave a held gesture active indefinitely.
+        this.identities.reset();
+        this.frame = { hands: [], time: start };
         gestures.update(this.frame);
       }
     } catch {
@@ -174,7 +161,10 @@ export class HandTrackingManager {
     }
     this.timer = window.setTimeout(
       this.loop,
-      Math.max(15, 50 - (performance.now() - start)),
+      Math.max(
+        0,
+        1000 / gestureConfig.CAMERA_FPS - (performance.now() - start),
+      ),
     );
   };
   private cleanup() {
@@ -189,9 +179,9 @@ export class HandTrackingManager {
     this.video = null;
     this.model?.close();
     this.model = null;
-    this.recognizers.forEach((r) => r.reset());
+    this.identities.reset();
     this.lastVideo = -1;
-    this.lastCenters = [];
+    this.lastFrameTime = 0;
     this.frame = { hands: [], time: 0 };
     gestures.reset();
     interaction.endScale();

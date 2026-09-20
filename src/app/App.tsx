@@ -1,7 +1,7 @@
 import { Component, Suspense, useEffect, type ReactNode } from "react";
 import { SolarScene } from "../scene/SolarScene";
 import { HUD } from "../ui/HUD";
-import { DebugHands } from "../ui/DebugHands";
+import { GestureDebug } from "../gesture/GestureDebug";
 import { store, useSolaris } from "../interaction/store";
 import { handTracking } from "../gesture/HandTrackingManager";
 class SceneBoundary extends Component<
@@ -39,8 +39,9 @@ export function App() {
       </SceneBoundary>
       <div className="film-grain" />
       <HUD />
-      {new URLSearchParams(location.search).get("debug") === "true" && (
-        <DebugHands />
+      {(new URLSearchParams(location.search).get("debugGesture") === "true" ||
+        new URLSearchParams(location.search).get("debug") === "true") && (
+        <GestureDebug />
       )}
       {webglError && (
         <div className="render-error" role="alert">

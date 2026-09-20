@@ -7,7 +7,8 @@ import { audio } from "../audio/AudioManager";
 import { HandIcon, OrbitIcon, SoundIcon } from "./Icons";
 import { GestureHint } from "./GestureHint";
 import { PlanetInfo } from "./PlanetInfo";
-import { gestureLabels } from "./chinese";
+import { GestureCursor } from "../gesture/GestureCursor";
+import { GestureTutorial } from "../gesture/GestureTutorial";
 import { HandFeedback } from "./HandFeedback";
 export function HUD() {
   const s = useSolaris();
@@ -16,6 +17,7 @@ export function HUD() {
   const [soundError, setSoundError] = useState("");
   const cameraActive = ["loading", "seeking", "online"].includes(s.tracking);
   const busy =
+    s.transitioning ||
     s.mode === "INTRO" ||
     s.mode === "BIG_BANG" ||
     s.mode === "PLANET_TRANSITION";
@@ -43,10 +45,15 @@ export function HUD() {
     <div
       className={`hud ${s.mode === "INTRO" ? "intro-hud" : ""}${s.tracking === "online" ? " hand-active" : ""}${insideSun ? " sun-interior-hud" : ""}`}
     >
+      <GestureCursor />
+      <GestureTutorial />
       <header className="topbar">
         <button
           className="wordmark"
           aria-label="返回太阳系"
+          data-gesture-id="back-home"
+          data-gesture-label="返回太阳系"
+          disabled={busy}
           onClick={() => {
             interaction.return();
             store.set({ welcome: false });
@@ -70,6 +77,9 @@ export function HUD() {
           </button>
           <button
             className="sound-button"
+            data-gesture-id="toggle-sound"
+            data-gesture-label={s.sound ? "关闭声音" : "开启声音"}
+            disabled={busy}
             title="开启或关闭声音"
             aria-label={s.sound ? "关闭声音" : "开启声音"}
             aria-pressed={s.sound}
@@ -108,15 +118,24 @@ export function HUD() {
           {insideSun && (
             <button
               className="text-action"
+              data-gesture-id="back-from-sun"
+              data-gesture-label="返回太阳系"
+              disabled={busy}
               onClick={() => interaction.return()}
             >
-              返回太阳系 <span>✌ / Esc</span>
+              返回太阳系 <span>握拳 / Esc</span>
             </button>
           )}
           {p && (
-            <button className="text-action" onClick={() => interaction.info()}>
-              {s.mode === "INFO" ? "收起资料" : "查看星球资料"}{" "}
-              <span>{s.mode === "INFO" ? "−" : "+"}</span>
+            <button
+              className="text-action"
+              data-gesture-id="toggle-info"
+              data-gesture-label={s.infoVisible ? "收起资料" : "查看资料"}
+              disabled={busy}
+              onClick={() => interaction.info()}
+            >
+              {s.infoVisible ? "收起资料" : "查看星球资料"}{" "}
+              <span>{s.infoVisible ? "−" : "+"}</span>
             </button>
           )}
         </section>
@@ -129,7 +148,7 @@ export function HUD() {
             <br />
             <span>尽在掌中</span>
           </h1>
-          <p className="welcome-caption">探索 · 触碰 · 坍缩 · 创造</p>
+          <p className="welcome-caption">指 · 捏 · 拖 · 拨 · 握</p>
           <button
             className="enter-button"
             disabled={s.mode === "INTRO" || s.tracking === "loading"}
@@ -141,7 +160,9 @@ export function HUD() {
           </button>
           <button
             className="mouse-link"
-            disabled={s.mode === "INTRO"}
+            data-gesture-id="start-exploring"
+            data-gesture-label="开始探索"
+            disabled={busy}
             onClick={startMouse}
           >
             也可以用鼠标探索 <span>→</span>
@@ -187,12 +208,17 @@ export function HUD() {
           </p>
           <h2>{s.mode === "COLLAPSE" ? "奇点" : "重生"}</h2>
           {s.mode === "COLLAPSE" && (
-            <button onClick={() => interaction.enterSun()}>
-              {s.tracking === "online" ? "双手快速张掌拉开" : "进入太阳内部"}{" "}
+            <button
+              data-gesture-id="solar-rebirth"
+              data-gesture-label="宇宙重生"
+              disabled={busy}
+              onClick={() => interaction.rebirth()}
+            >
+              {s.tracking === "online" ? "双掌从中心向两侧拉开" : "让宇宙重生"}{" "}
               <span>
                 {s.tracking === "online"
-                  ? "穿过奇点，被金色粒子环绕"
-                  : "也可以按空格键或 S"}
+                  ? "释放能量，让星球重新展开"
+                  : "也可以按空格键"}
               </span>
             </button>
           )}
@@ -219,27 +245,31 @@ export function HUD() {
           </div>
           <div className="quiet-status">
             {s.tracking === "online"
-              ? (gestureLabels[s.gesture] ?? "等待手势")
+              ? "指 · 捏 · 拖 · 拨 · 握"
               : "漫游无垠宇宙"}
           </div>
           <GestureHint />
         </div>
         <nav className="planet-nav" aria-label="选择星球">
           <button
+            data-gesture-id="nav-sun"
+            data-gesture-label="探索太阳"
             onClick={() => {
-              interaction.return();
+              interaction.selectBody("sun");
               startMouse();
             }}
-            className={!s.selected && !insideSun ? "active" : ""}
+            className={insideSun ? "active" : ""}
             disabled={busy || s.mode === "COLLAPSE"}
           >
             <i className="sun-dot" />
-            <span>{insideSun ? "返回太阳系" : "太阳"}</span>
+            <span>太阳</span>
           </button>
           {!insideSun &&
             planets.map((planet) => (
               <button
                 key={planet.id}
+                data-gesture-id={`nav-${planet.id}`}
+                data-gesture-label={`探索${planet.chineseName}`}
                 aria-label={`探索${planet.chineseName}`}
                 aria-current={s.selected === planet.id ? "true" : undefined}
                 disabled={busy || s.mode === "COLLAPSE"}
@@ -258,9 +288,11 @@ export function HUD() {
             ))}
           <button
             className={`interior-entry${insideSun ? " active" : ""}`}
+            data-gesture-id="sun-interior"
+            data-gesture-label="进入太阳内部"
             aria-label="进入太阳内部"
             aria-current={insideSun ? "page" : undefined}
-            disabled={busy || insideSun}
+            disabled={busy || insideSun || s.mode === "COLLAPSE"}
             onClick={() => {
               interaction.enterSun();
               startMouse();
@@ -271,6 +303,9 @@ export function HUD() {
           </button>
           <button
             className="help-toggle"
+            data-gesture-id="show-help"
+            data-gesture-label="操作指南"
+            disabled={busy}
             aria-label="操作指南"
             aria-expanded={s.help}
             onClick={() => store.set({ help: !s.help })}
@@ -283,75 +318,56 @@ export function HUD() {
         <section className="help-panel">
           <button
             className="help-close"
+            data-gesture-id="close-help"
+            data-gesture-label="关闭操作指南"
+            disabled={busy}
             aria-label="关闭操作指南"
             onClick={() => store.set({ help: false })}
           >
             ×
           </button>
           <p className="eyebrow">宇宙探索指南</p>
-          <h2>用双手，掌控宇宙。</h2>
+          <h2>指、捏、拖、拨、握。</h2>
           <div className="help-columns">
             <div>
-              <h3>手势操作</h3>
+              <h3>核心互动</h3>
               <p>
-                ① 食指瞄准 → 捏一下
-                <span>光圈变金色后，拇指碰食指，进入星球</span>
+                指向 → 捏合
+                <span>食指瞄准，拇指碰食指确认；进入后资料自动浮现</span>
               </p>
               <p>
-                ② 伸出三根手指
-                <span>食指、中指、无名指伸直，查看 / 收起资料</span>
+                捏住 → 拖动<span>抓住太阳系空白，移动手旋转</span>
               </p>
               <p>
-                ③ 比出 ✌ <span>保持片刻，返回太阳系</span>
+                左右拨动<span>聚焦后，左拨下一颗，右拨上一颗</span>
               </p>
               <p>
-                ④ 手向左 / 向右滑动 <span>进入星球后，切换相邻星球</span>
-              </p>
-              <p>
-                ⑤ 双手捏合，再拉开 / 靠近
-                <span>
-                  太阳系 / 星球视角中，两手各自拇指碰食指，拉开变大、靠近变小
-                </span>
-              </p>
-              <p>
-                ⑥ 双手向中心合拢 <span>张开五指，让整个星系向中心坍缩</span>
-              </p>
-              <p>
-                ⑦ 双手快速张掌拉开
-                <span>进入太阳内部，在环绕四周的金色粒子中漫游</span>
+                握拳保持<span>返回圆环填满，即回到太阳系</span>
               </p>
             </div>
             <div>
               <h3>鼠标与触屏</h3>
               <p>
-                移动鼠标 <span>拨动星尘粒子</span>
+                点击进入 · 拖动旋转<span>滚轮 / 双指缩放</span>
               </p>
               <p>
-                点击星球 <span>拉近观察</span>
+                方向键 / 横滑切换<span>Esc / 左上角 SOLARIS 返回</span>
+              </p>
+              <h3>双手玩法</h3>
+              <p>
+                双手捏住 · 缩放<span>拉开变大，靠近变小</span>
               </p>
               <p>
-                ← / → <span>切换星球</span>
+                双掌合拢 · 坍缩
+                <span>缓慢靠近，保持 1 秒；再向两侧拉开，宇宙重生</span>
               </p>
               <p>
-                滚动滚轮 <span>太阳系 / 星球视角中调整大小</span>
-              </p>
-              <p>
-                空格键，再按空格键 <span>坍缩，然后进入太阳内部</span>
-              </p>
-              <p>
-                S / 点击「太阳内部」 <span>直接体验太阳粒子漫游</span>
-              </p>
-              <p>
-                Esc / I <span>返回 / 查看资料</span>
-              </p>
-              <p>
-                单指拖动 <span>太阳系 / 星球视角中旋转 · 双指缩放</span>
+                空格键<span>坍缩 / 重生</span>
               </p>
             </div>
           </div>
           <p className="help-note">
-            双手操作时，两只手都要完整留在镜头内。捏合双手用于缩放，张开五指用于合拢
-            / 拉开；做完动作稍停一下。摄像头画面始终留在本机。
+            捏一次，确认一次。松开后再捏合；动画结束后继续探索。摄像头画面仅在本机处理。
           </p>
         </section>
       )}

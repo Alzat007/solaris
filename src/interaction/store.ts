@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import type { CelestialId } from "../gesture/gestureFeedback";
 import type { PlanetId } from "../data/planets";
 import type { InteractionState } from "./InteractionStateMachine";
 export type TrackingStatus =
@@ -10,7 +11,9 @@ export type TrackingStatus =
 export interface UIState {
   mode: InteractionState;
   selected: PlanetId | null;
-  hover: PlanetId | null;
+  hover: CelestialId | null;
+  transitioning: boolean;
+  infoVisible: boolean;
   tracking: TrackingStatus;
   cameraError: string;
   sound: boolean;
@@ -27,6 +30,8 @@ let snapshot: UIState = {
   mode: "INTRO",
   selected: null,
   hover: null,
+  transitioning: false,
+  infoVisible: false,
   tracking: "off",
   cameraError: "",
   sound: false,
@@ -44,6 +49,12 @@ const listeners = new Set<() => void>();
 export const store = {
   get: () => snapshot,
   set: (patch: Partial<UIState>) => {
+    if (
+      !Object.keys(patch).some(
+        (key) => snapshot[key as keyof UIState] !== patch[key as keyof UIState],
+      )
+    )
+      return;
     snapshot = { ...snapshot, ...patch };
     listeners.forEach((fn) => fn());
   },

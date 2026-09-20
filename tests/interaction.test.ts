@@ -1,103 +1,118 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { InteractionStateMachine } from "../src/interaction/InteractionStateMachine";
 import {
-  GestureStabilizer,
-  GestureRecognizer,
-} from "../src/gesture/GestureRecognizer";
+  InteractionStateMachine,
+  type InteractionEvent,
+} from "../src/interaction/InteractionStateMachine";
 import { planets } from "../src/data/planets";
-
-test("intro and transition states reject conflicting gestures", () => {
-  const sm = new InteractionStateMachine();
-  assert.equal(sm.send("COLLAPSE"), false);
-  assert.equal(sm.send("READY"), true);
-  assert.equal(sm.send("SELECT"), true);
-  for (const e of [
+const operations: InteractionEvent[] = [
+  "POINT",
+  "SELECT",
+  "RETURN",
+  "INFO",
+  "SCALE",
+  "COLLAPSE",
+  "ENTER_SUN",
+  "OPEN",
+];
+function ready() {
+  const machine = new InteractionStateMachine();
+  machine.send("READY");
+  return machine;
+}
+function rejectsNavigation(machine: InteractionStateMachine) {
+  assert.equal(machine.locked, true);
+  for (const event of operations)
+    assert.equal(
+      machine.send(event),
+      false,
+      `${machine.state} must reject ${event}`,
+    );
+}
+test("intro and every camera transition reject conflicting input", () => {
+  const machine = new InteractionStateMachine();
+  rejectsNavigation(machine);
+  machine.send("READY");
+  machine.send("SELECT");
+  rejectsNavigation(machine);
+  machine.send("TRANSITION_END");
+  assert.equal(machine.state, "PLANET_FOCUS");
+  assert.equal(machine.send("RETURN"), true);
+  assert.equal(machine.state, "TRANSITION");
+  rejectsNavigation(machine);
+  machine.send("TRANSITION_END");
+  assert.equal(machine.state, "SOLAR_SYSTEM");
+  assert.equal(machine.locked, false);
+});
+test("point is hover only and never changes app state", () => {
+  const machine = ready();
+  for (let i = 0; i < 100; i++) machine.send("POINT");
+  assert.equal(machine.state, "SOLAR_SYSTEM");
+  machine.send("SELECT");
+  machine.send("TRANSITION_END");
+  machine.send("POINT");
+  assert.equal(machine.state, "PLANET_FOCUS");
+});
+test("sun uses a locked fly-in before entering its stable interior", () => {
+  const machine = ready();
+  assert.equal(machine.send("ENTER_SUN"), true);
+  assert.equal(machine.state, "SUN_FOCUS");
+  rejectsNavigation(machine);
+  machine.send("TRANSITION_END");
+  assert.equal(machine.state, "SUN_INTERIOR");
+  for (const event of [
     "COLLAPSE",
     "SELECT",
-    "RETURN",
     "SCALE",
+    "INFO",
     "ENTER_SUN",
   ] as const)
-    assert.equal(sm.send(e), false);
-  assert.equal(sm.send("TRANSITION_END"), true);
-  assert.equal(sm.state, "PLANET_FOCUS");
+    assert.equal(machine.send(event), false);
+  assert.equal(machine.send("RETURN"), true);
+  rejectsNavigation(machine);
+  machine.send("TRANSITION_END");
+  assert.equal(machine.state, "SOLAR_SYSTEM");
 });
-test("joined hands collapse, rapid expansion enters the sun, and V can return", () => {
-  const sm = new InteractionStateMachine();
-  sm.send("READY");
-  sm.send("COLLAPSE");
-  assert.equal(sm.state, "COLLAPSE");
-  assert.equal(sm.send("SELECT"), false);
-  assert.equal(sm.send("SCALE"), false);
-  assert.equal(sm.send("ENTER_SUN"), true);
-  assert.equal(sm.state, "SUN_INTERIOR");
-  assert.equal(sm.send("ENTER_SUN"), false);
-  assert.equal(sm.send("INFO"), false);
-  assert.equal(sm.send("SELECT"), false);
-  assert.equal(sm.send("RETURN"), true);
-  assert.equal(sm.state, "SOLAR_SYSTEM");
+test("collapse must finish before its separate rebirth can run", () => {
+  const machine = ready();
+  machine.send("COLLAPSE");
+  rejectsNavigation(machine);
+  machine.send("TRANSITION_END");
+  assert.equal(machine.state, "COLLAPSE");
+  assert.equal(machine.locked, false);
+  assert.equal(machine.send("ENTER_SUN"), false);
+  assert.equal(machine.send("OPEN"), true);
+  assert.equal(machine.state, "BIG_BANG");
+  rejectsNavigation(machine);
+  assert.equal(machine.send("BANG_END"), true);
+  assert.equal(machine.state, "SOLAR_SYSTEM");
 });
-test("the sun interior can collapse again and collapse has a direct return", () => {
-  const sm = new InteractionStateMachine();
-  sm.send("READY");
-  sm.send("ENTER_SUN");
-  assert.equal(sm.send("COLLAPSE"), true);
-  assert.equal(sm.send("RETURN"), true);
-  assert.equal(sm.state, "SOLAR_SYSTEM");
+test("the collapse easter egg is restricted to overview", () => {
+  const machine = ready();
+  machine.send("SELECT");
+  machine.send("TRANSITION_END");
+  assert.equal(machine.send("COLLAPSE"), false);
+  machine.send("ENTER_SUN");
+  machine.send("TRANSITION_END");
+  assert.equal(machine.send("COLLAPSE"), false);
 });
-test("information, scale and return have explicit exits", () => {
-  const sm = new InteractionStateMachine();
-  sm.send("READY");
-  sm.send("SELECT");
-  sm.send("TRANSITION_END");
-  sm.send("INFO");
-  assert.equal(sm.state, "INFO");
-  sm.send("INFO");
-  assert.equal(sm.state, "PLANET_FOCUS");
-  sm.send("SCALE");
-  sm.send("SCALE_END");
-  assert.equal(sm.state, "PLANET_FOCUS");
-  assert.equal(sm.send("RETURN"), true);
-});
-test("fist needs 250 ms and fires only once while held", () => {
-  const s = new GestureStabilizer();
-  assert.equal(s.update("FIST", 0, 0.95), null);
-  assert.equal(s.update("FIST", 249, 0.95), null);
-  assert.equal(s.update("FIST", 250, 0.95), "FIST");
-  assert.equal(s.update("FIST", 900, 0.95), null);
-  s.update("NONE", 1000, 1);
-  s.update("FIST", 1100, 1);
-  assert.equal(s.update("FIST", 1350, 0.95), "FIST");
-});
-test("pinch releases and hold reset during lost tracking", () => {
-  const s = new GestureStabilizer();
-  s.update("PINCH", 0, 1);
-  assert.equal(s.update("PINCH", 70, 1), "PINCH");
-  s.reset();
-  assert.equal(s.update("PINCH", 1000, 1), null);
-  assert.equal(s.update("PINCH", 1070, 1), "PINCH");
-});
-test("brief open-palm noise cannot interrupt another gesture", () => {
-  const s = new GestureStabilizer();
-  s.update("OPEN_PALM", 0, 0.9);
-  assert.equal(s.update("OPEN_PALM", 149, 0.9), null);
-  s.update("FIST", 150, 0.9);
-  assert.equal(s.update("OPEN_PALM", 250, 0.9), null);
-  assert.equal(s.update("OPEN_PALM", 469, 0.9), null);
-  assert.equal(s.update("OPEN_PALM", 470, 0.9), "OPEN_PALM");
-});
-test("geometry remains finite for degenerate or small hands", () => {
-  const recognizer = new GestureRecognizer();
-  const points = Array.from({ length: 21 }, () => ({ x: 0.5, y: 0.5, z: 0 }));
-  const frame = recognizer.analyze(points, undefined, 0);
-  assert.ok(Number.isFinite(frame.pinchDistance));
-  assert.ok(Number.isFinite(frame.velocity.x));
-  assert.ok(Number.isFinite(frame.confidence));
+test("scale release restores the exact previous focused state", () => {
+  for (const showInfo of [false, true]) {
+    const machine = ready();
+    machine.send("SELECT");
+    machine.send("TRANSITION_END");
+    if (showInfo) machine.send("INFO");
+    const before = machine.state;
+    assert.equal(machine.send("SCALE"), true);
+    assert.equal(machine.send("SELECT"), false);
+    assert.equal(machine.send("COLLAPSE"), false);
+    assert.equal(machine.send("SCALE_END"), true);
+    assert.equal(machine.state, before);
+  }
 });
 test("planet visual sizes and physical data stay separate and ordered", () => {
   assert.deepEqual(
-    planets.map((p) => p.id),
+    planets.map((planet) => planet.id),
     [
       "mercury",
       "venus",
@@ -109,27 +124,9 @@ test("planet visual sizes and physical data stay separate and ordered", () => {
       "neptune",
     ],
   );
-  planets.forEach((p, i) => {
-    assert.ok(p.realRadius > 1000);
-    assert.ok(p.visualRadius < 2);
-    if (i) assert.ok(p.distance > planets[i - 1].distance);
+  planets.forEach((planet, index) => {
+    assert.ok(planet.realRadius > 1000);
+    assert.ok(planet.visualRadius < 2);
+    if (index) assert.ok(planet.distance > planets[index - 1].distance);
   });
-});
-test("low-confidence frames interrupt a continuous gesture hold", () => {
-  const s = new GestureStabilizer();
-  s.update("FIST", 0, 0.9);
-  s.update("FIST", 200, 0.2);
-  assert.equal(s.update("FIST", 260, 0.9), null);
-  assert.equal(s.update("FIST", 510, 0.9), "FIST");
-});
-
-test("releasing a two-hand zoom preserves an open information panel", () => {
-  const sm = new InteractionStateMachine();
-  sm.send("READY");
-  sm.send("SELECT");
-  sm.send("TRANSITION_END");
-  sm.send("INFO");
-  assert.equal(sm.send("SCALE"), true);
-  assert.equal(sm.send("SCALE_END"), true);
-  assert.equal(sm.state, "INFO");
 });

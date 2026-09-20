@@ -1,14 +1,14 @@
 import { useLayoutEffect, useMemo, useRef, type ReactNode } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
-import { Group, Vector3 } from "three";
+import { Group, Vector3, type Mesh } from "three";
 import { planets, type PlanetId } from "../data/planets";
-import { useSolaris, store } from "../interaction/store";
-import { interaction } from "../interaction/InteractionController";
+import { useSolaris } from "../interaction/store";
 import { particles } from "../particles/ParticleEngine";
 import { PlanetMaterial } from "./PlanetMaterial";
 import { ParticleField } from "../particles/ParticleField";
 import { planetObjects } from "../scene/planetPicking";
+import { gestureFeedback } from "../gesture/gestureFeedback";
 export function PlanetBase({
   id,
   children,
@@ -21,6 +21,7 @@ export function PlanetBase({
   const data = planets.find((p) => p.id === id)!;
   const root = useRef<Group>(null),
     body = useRef<Group>(null);
+  const hoverRing = useRef<Mesh>(null);
   const { selected, hover, mode } = useSolaris();
   const active = selected === id;
   const labelsVisible = ["SOLAR_SYSTEM", "POINTER", "UNIVERSE_SCALE"].includes(
@@ -31,6 +32,7 @@ export function PlanetBase({
   const wasActive = useRef(false),
     exitAmount = useRef(0);
   const focusTarget = useMemo(() => new Vector3(), []);
+  const desiredScale = useMemo(() => new Vector3(), []);
   useLayoutEffect(() => {
     const object = root.current!;
     planetObjects.set(id, object);
@@ -98,25 +100,19 @@ export function PlanetBase({
       visual * birth * (1 - particles.collapse * 0.995) * reassembly,
     );
     root.current.scale.lerp(
-      new Vector3(desired, desired, desired),
+      desiredScale.set(desired, desired, desired),
       1 - Math.exp(-delta * 6),
     );
     if (body.current) body.current.rotation.y += delta * data.rotationSpeed;
+    if (hoverRing.current)
+      hoverRing.current.scale.setScalar(
+        1 - gestureFeedback.get().pinchProgress * 0.12,
+      );
   });
   return (
     <group ref={root}>
       <group ref={body}>
-        <mesh
-          onPointerOver={(e) => {
-            e.stopPropagation();
-            if (interaction.machine.can("SELECT")) store.set({ hover: id });
-          }}
-          onPointerOut={() => store.set({ hover: null })}
-          onClick={(e) => {
-            e.stopPropagation();
-            interaction.select(id);
-          }}
-        >
+        <mesh>
           <sphereGeometry args={[1, 56, 40]} />
           {surface || (
             <PlanetMaterial
@@ -149,7 +145,7 @@ export function PlanetBase({
         </Html>
       )}
       {isHover && !selected && labelsVisible && (
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <mesh ref={hoverRing} rotation={[Math.PI / 2, 0, 0]}>
           <ringGeometry args={[1.24, 1.27, 64]} />
           <meshBasicMaterial
             color="#ded5bb"

@@ -4,157 +4,245 @@ import { Mesh, Plane, Raycaster, Vector2, Vector3 } from "three";
 import { particles } from "../particles/ParticleEngine";
 import { store } from "../interaction/store";
 import { interaction } from "../interaction/InteractionController";
+import { rotation } from "../interaction/rotation";
+import { gestureConfig as config } from "../gesture/gestureConfig";
+import { gestureTargets } from "../gesture/gestureTargets";
+import { planets } from "../data/planets";
 import { pickPlanet } from "./planetPicking";
+import { PointerFallback } from "./PointerFallback";
 export function InputField() {
   const { camera, gl, size } = useThree();
   const tip = useRef<Mesh>(null);
-  const ray = useMemo(() => new Raycaster(), []),
-    plane = useMemo(() => new Plane(), []),
-    normal = useMemo(() => new Vector3(), []),
-    hit = useMemo(() => new Vector3(), []),
-    last = useMemo(() => new Vector3(), []);
-  const state = useRef({
-    time: 0,
-    down: false,
-    x: 0,
-    touches: new Map<number, Vector2>(),
-    pinch: 0,
-    scale: 1,
-  });
+  const uiHover = useRef<HTMLButtonElement | null>(null);
+  const hadHand = useRef(false);
+  const ray = useMemo(() => new Raycaster(), []);
+  const plane = useMemo(() => new Plane(), []);
+  const normal = useMemo(() => new Vector3(), []);
+  const hit = useMemo(() => new Vector3(), []);
+  const last = useMemo(() => new Vector3(), []);
+  const velocity = useMemo(() => new Vector3(), []);
+  const planeOrigin = useMemo(() => new Vector3(), []);
+  const pointer = useMemo(() => new Vector2(), []);
   useEffect(() => {
     const canvas = gl.domElement;
-    const move = (e: PointerEvent) => {
-      if (store.get().tracking === "online") return;
+    const pick = (x: number, y: number) => {
       const rect = canvas.getBoundingClientRect();
-      particles.handNDC.set(
-        ((e.clientX - rect.left) / rect.width) * 2 - 1,
-        (-(e.clientY - rect.top) / rect.height) * 2 + 1,
+      pointer.set(
+        ((x - rect.left) / rect.width) * 2 - 1,
+        1 - ((y - rect.top) / rect.height) * 2,
       );
-      particles.active = true;
-      particles.interactionTime = performance.now();
-      if (state.current.touches.has(e.pointerId)) {
-        state.current.touches.set(
-          e.pointerId,
-          new Vector2(e.clientX, e.clientY),
-        );
-        if (state.current.touches.size === 2) {
-          const [a, b] = [...state.current.touches.values()];
-          if (!state.current.pinch) {
-            state.current.pinch = a.distanceTo(b);
-            state.current.scale = particles.targetScale;
-          }
-          interaction.scale(
-            (state.current.scale * a.distanceTo(b)) /
-              Math.max(state.current.pinch, 20),
-          );
-        } else if (state.current.down && e.pointerType === "touch") {
-          particles.targetRotation += (e.clientX - state.current.x) * 0.006;
-        }
-      }
-      state.current.x = e.clientX;
+      if (!interaction.machine.can("SELECT") || particles.sunInterior > 0.05)
+        return null;
+      return pickPlanet(pointer, camera, rect.width, rect.height);
     };
-    const down = (e: PointerEvent) => {
-      state.current.down = true;
-      state.current.x = e.clientX;
-      state.current.touches.set(e.pointerId, new Vector2(e.clientX, e.clientY));
-      move(e);
+    const fallback = new PointerFallback({
+      locked: () => interaction.isLocked(),
+      overview: () => ["SOLAR_SYSTEM", "POINTER"].includes(store.get().mode),
+      focused: () => ["PLANET_FOCUS", "INFO"].includes(store.get().mode),
+      width: () => canvas.getBoundingClientRect().width,
+      pick,
+      point(x, y) {
+        const hover = pick(x, y);
+        if (store.get().hover !== hover) store.set({ hover });
+        if (store.get().tracking !== "online" || !particles.cursorVisible)
+          particles.handNDC.copy(pointer);
+        particles.active = true;
+        particles.interactionTime = performance.now();
+      },
+      select: (id) => interaction.selectBody(id),
+      next: (direction) => interaction.next(direction),
+      scale: (value) => interaction.scale(value),
+      endScale: () => interaction.endScale(),
+      currentScale: () => particles.targetScale,
+      startDrag: () => rotation.start(),
+      drag: (dx, dt) => rotation.move(dx, dt),
+      endDrag: () => rotation.end(),
+    });
+    const down = (event: PointerEvent) => {
+      if (event.button !== 0 && event.pointerType !== "touch") return;
+      if (fallback.down(event)) canvas.setPointerCapture?.(event.pointerId);
     };
-    const up = (e: PointerEvent) => {
-      state.current.down = false;
-      state.current.touches.delete(e.pointerId);
-      state.current.pinch = 0;
-      interaction.endScale();
+    const move = (event: PointerEvent) => fallback.move(event);
+    const up = (event: PointerEvent) => {
+      fallback.up(event);
+      if (canvas.hasPointerCapture?.(event.pointerId))
+        canvas.releasePointerCapture(event.pointerId);
     };
-    const wheel = (e: WheelEvent) => {
-      e.preventDefault();
-      interaction.scale(particles.targetScale * Math.exp(-e.deltaY * 0.0006));
+    const cancel = () => fallback.cancel();
+    const leave = () => {
+      if (!particles.cursorVisible && store.get().hover)
+        store.set({ hover: null });
     };
-    const key = (e: KeyboardEvent) => {
+    const wheel = (event: WheelEvent) => {
+      event.preventDefault();
       if (
-        ["Space", "ArrowRight", "ArrowLeft", "Escape", "KeyI", "KeyS"].includes(
-          e.code,
+        interaction.scale(
+          particles.targetScale *
+            Math.exp(-event.deltaY * config.WHEEL_ZOOM_SENSITIVITY),
         )
       )
-        e.preventDefault();
-      if (e.code === "Space" && !e.repeat) interaction.space();
-      if (e.code === "ArrowRight") interaction.next(1);
-      if (e.code === "ArrowLeft") interaction.next(-1);
-      if (e.code === "Escape") interaction.return();
-      if (e.code === "KeyI" && !e.repeat) interaction.info();
-      if (e.code === "KeyS" && !e.repeat) interaction.enterSun();
+        interaction.endScale();
     };
-    canvas.addEventListener("pointermove", move);
+    const key = (event: KeyboardEvent) => {
+      if (
+        event.target instanceof HTMLElement &&
+        (event.target.isContentEditable ||
+          /^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName))
+      )
+        return;
+      if (
+        ["Space", "ArrowRight", "ArrowLeft", "Escape", "KeyI", "KeyS"].includes(
+          event.code,
+        )
+      )
+        event.preventDefault();
+      if (event.repeat || interaction.isLocked()) return;
+      if (event.code === "Space") interaction.space();
+      if (event.code === "ArrowRight") interaction.next(1);
+      if (event.code === "ArrowLeft") interaction.next(-1);
+      if (event.code === "Escape") interaction.return();
+      if (event.code === "KeyI") interaction.info();
+      if (event.code === "KeyS") interaction.selectBody("sun");
+    };
+    const unsubscribe = store.subscribe(() => {
+      if (interaction.isLocked()) fallback.cancel();
+    });
     canvas.addEventListener("pointerdown", down);
-    window.addEventListener("pointerup", up);
-    window.addEventListener("pointercancel", up);
+    canvas.addEventListener("pointermove", move);
+    canvas.addEventListener("pointerup", up);
+    canvas.addEventListener("pointercancel", cancel);
+    canvas.addEventListener("lostpointercapture", cancel);
+    canvas.addEventListener("pointerleave", leave);
     canvas.addEventListener("wheel", wheel, { passive: false });
     window.addEventListener("keydown", key);
+    window.addEventListener("blur", cancel);
     return () => {
-      canvas.removeEventListener("pointermove", move);
+      unsubscribe();
+      fallback.cancel();
       canvas.removeEventListener("pointerdown", down);
-      window.removeEventListener("pointerup", up);
-      window.removeEventListener("pointercancel", up);
+      canvas.removeEventListener("pointermove", move);
+      canvas.removeEventListener("pointerup", up);
+      canvas.removeEventListener("pointercancel", cancel);
+      canvas.removeEventListener("lostpointercapture", cancel);
+      canvas.removeEventListener("pointerleave", leave);
       canvas.removeEventListener("wheel", wheel);
       window.removeEventListener("keydown", key);
+      window.removeEventListener("blur", cancel);
+      uiHover.current?.removeAttribute("data-gesture-hover");
+      gestureTargets.set(null);
     };
-  }, [gl]);
+  }, [camera, gl, pointer]);
   useFrame((_, dt) => {
+    const state = store.get();
+    const hand = state.tracking === "online" && particles.cursorVisible;
     const on =
       particles.active &&
-      (store.get().tracking === "online" ||
-        performance.now() - particles.interactionTime < 2200);
+      (hand || performance.now() - particles.interactionTime < 2200);
     particles.influence +=
       ((on ? 1 : 0) - particles.influence) * (1 - Math.exp(-dt * 8));
+    if (hand)
+      particles.handNDC.lerp(
+        particles.handTargetNDC,
+        1 - Math.exp(-dt * config.CURSOR_RENDER_RESPONSE),
+      );
     camera.getWorldDirection(normal);
-    plane.setFromNormalAndCoplanarPoint(
-      normal,
-      new Vector3(0, 0, particles.focus * 3.5),
-    );
+    planeOrigin.set(0, 0, particles.focus * 3.5);
+    plane.setFromNormalAndCoplanarPoint(normal, planeOrigin);
     ray.setFromCamera(particles.handNDC, camera);
     if (ray.ray.intersectPlane(plane, hit)) {
       last.copy(particles.handPosition3D);
       particles.handPosition3D.lerp(hit, 1 - Math.exp(-dt * 14));
       if (last.z < 90) {
-        const v = hit
-          .clone()
+        velocity
+          .copy(hit)
           .sub(last)
-          .multiplyScalar(1 / Math.max(dt, 0.01));
-        v.clampLength(0, 20);
-        particles.handVelocity.lerp(v, 0.12);
+          .multiplyScalar(1 / Math.max(dt, 0.01))
+          .clampLength(0, 20);
+        particles.handVelocity.lerp(velocity, 0.12);
       }
     }
     if (tip.current) {
+      // The screen-space cursor owns interior feedback; a world-space marker
+      // can sit against the travelling camera and appear as a large solid orb.
+      tip.current.visible = on && particles.sunInterior < 0.05;
       tip.current.position.copy(particles.handPosition3D);
       tip.current.scale.setScalar(
         (0.025 + particles.pinchStrength * 0.025) * particles.influence,
       );
     }
+    let button: HTMLButtonElement | null = null;
     if (
-      [
-        "SOLAR_SYSTEM",
-        "POINTER",
-        "PLANET_FOCUS",
-        "INFO",
-        "UNIVERSE_SCALE",
-      ].includes(store.get().mode) &&
-      particles.sunInterior < 0.05 &&
-      store.get().tracking === "online" &&
-      (store.get().gesture === "POINT" || store.get().gesture === "PINCH")
+      hand &&
+      (state.gesture === "POINT" || state.gesture === "PINCH") &&
+      !interaction.isLocked()
     ) {
-      const best = pickPlanet(
-        particles.handNDC,
-        camera,
-        size.width,
-        size.height,
-      );
-      if (store.get().hover !== best) store.set({ hover: best });
-    } else if (
-      (store.get().mode === "SUN_INTERIOR" ||
-        store.get().mode === "COLLAPSE") &&
-      store.get().hover
-    ) {
-      store.set({ hover: null });
+      const rect = gl.domElement.getBoundingClientRect();
+      const x = rect.left + ((particles.handNDC.x + 1) * rect.width) / 2;
+      const y = rect.top + ((1 - particles.handNDC.y) * rect.height) / 2;
+      const element = document
+        .elementFromPoint(x, y)
+        ?.closest<HTMLButtonElement>("button[data-gesture-id]");
+      if (
+        element &&
+        !element.disabled &&
+        element.getAttribute("aria-disabled") !== "true" &&
+        element.getClientRects().length
+      ) {
+        const style = getComputedStyle(element);
+        if (
+          style.visibility !== "hidden" &&
+          style.display !== "none" &&
+          Number(style.opacity) > 0 &&
+          style.pointerEvents !== "none"
+        )
+          button = element;
+      }
+      if (button) {
+        gestureTargets.set({
+          kind: "ui",
+          id: button.dataset.gestureId!,
+          label:
+            button.dataset.gestureLabel ||
+            button.getAttribute("aria-label") ||
+            button.textContent?.trim() ||
+            "选择",
+        });
+        if (state.hover) store.set({ hover: null });
+      } else {
+        const best =
+          interaction.machine.can("SELECT") && particles.sunInterior < 0.05
+            ? pickPlanet(particles.handNDC, camera, size.width, size.height)
+            : null;
+        if (state.hover !== best) store.set({ hover: best });
+        gestureTargets.set(
+          best
+            ? {
+                kind: "body",
+                id: best,
+                label:
+                  best === "sun"
+                    ? "太阳"
+                    : planets.find((planet) => planet.id === best)!.chineseName,
+              }
+            : null,
+        );
+      }
+    } else {
+      gestureTargets.set(null);
+      if (
+        (state.tracking === "online" ||
+          hadHand.current ||
+          interaction.isLocked()) &&
+        state.hover
+      )
+        store.set({ hover: null });
     }
+    if (uiHover.current !== button) {
+      uiHover.current?.removeAttribute("data-gesture-hover");
+      button?.setAttribute("data-gesture-hover", "true");
+      uiHover.current = button;
+    }
+    hadHand.current = hand;
   });
   return (
     <mesh ref={tip}>

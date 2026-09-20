@@ -17,8 +17,20 @@ export type Gesture =
   | "TWO_HAND_COLLAPSE"
   | "TWO_HAND_EXPAND";
 export interface HandFeatures {
+  /** Stable for a continuous detection, replaced after a lost or rejected frame. */
+  id?: string;
+  handedness?: "Left" | "Right" | "Unknown";
   center: { x: number; y: number };
   pointer: { x: number; y: number };
+  /** Mirrored thumb/index midpoint, smoothed independently of the pointing tip. */
+  pinchPoint?: { x: number; y: number };
+  fingerState?: {
+    thumb: boolean;
+    index: boolean;
+    middle: boolean;
+    ring: boolean;
+    pinky: boolean;
+  };
   velocity: { x: number; y: number };
   scale: number;
   openness: number;
