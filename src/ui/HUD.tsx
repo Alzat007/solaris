@@ -11,8 +11,11 @@ import { GestureCursor } from "../gesture/GestureCursor";
 import { GestureTutorial } from "../gesture/GestureTutorial";
 import { HandFeedback } from "./HandFeedback";
 import { CameraPreview } from "../gesture/CameraPreview";
+import { CameraStatus } from "./CameraStatus";
+import { useCameraDiagnostics } from "../gesture/cameraDiagnostics";
 export function HUD() {
   const s = useSolaris();
+  const camera = useCameraDiagnostics();
   const insideSun = s.mode === "SUN_INTERIOR";
   const p = insideSun ? undefined : planetById(s.selected);
   const [soundError, setSoundError] = useState("");
@@ -29,7 +32,11 @@ export function HUD() {
       : s.tracking === "seeking"
         ? "请抬起手掌"
         : s.tracking === "loading"
-          ? "正在连接摄像头"
+          ? camera.stage === "switching"
+            ? "正在切换识别"
+            : camera.stage === "model"
+              ? "正在加载手势模型"
+              : "正在连接摄像头"
           : s.tracking === "unavailable"
             ? "鼠标模式"
             : "鼠标模式";
@@ -171,13 +178,7 @@ export function HUD() {
           <p className="privacy">摄像头画面仅在本机处理</p>
         </section>
       )}
-      {s.tracking === "seeking" && (
-        <div className="tracking-prompt">
-          <HandIcon size={32} />
-          <span>请抬起手掌</span>
-          <small>请让整只手掌保持在镜头内</small>
-        </div>
-      )}
+      <CameraStatus />
       <HandFeedback />
       <CameraPreview />
       {s.tracking === "unavailable" && (
@@ -404,7 +405,7 @@ export function HUD() {
             </div>
           </div>
           <p className="help-note">
-            缩放时让五个指尖相靠，别卷进掌心握成拳。完全张开停半秒，或移开手，结束缩放并保留大小。松开后再捏合；动画结束后继续探索。摄像头画面仅在本机处理。
+            缩放时让五个指尖相靠，别卷进掌心握成拳。完全张开停半秒，或移开手，结束缩放并保留大小。松开后再捏合；动画结束后继续探索。若有画面却一直没有手部骨架，可点击「切换兼容识别」。摄像头画面仅在本机处理。
           </p>
         </section>
       )}

@@ -399,24 +399,66 @@ footer {
   color: #ffdeb0;
   opacity: 1;
 }
-.tracking-prompt {
+.camera-status {
   position: absolute;
-  right: 6%;
-  top: 29%;
+  right: 3.4%;
+  top: 134px;
+  width: 270px;
+  max-width: 88%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  animation: arrive 0.6s both;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 14px;
+  border: 1px solid #9cddf121;
+  border-radius: 5px;
+  background: #041016e8;
+  z-index: 4;
+  animation: arrive 0.3s both;
   color: #c0b8a3;
+  pointer-events: auto;
 }
-.tracking-prompt span {
-  font-size: 11px;
-  letter-spacing: 0.2em;
+.camera-status > svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #a4c5ca;
 }
-.tracking-prompt small {
+.camera-status-title {
+  margin: 0;
   font-size: 11px;
-  color: #777b72;
+  line-height: 1.6;
+  color: #d4e0da;
+}
+.camera-status-detail {
+  margin: 7px 0 0;
+  font-size: 10px;
+  line-height: 1.65;
+  color: #97a9a7;
+}
+.camera-status-mode {
+  display: block;
+  margin-top: 8px;
+  font-size: 10px;
+  color: #a8ccbd;
+}
+.camera-compatibility-button {
+  margin-top: 11px;
+  padding: 8px 11px;
+  border: 1px solid #abdfe74a;
+  border-radius: 3px;
+  color: #d3edf0;
+  font-size: 11px;
+  line-height: 1.4;
+  background: #9bdded0d;
+}
+.camera-compatibility-button:hover {
+  background: #9bdded20;
+}
+.camera-compatibility-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.hud:has(.camera-status) .hand-feedback {
+  display: none;
 }
 .camera-notice {
   position: absolute;
@@ -919,15 +961,12 @@ footer {
     top: 80px;
     width: 88%;
   }
-  .tracking-prompt {
-    top: 20%;
-    right: 8%;
-  }
-  .tracking-prompt small {
-    font-size: 10px;
-  }
-  .tracking-prompt span {
-    font-size: 9px;
+  .camera-status {
+    top: 116px;
+    right: 6%;
+    width: 88%;
+    gap: 8px;
+    padding: 11px;
   }
   .cosmic-event {
     top: 27%;
@@ -1507,8 +1546,25 @@ footer {
   }
 }
 
-.hud:has(.camera-preview:not([hidden])) .tracking-prompt {
-  display: none;
+.hud:has(.camera-preview:not([hidden])) .camera-status {
+  right: calc(3.4% + 174px);
+}
+@media (max-width: 700px) {
+  .hud:has(.camera-preview:not([hidden])) .camera-status {
+    right: calc(6% + 124px);
+    width: calc(88% - 124px);
+  }
+  .hud:has(.camera-preview:not([hidden])) .camera-status > svg {
+    display: none;
+  }
+}
+@media (max-height: 600px) and (min-width: 701px) {
+  .camera-status {
+    top: 120px;
+  }
+  .hud:has(.camera-preview:not([hidden])) .camera-status {
+    right: calc(3.4% + 134px);
+  }
 }
 
 /* Keep the singularity unobscured; instructions sit below its halo. */

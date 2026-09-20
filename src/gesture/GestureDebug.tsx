@@ -2,10 +2,12 @@ import { useSolaris } from "../interaction/store";
 import { DebugHands } from "../ui/DebugHands";
 import { gestureLabels } from "../ui/chinese";
 import { useGestureFeedback } from "./gestureFeedback";
+import { useCameraDiagnostics } from "./cameraDiagnostics";
 
 export function GestureDebug() {
   const s = useSolaris();
   const f = useGestureFeedback();
+  const camera = useCameraDiagnostics();
   const appState =
     s.transitioning ||
     s.mode === "INTRO" ||
@@ -25,6 +27,9 @@ export function GestureDebug() {
       <pre>
         {[
           "SOLARIS / GESTURE SYSTEM V2.1",
+          `Camera: ${camera.stage} · ${camera.backend || "—"}${camera.compatibility ? " · COMPAT" : ""}`,
+          `Detection: ${camera.rawHands} raw / ${camera.validHands} valid · ${camera.frames} frames`,
+          `Inference: ${camera.inferenceMs.toFixed(1)} ms${camera.frozen ? " · VIDEO FROZEN" : ""}`,
           `HAND: ${f.handedness} × ${f.handCount}`,
           `Pose Evidence Score: ${f.confidence.toFixed(2)}`,
           `Hand Geometry: ${f.trackingConfidence >= 0.55 ? "VALID" : "WEAK"}`,

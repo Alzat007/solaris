@@ -74,6 +74,14 @@ V2.1 把「有效跟踪」和「姿势证据」分开：左右手标签暂时低
 
 完整的文件职责、状态机、阈值、优先级与调参说明见 [GESTURE_SYSTEM_V2.md](GESTURE_SYSTEM_V2.md)。现成方案的源码、许可与适用范围核查见 [GESTURE_RESEARCH.md](GESTURE_RESEARCH.md)；本轮是在现有 MediaPipe 关键点上独立改进几何识别，没有直接接入研究仓库的代码或模型。
 
+### 有摄像头画面，但检测不到手
+
+画面显示成功只表示摄像头可用，手部模型仍需单独加载。网站现在分别显示摄像头连接、模型加载、识别运行与画面冻结；检测不到手持续 5 秒后可点击 **切换兼容识别**。兼容模式复用当前摄像头，使用 CPU 推理，并把检测、手部存在和跟踪门槛设为 [MediaPipe 官方默认的 0.5](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker/web_js)。正常模式仍使用 0.65；动作确认与五指手势判据不变。
+
+也可打开 [兼容识别入口](https://alzat007.github.io/solaris/?handTracking=cpu)，再主动点击开启手势。这个入口不会自动开启摄像头。GPU 初始化或推理抛错会自动尝试一次 CPU，单纯没有手部检出不会被认定为显卡故障。兼容模式是排查途径，不代表已确定 Windows / Edge 故障；光照、手的大小与模型加载也需要分开观察。
+
+`/tests/camera-lab.html` 在开发环境用 canvas 视频流替代摄像头，实跑原版检测模型和兼容切换按钮。可将官方测试图 `https://storage.googleapis.com/mediapipe-assets/right_hands.jpg` 下载到忽略的 `artifacts/right_hands.jpg` 后检查正样本；测试页面和图片均不进入生产发布，不申请真实摄像头权限。
+
 ## 项目结构
 
 - `src/scene`：太阳系组合、深空、轨道、屏幕与 3D 交互场映射。

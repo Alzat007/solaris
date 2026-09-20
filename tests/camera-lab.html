@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SOLARIS · 模型兼容回归</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <aside
+      style="
+        position: fixed;
+        z-index: 100;
+        bottom: 100px;
+        left: 16px;
+        width: 300px;
+        background: #101c26ef;
+        color: #ddd;
+        padding: 12px;
+        font: 12px/1.7 sans-serif;
+      "
+    >
+      <strong>模型实跑 · 合成摄像头 · 无真实摄像头权限</strong>
+      <p>只替换摄像头输入；真实模型、切换按钮与追踪链路保持运行。</p>
+      <button id="blank">空白画面</button
+      ><button id="sample">展示官方手部样图</button>
+      <output id="camera-result" style="display: block"></output>
+    </aside>
+    <script type="module" src="./camera-lab.ts"></script>
+  </body>
+</html>
