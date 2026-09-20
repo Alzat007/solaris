@@ -60,7 +60,8 @@ export function CameraPreview() {
       ctx.drawImage(video, 0, 0, c.width, c.height);
       ctx.restore();
       for (const hand of handTracking.frame.hands) {
-        ctx.strokeStyle = "#9de5ee";
+        const fivePinch = hand.gesture === "FIVE_PINCH";
+        ctx.strokeStyle = fivePinch ? "#efc18b" : "#9de5ee";
         ctx.lineWidth = 2;
         ctx.lineJoin = "round";
         for (const bone of bones) {
@@ -76,16 +77,26 @@ export function CameraPreview() {
         }
         for (let index = 0; index < hand.landmarks.length; index++) {
           const p = hand.landmarks[index];
-          ctx.fillStyle = index === 4 || index === 8 ? "#ffe7ae" : "#c8f5fb";
+          const fingertip = index > 0 && index % 4 === 0;
+          ctx.fillStyle = fingertip
+            ? fivePinch
+              ? "#ffbd77"
+              : "#eafaff"
+            : "#b6dce6";
           ctx.beginPath();
           ctx.arc(
             (1 - p.x) * c.width,
             p.y * c.height,
-            index === 4 || index === 8 ? 4 : 2,
+            fingertip ? (fivePinch ? 5.5 : 4.5) : 1.8,
             0,
             Math.PI * 2,
           );
           ctx.fill();
+          if (fingertip) {
+            ctx.strokeStyle = fivePinch ? "#fff0c8" : "#80d7ea";
+            ctx.lineWidth = 1.4;
+            ctx.stroke();
+          }
         }
       }
     };
@@ -99,6 +110,7 @@ export function CameraPreview() {
       hidden={!hasVideo}
       data-expanded={expanded}
       data-reading={reading}
+      data-gesture={s.gesture}
       aria-label="本机摄像头镜像预览"
     >
       <button
@@ -113,13 +125,14 @@ export function CameraPreview() {
         aria-expanded={expanded}
         aria-controls="local-camera-preview"
         title={
-          reading && !expanded
-            ? "阅读时已收起，点击展开手部骨架"
-            : "画面仅在本机处理"
+          !expanded
+            ? "点击展开手部骨架，对照五个指尖的位置"
+            : "亮点标出五个指尖；识别为五指聚拢时变为暖色。画面仅在本机处理"
         }
       >
         <span>
-          镜像预览 <i>{expanded ? "仅本机" : "已收起"}</i>
+          {expanded ? "镜像预览" : "查看手部骨架"}{" "}
+          <i>{expanded ? "仅本机" : "已收起"}</i>
         </span>
         <span aria-hidden="true">{expanded ? "−" : "+"}</span>
       </button>

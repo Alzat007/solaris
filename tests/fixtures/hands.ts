@@ -23,6 +23,8 @@ export function handFixture(
     pitch = 0,
     depthNoise = noise,
     gripSpread = 0,
+    gripDirection = "forward",
+    gripDepth = 0.045,
   }: {
     relaxed?: boolean;
     noise?: number;
@@ -37,6 +39,9 @@ export function handFixture(
     pitch?: number;
     depthNoise?: number;
     gripSpread?: number;
+    /** Changes finger flexion relative to the palm, not the whole hand pose. */
+    gripDirection?: "forward" | "camera";
+    gripDepth?: number;
   } = {},
 ) {
   const world: Landmark[] = Array.from({ length: 21 }, () => ({
@@ -75,7 +80,11 @@ export function handFixture(
         ? [0, bend, bend + 10]
         : [0, 0, 0]
       : [25, 110, 180];
-    const fingerScale = [0.95, 1.08, 1, 0.78][finger];
+    // This family has a slightly longer little finger, allowing the 55 mm
+    // camera-facing target to be reached without stretching its bone chain.
+    const pinkyScale =
+      gesture === "FIVE_PINCH" && gripDirection === "camera" ? 0.9 : 0.78;
+    const fingerScale = [0.95, 1.08, 1, pinkyScale][finger];
     [0.035, 0.022, 0.018].forEach((length, joint) => {
       const a = (bends[joint] * Math.PI) / 180;
       const prev = world[start + joint];
@@ -107,7 +116,10 @@ export function handFixture(
   }
   if (gesture === "FIVE_PINCH") {
     const spread = Math.max(0, Math.min(1, gripSpread));
-    const center = { x: -0.001, y: -0.038, z: -0.022 };
+    const center =
+      gripDirection === "camera"
+        ? { x: -0.001, y: 0.005, z: -gripDepth }
+        : { x: -0.001, y: -0.038, z: -0.022 };
     // Curl all five independent chains toward a shared point, then reopen to
     // their original tips. Preserve each chain's total length in the closed
     // pose instead of collapsing the fingertip directly onto its own knuckle.
@@ -124,10 +136,25 @@ export function handFixture(
           b = world[baseIndex + joint + 1];
         return sum + Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
       }, 0);
+      // In a camera-facing bunch, knuckles remain in the palm plane while
+      // fingertips gather above it. Bow the chains towards their knuckle side,
+      // so PIP can be farther from the wrist than the gathered tips: a real
+      // curl is not a rigid rotation of the old forward-reaching fixture.
+      const dy = tip.y - base.y;
+      const dz = tip.z - base.z;
+      const perpendicularLength = Math.hypot(dy, dz) || 1;
+      const bowY = gripDirection === "camera" ? dz / perpendicularLength : 0;
+      const bowZ = gripDirection === "camera" ? -dy / perpendicularLength : 1;
       const pointAt = (t: number, amplitude: number) => ({
         x: base.x + (tip.x - base.x) * t,
-        y: base.y + (tip.y - base.y) * t,
-        z: base.z + (tip.z - base.z) * t + Math.sin(t * Math.PI) * amplitude,
+        y:
+          base.y +
+          (tip.y - base.y) * t +
+          Math.sin(t * Math.PI) * amplitude * bowY,
+        z:
+          base.z +
+          (tip.z - base.z) * t +
+          Math.sin(t * Math.PI) * amplitude * bowZ,
       });
       let lo = 0,
         hi = 0.08;

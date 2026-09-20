@@ -42,6 +42,7 @@ export class GestureRecognizer {
   private extended = [false, false, false, false];
   private scores = new Float64Array(4);
   private wristRatios = new Float64Array(4);
+  private curlAngles = new Float64Array(4);
   private corrected: Landmark[] = Array.from({ length: 21 }, () => ({
     x: 0,
     y: 0,
@@ -109,6 +110,7 @@ export class GestureRecognizer {
     for (let i = 0; i < 4; i++) {
       const base = 5 + i * 4;
       const a = angle(w[base], w[base + 1], w[base + 3]);
+      this.curlAngles[i] = a;
       const boneLength =
         distance(w[base], w[base + 1]) +
         distance(w[base + 1], w[base + 2]) +
@@ -237,11 +239,46 @@ export class GestureRecognizer {
       if (ratio >= config.GRIP_FINGER_WRIST_STRONG) participating++;
       leastWristRatio = Math.min(leastWristRatio, ratio);
     }
-    const gripOutsidePalm =
+    const longitudinalGrip =
       tipForward >= config.GRIP_CENTER_FORWARD_MIN &&
       gripPalmDistance >= config.GRIP_CENTER_TO_PALM_MIN &&
       leastWristRatio >= config.GRIP_FINGER_WRIST_MIN &&
       participating >= config.GRIP_FINGER_COUNT;
+    // Curl towards the camera is not a rigid rotation of a forward-reaching
+    // grip: its tips can be closer to the wrist than its PIP joints. Use the
+    // palm's own plane, preserving mirror/rotation/scale invariance, instead
+    // of requiring longitudinal reach and wrist ratios for every grip.
+    const ax = w[5].x - w[0].x,
+      ay = w[5].y - w[0].y,
+      az = w[5].z - w[0].z;
+    const bx = w[17].x - w[0].x,
+      by = w[17].y - w[0].y,
+      bz = w[17].z - w[0].z;
+    const cx = ay * bz - az * by,
+      cy = az * bx - ax * bz,
+      cz = ax * by - ay * bx;
+    const normalLength = Math.hypot(cx, cy, cz) || 1;
+    const normalDenominator = normalLength * geometryWidth;
+    const centerNormal =
+      ((tipX - mcpX) * cx + (tipY - mcpY) * cy + (tipZ - mcpZ) * cz) /
+      normalDenominator;
+    const normalSide = Math.sign(centerNormal);
+    let leastTipNormal = Infinity;
+    for (const i of tipIndices) {
+      const tipNormal =
+        ((w[i].x - mcpX) * cx + (w[i].y - mcpY) * cy + (w[i].z - mcpZ) * cz) /
+        normalDenominator;
+      leastTipNormal = Math.min(leastTipNormal, tipNormal * normalSide);
+    }
+    const normalGrip =
+      gripPalmDistance >= config.GRIP_NORMAL_PALM_DISTANCE_MIN &&
+      tipForward >= config.GRIP_NORMAL_FORWARD_MIN &&
+      leastTipNormal >= config.GRIP_EACH_TIP_NORMAL_MIN &&
+      Math.hypot(Math.max(0, tipForward), centerNormal) >=
+        config.GRIP_NORMAL_REACH_MIN;
+    let meanCurl = 0;
+    for (const curl of this.curlAngles) meanCurl += curl / 4;
+    const gripOutsidePalm = longitudinalGrip || normalGrip;
     const fivePinch =
       gripOutsidePalm &&
       gripAperture <= config.FIVE_PINCH_APERTURE_MAX &&
@@ -296,30 +333,34 @@ export class GestureRecognizer {
     // fingertips remain spread; unsupported signs and fists never claim it.
     const spreadTogether =
       pinchDistance >= gripAperture * config.GRIP_THUMB_INDEX_SPREAD_MIN;
-    const intermediateGrip = gripOutsidePalm && spreadTogether;
-    if (!fivePinch && gesture === "PINCH" && intermediateGrip) {
-      // A slowly opening five-finger grip can outlive thumb/index hysteresis.
-      // Its proportional spread is not a new two-finger select command.
+    const intermediateGrip =
+      spreadTogether &&
+      (longitudinalGrip ||
+        (normalGrip &&
+          tipForward >= config.GRIP_UNFOLD_FORWARD_MIN &&
+          meanCurl >= config.GRIP_NORMAL_CURL_MEAN_MIN));
+    if (
+      !fivePinch &&
+      (gesture === "PINCH" || gesture === "FIST") &&
+      intermediateGrip
+    ) {
+      // A slowly opening bunch can still look curled or retain thumb/index
+      // hysteresis. All five tips must participate above the palm, their
+      // spread must stay proportional, and collective curl must be shallower
+      // than a folded fist. Spread tips must also move beyond the MCP row:
+      // deeply flexed MCPs can give a fist a deceptively large PIP curl angle.
+      // An ordinary two-finger contact also fails the proportional-spread gate.
       gesture = "NONE";
     }
     const gripConfidence = fivePinch
       ? confidence
       : gesture === "OPEN_PALM"
-        ? confidence
+        ? Math.max(confidence, intermediateGrip ? 0.8 : 0)
         : gesture === "NONE" && intermediateGrip
           ? 0.8
           : 0;
     // V signs and three-finger poses intentionally stay NONE: neither is a
     // command in V2, but their independently measured fingers remain debuggable.
-    const ax = w[5].x - w[0].x,
-      ay = w[5].y - w[0].y,
-      az = w[5].z - w[0].z;
-    const bx = w[17].x - w[0].x,
-      by = w[17].y - w[0].y,
-      bz = w[17].z - w[0].z;
-    const cx = ay * bz - az * by,
-      cy = az * bx - ax * bz,
-      cz = ax * by - ay * bx;
     const result: HandFeatures = {
       center,
       pointer,

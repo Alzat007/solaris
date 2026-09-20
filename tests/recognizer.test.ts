@@ -577,3 +577,240 @@ test("a slightly uneven five-tip bunch retains grip evidence without exact finge
     assert.ok(hand.gripConfidence! >= 0.75);
   }
 });
+
+test("fingertips gathered towards the camera classify despite being behind the MCP row", () => {
+  for (const depth of [0.035, 0.045, 0.055]) {
+    for (const mirror of [false, true]) {
+      for (const yaw of [-0.8, 0, 0.8]) {
+        for (const pitch of [-0.55, 0.4]) {
+          const recognizer = new GestureRecognizer();
+          for (let frame = 0; frame < 12; frame++) {
+            const fixture = handFixture("FIVE_PINCH", {
+              gripDirection: "camera",
+              gripDepth: depth,
+              mirror,
+              yaw,
+              pitch,
+              rotation: 0.35,
+              noise: 0.0004,
+              depthNoise: 0.0015,
+              frame,
+            });
+            const hand = recognizer.analyze(
+              fixture.points,
+              fixture.world,
+              frame * 50,
+            );
+            assert.equal(
+              hand.gesture,
+              "FIVE_PINCH",
+              `depth=${depth}, mirror=${mirror}, yaw=${yaw}, pitch=${pitch}, frame=${frame}`,
+            );
+            assert.ok(
+              hand.gripConfidence! >=
+                gestureConfig.ONE_HAND_ZOOM_MIN_CONFIDENCE,
+            );
+          }
+        }
+      }
+    }
+  }
+});
+
+test("camera-facing bunch keeps reliable geometry across slow opening and closing", () => {
+  for (const depth of [0.035, 0.045, 0.055]) {
+    for (const relaxed of [false, true]) {
+      for (const mirror of [false, true]) {
+        const recognizer = new GestureRecognizer();
+        let previous = -Infinity;
+        for (let frame = 0; frame <= 100; frame++) {
+          const spread = frame <= 50 ? frame / 50 : (100 - frame) / 50;
+          const fixture = handFixture("FIVE_PINCH", {
+            gripDirection: "camera",
+            gripDepth: depth,
+            gripSpread: spread,
+            relaxed,
+            mirror,
+            yaw: mirror ? -0.7 : 0.7,
+            pitch: 0.4,
+            rotation: -0.3,
+            noise: 0.00035,
+            depthNoise: 0.0015,
+            frame,
+          });
+          const hand = recognizer.analyze(
+            fixture.points,
+            fixture.world,
+            frame * 50,
+          );
+          const context = `depth=${depth}, spread=${spread}, mirror=${mirror}, relaxed=${relaxed}, gesture=${hand.gesture}, confidence=${hand.gripConfidence}`;
+          assert.ok(
+            hand.gripConfidence! >= gestureConfig.ONE_HAND_ZOOM_MIN_CONFIDENCE,
+            context,
+          );
+          assert.notEqual(hand.gesture, "FIST", context);
+          assert.notEqual(hand.gesture, "PINCH", context);
+          if (frame <= 50)
+            assert.ok(hand.gripAperture! >= previous - 0.035, context);
+          else assert.ok(hand.gripAperture! <= previous + 0.035, context);
+          previous = hand.gripAperture!;
+        }
+      }
+    }
+  }
+});
+
+test("all five raised fingertips must participate: one uncurled tip prevents camera-facing activation", () => {
+  for (const depth of [0.045, 0.055]) {
+    for (const excluded of [4, 8, 12, 16, 20]) {
+      const fixture = handFixture("FIVE_PINCH", {
+        gripDirection: "camera",
+        gripDepth: depth,
+      });
+      const open = handFixture("FIVE_PINCH", {
+        gripDirection: "camera",
+        gripDepth: depth,
+        gripSpread: 1,
+      });
+      fixture.world[excluded] = { ...open.world[excluded] };
+      const hand = new GestureRecognizer().analyze(
+        fixture.points,
+        fixture.world,
+        0,
+      );
+      assert.notEqual(
+        hand.gesture,
+        "FIVE_PINCH",
+        `depth=${depth}, excluded=${excluded}`,
+      );
+    }
+  }
+});
+
+test("camera-facing bunch cannot turn into a compact fist or a two-finger pinch", () => {
+  for (const pose of ["FIST", "PINCH", "POINT", "V_SIGN", "THREE"] as const) {
+    const recognizer = new GestureRecognizer();
+    const bunch = handFixture("FIVE_PINCH", { gripDirection: "camera" });
+    assert.equal(
+      recognizer.analyze(bunch.points, bunch.world, 0).gesture,
+      "FIVE_PINCH",
+    );
+    for (let frame = 1; frame <= 12; frame++) {
+      const other = handFixture(pose, {
+        foldedPinch: true,
+        compactPinch: true,
+        noise: 0.0004,
+        depthNoise: 0.0015,
+        frame,
+      });
+      const hand = recognizer.analyze(other.points, other.world, frame * 50);
+      assert.equal(hand.gesture, classified(pose));
+      assert.equal(hand.gripConfidence, 0, pose);
+    }
+  }
+});
+
+test("a fist with the thumb off the index does not become intermediate five-finger zoom", () => {
+  for (let frame = 0; frame < 18; frame++) {
+    const fixture = handFixture("FIST", {
+      noise: 0.0004,
+      depthNoise: 0.0015,
+      frame,
+    });
+    // A loose thumb removes the usual thumb/index overlap. Curl evidence must
+    // still reject the fist even if the five-tip spread ratio looks plausible.
+    fixture.world[4] = { x: -0.055, y: -0.002, z: -0.034 };
+    const hand = new GestureRecognizer().analyze(
+      fixture.points,
+      fixture.world,
+      0,
+    );
+    assert.equal(hand.gesture, "FIST");
+    assert.equal(hand.gripConfidence, 0);
+  }
+});
+
+test("fists with strongly flexed MCPs and a loose thumb still return FIST", () => {
+  for (const bends of [
+    [60, 130, 200],
+    [60, 135, 205],
+    [50, 120, 190],
+  ]) {
+    for (const thumbGap of [0.016, 0.02, 0.026]) {
+      const fixture = handFixture("FIST");
+      for (let finger = 0; finger < 4; finger++) {
+        const base = 5 + finger * 4;
+        const scale = [0.95, 1.08, 1, 0.78][finger];
+        for (let joint = 0; joint < 3; joint++) {
+          const length = [0.035, 0.022, 0.018][joint] * scale;
+          const angle = (bends[joint] * Math.PI) / 180;
+          const previous = fixture.world[base + joint];
+          fixture.world[base + joint + 1] = {
+            x: previous.x,
+            y: previous.y - length * Math.cos(angle),
+            z: previous.z - length * Math.sin(angle),
+          };
+        }
+      }
+      fixture.world[4] = {
+        ...fixture.world[8],
+        x: fixture.world[8].x - thumbGap,
+      };
+      fixture.points = fixture.world.map((p) => ({
+        x: 0.5 + (p.x * 3) / (4 / 3),
+        y: 0.4 + p.y * 3,
+        z: (p.z * 3) / (4 / 3),
+      }));
+      const recognizer = new GestureRecognizer();
+      const bunch = handFixture("FIVE_PINCH", { gripDirection: "camera" });
+      recognizer.analyze(bunch.points, bunch.world, 0);
+      const hand = recognizer.analyze(fixture.points, fixture.world, 50);
+      assert.equal(
+        hand.gesture,
+        "FIST",
+        `bends=${bends}, thumbGap=${thumbGap}`,
+      );
+      assert.equal(hand.gripConfidence, 0);
+    }
+  }
+});
+
+test("camera-facing bunch matches fallback geometry and stays invariant to hand image scale", () => {
+  for (const spread of [0, 0.35, 0.65, 1]) {
+    const fixture = handFixture("FIVE_PINCH", {
+      gripDirection: "camera",
+      gripDepth: 0.055,
+      gripSpread: spread,
+      mirror: true,
+      yaw: 0.65,
+      pitch: -0.5,
+    });
+    const world = new GestureRecognizer().analyze(
+      fixture.points,
+      fixture.world,
+      0,
+    );
+    const screen = new GestureRecognizer().analyze(
+      fixture.points,
+      undefined,
+      0,
+    );
+    assert.equal(screen.gesture, world.gesture);
+    assert.ok(Math.abs(screen.gripAperture! - world.gripAperture!) < 1e-12);
+    assert.ok(Math.abs(screen.gripConfidence! - world.gripConfidence!) < 1e-12);
+    for (const scale of [0.55, 1.7]) {
+      const transformed = fixture.world.map((p) => ({
+        x: p.x * scale + 0.13,
+        y: p.y * scale - 0.21,
+        z: p.z * scale + 0.18,
+      }));
+      const hand = new GestureRecognizer().analyze(
+        fixture.points,
+        transformed,
+        0,
+      );
+      assert.equal(hand.gesture, world.gesture);
+      assert.ok(Math.abs(hand.gripAperture! - world.gripAperture!) < 1e-12);
+    }
+  }
+});

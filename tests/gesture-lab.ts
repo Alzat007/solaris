@@ -96,6 +96,7 @@ function feature(
   index = 0,
   alignPalm = false,
   gripSpread = 0,
+  gripDirection: "forward" | "camera" = "forward",
 ): HandFeatures {
   const { points, world } = handFixture(pose, {
     relaxed: true,
@@ -104,6 +105,7 @@ function feature(
     mirror: index === 1,
     foldedPinch: pose === "PINCH",
     gripSpread,
+    gripDirection,
   });
   const sourceX = alignPalm
     ? [0, 5, 9, 13, 17].reduce((sum, i) => sum + points[i].x / 5, 0)
@@ -170,7 +172,7 @@ const timer = window.setInterval(() => {
     const spread =
       elapsed < 1000
         ? 0
-        : motion === "five-zoom-in"
+        : motion.endsWith("-in")
           ? clamp((elapsed - 1000) / 1200)
           : elapsed < 1850
             ? clamp((elapsed - 1000) / 750)
@@ -184,6 +186,7 @@ const timer = window.setInterval(() => {
         0,
         true,
         spread,
+        motion.includes("camera") ? "camera" : "forward",
       ),
     ];
   } else if (motion === "reentry") {

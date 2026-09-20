@@ -17,7 +17,10 @@ type Pose = Parameters<typeof handFixture>[0];
 /** Replay anatomical landmarks through the production recognizer, gesture
  * arbitration and real scene scale/selection methods. Only animation time and
  * the automatic facts timer are advanced explicitly; no action is stubbed. */
-function setup(t: TestContext) {
+function setup(
+  t: TestContext,
+  fixtureOptions: NonNullable<Parameters<typeof handFixture>[1]> = {},
+) {
   gsap.globalTimeline.clear();
   gsap.ticker.sleep();
   const controller = new GestureController();
@@ -55,6 +58,7 @@ function setup(t: TestContext) {
       relaxed: true,
       yaw: 0.5,
       pitch: 0.3,
+      ...fixtureOptions,
       frame: frame++,
     });
     const hand = recognizer.analyze(fixture.points, fixture.world, time);
@@ -220,3 +224,41 @@ test("a lost hand still requires an explicit release before focused five-finger 
   s.send("OPEN_PALM");
   assertFreshConfirmation(s.send);
 });
+
+for (const depth of [0.045, 0.055]) {
+  test(`camera-facing five-tip gathering at ${depth} m continuously scales the selected planet`, (t) => {
+    const s = setup(t, {
+      gripDirection: "camera",
+      gripDepth: depth,
+      mirror: depth === 0.045,
+      noise: 0.0005,
+      depthNoise: 0.001,
+    });
+    s.selectEarth();
+    s.hold("OPEN_PALM", 500);
+    s.finishAndRevealFacts();
+    assert.equal(s.send("FIVE_PINCH").gesture, "FIVE_PINCH");
+    s.hold("FIVE_PINCH", 300);
+    assert.equal(gestureFeedback.get().zoomActive, true);
+    assert.equal(particles.targetScale, config.ZOOM_MIN);
+    for (let step = 1; step <= 20; step++) {
+      const hand = s.send("FIVE_PINCH", step / 20);
+      assert.ok(["FIVE_PINCH", "NONE", "OPEN_PALM"].includes(hand.gesture));
+      assert.ok(hand.gripConfidence! >= config.ONE_HAND_ZOOM_MIN_CONFIDENCE);
+      assert.equal(gestureFeedback.get().zoomActive, true);
+      assert.equal(store.get().selected, "earth");
+    }
+    assert.ok(particles.targetScale > 1.65);
+    for (let step = 19; step >= 0; step--) {
+      s.send("FIVE_PINCH", step / 20);
+      assert.equal(gestureFeedback.get().zoomActive, true);
+      assert.equal(store.get().selected, "earth");
+    }
+    s.hold("FIVE_PINCH", 400);
+    assert.ok(particles.targetScale < config.ZOOM_MIN + 0.03);
+    assert.equal(store.get().infoVisible, true);
+    s.empty();
+    assert.equal(store.get().mode, "PLANET_FOCUS");
+    assert.equal(store.get().selected, "earth");
+  });
+}

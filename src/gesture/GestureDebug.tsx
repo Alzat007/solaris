@@ -1,5 +1,6 @@
 import { useSolaris } from "../interaction/store";
 import { DebugHands } from "../ui/DebugHands";
+import { gestureLabels } from "../ui/chinese";
 import { useGestureFeedback } from "./gestureFeedback";
 
 export function GestureDebug() {
@@ -25,9 +26,9 @@ export function GestureDebug() {
         {[
           "SOLARIS / GESTURE SYSTEM V2.1",
           `HAND: ${f.handedness} × ${f.handCount}`,
-          `Pose Confidence: ${(f.confidence * 100).toFixed(0)}%`,
+          `Pose Evidence Score: ${f.confidence.toFixed(2)}`,
           `Hand Geometry: ${f.trackingConfidence >= 0.55 ? "VALID" : "WEAK"}`,
-          `Current Gesture: ${s.gesture}`,
+          `Current Gesture: ${gestureLabels[s.gesture] || "姿势未确定"} (${s.gesture})`,
           `Action: ${f.action}`,
           `Pinch State: ${f.pinchPhase}`,
           `Pinch Distance: ${f.pinchDistance.toFixed(3)}`,

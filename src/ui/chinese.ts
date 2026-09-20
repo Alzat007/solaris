@@ -1,12 +1,12 @@
 /** Display copy only; gesture and quality identifiers stay language-independent. */
 export const gestureLabels: Record<string, string> = {
-  NONE: "等待手势",
-  OPEN_PALM: "张开手掌",
-  POINT: "食指指向",
-  PINCH: "拇指与食指捏合",
-  FIVE_PINCH: "五指指尖聚拢",
+  NONE: "姿势未确定",
+  OPEN_PALM: "张掌",
+  POINT: "指向",
+  PINCH: "双指捏合",
+  FIVE_PINCH: "五指聚拢",
   ONE_HAND_ZOOM: "五指开合 · 缩放",
-  FIST: "握紧拳头",
+  FIST: "握拳",
   SWIPE_LEFT: "向左滑动",
   SWIPE_RIGHT: "向右滑动",
   TWO_HAND_COLLAPSE: "双手合拢 · 坍缩",

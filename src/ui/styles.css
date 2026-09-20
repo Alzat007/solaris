@@ -1592,3 +1592,14 @@ footer {
     min-width: 0;
   }
 }
+
+/* Pose evidence stays separate from the action that it may trigger. */
+.hand-feedback .recognized-pose {
+  color: #b0cdd4;
+}
+.hand-feedback .recognized-pose[data-gesture="FIVE_PINCH"] {
+  color: #e4b681;
+}
+.camera-preview[data-gesture="FIVE_PINCH"] {
+  border-color: #c9a16d66;
+}

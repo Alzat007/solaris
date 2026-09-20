@@ -1,11 +1,14 @@
 import { useSolaris } from "../interaction/store";
 import { useGestureFeedback } from "../gesture/gestureFeedback";
+import { gestureLabels } from "./chinese";
 
 /** Show action progress before release reminders, especially for two-hand play. */
 export function HandFeedback() {
   const s = useSolaris();
   const f = useGestureFeedback();
   if (s.tracking !== "online" && s.tracking !== "seeking") return null;
+  const pose =
+    f.handCount > 0 ? gestureLabels[s.gesture] || "姿势未确定" : "姿势未确定";
   const percent = Math.round(Math.max(0, Math.min(1, f.specialProgress)) * 100);
   const special =
     f.action === "COLLAPSE" ||
@@ -72,7 +75,13 @@ export function HandFeedback() {
       </div>
       <small>
         {f.handCount > 0 ? `已识别 ${f.handCount} 只手` : "尚未识别到手"}
-        {zooming && " · 张开变大，聚拢变小"}
+        <span
+          className="recognized-pose"
+          data-gesture={f.handCount > 0 ? s.gesture : "NONE"}
+          aria-label={`当前识别姿势：${pose}`}
+        >
+          {` · ${pose}`}
+        </span>
       </small>
       {zooming && !f.locked && !s.transitioning && (
         <div
