@@ -1,6 +1,8 @@
 // Dev-only: real MediaPipe inference over a canvas stream. Never production.
-// Official photo fixtures live in ignored artifacts/right_hands.jpg and
-// artifacts/victory.jpg. No camera/photo is recorded or uploaded.
+// Official photo fixtures live in ignored artifacts/: right_hands.jpg,
+// victory.jpg, pointing_up.jpg and fist.jpg. The latter two filenames are
+// listed in MediaPipe's tasks/testdata/vision/BUILD official fixture manifest.
+// No camera/photo is recorded or uploaded. No landmark is generated or changed.
 import "../src/main";
 import { handTracking } from "../src/gesture/HandTrackingManager";
 import { cameraDiagnostics } from "../src/gesture/cameraDiagnostics";
@@ -86,6 +88,12 @@ document.getElementById("sample")!.onclick = () => {
 document.getElementById("victory")!.onclick = () => {
   void loadSample("victory.jpg", "官方 V 样图");
 };
+document.getElementById("pointing-up")!.onclick = () => {
+  void loadSample("pointing_up.jpg", "官方 POINT 原图（伸直）");
+};
+document.getElementById("fist")!.onclick = () => {
+  void loadSample("fist.jpg", "官方握拳样图");
+};
 document.getElementById("mirror")!.onclick = () => {
   mirrored = !mirrored;
   const button = document.getElementById("mirror")!;
@@ -108,8 +116,9 @@ document.getElementById("rotate-reset")!.onclick = () => {
 const report = () => {
   const d = cameraDiagnostics.get();
   const f = gestureFeedback.get();
+  const s = store.get();
   document.getElementById("camera-result")!.textContent =
-    `样图 ${sampleName} | 镜像 ${mirrored} | 画面旋转 ${visualAngle >= 0 ? "+" : ""}${visualAngle}° | 阶段 ${d.stage} | 后端 ${d.backend ?? "无"} | 兼容 ${d.compatibility} | 推理帧 ${d.frames} | 原始手 ${d.rawHands} | 有效手 ${d.validHands} | 无手 ${Math.round(d.emptyForMs)}ms | 摄像头请求 ${requestedStreams} | ${store.get().tracking} | Gesture ${store.get().gesture} | Hand ${f.handedness} | Mode ${f.zoomMode} | Delta ${f.zoomDelta >= 0 ? "+" : ""}${f.zoomDelta.toFixed(1)}° | Speed ${f.zoomSpeed.toFixed(3)} | Scale ${f.zoomScale.toFixed(3)}${sampleError ? ` | ${sampleError}` : ""}`;
+    `样图 ${sampleName} | 镜像 ${mirrored} | 画面旋转 ${visualAngle >= 0 ? "+" : ""}${visualAngle}° | 阶段 ${d.stage} | 后端 ${d.backend ?? "无"} | 兼容 ${d.compatibility} | 推理帧 ${d.frames} | 原始手 ${d.rawHands} | 有效手 ${d.validHands} | 无手 ${Math.round(d.emptyForMs)}ms | 摄像头请求 ${requestedStreams} | ${s.tracking} | Gesture ${s.gesture} | Hand ${f.handedness} | Index Angle ${f.indexAngle === null ? "—" : `${f.indexAngle.toFixed(1)}°`} | Index Velocity ${f.indexAngularVelocity.toFixed(1)}°/s | Point Confidence ${f.pointConfidence.toFixed(3)} | Index Phase ${f.indexPhase} | Locked Target ${f.lockedTarget ? `${f.lockedTarget.kind}/${f.lockedTarget.id}` : "none"} | Selected ${s.selected ?? "none"} | Last Action ${f.lastAction} | Mode ${f.zoomMode} | Delta ${f.zoomDelta >= 0 ? "+" : ""}${f.zoomDelta.toFixed(1)}° | Speed ${f.zoomSpeed.toFixed(3)} | Scale ${f.zoomScale.toFixed(3)}${sampleError ? ` | ${sampleError}` : ""}`;
 };
 const unsubscribe = cameraDiagnostics.subscribe(report);
 const unsubscribeState = store.subscribe(report);

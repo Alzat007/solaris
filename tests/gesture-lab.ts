@@ -4,6 +4,7 @@ import { gsap } from "gsap";
 import { interaction } from "../src/interaction/InteractionController";
 import { handFixture } from "./fixtures/hands";
 import { GestureRecognizer } from "../src/gesture/GestureRecognizer";
+import { gestureTargets } from "../src/gesture/gestureTargets";
 import { gestures } from "../src/gesture/GestureController";
 import { gestureFeedback } from "../src/gesture/gestureFeedback";
 import { store } from "../src/interaction/store";
@@ -61,11 +62,20 @@ document.getElementById("lab-buttons")!.addEventListener("click", (event) => {
   started = performance.now();
   focusUnlockedAt = null;
   if (motion === "focus-v") interaction.selectBody("earth");
-  recognizers.forEach((r) => r.reset());
+  if (!motion.startsWith("index-")) recognizers.forEach((r) => r.reset());
   if (button.dataset.target) {
     pose = "POINT";
     const which = button.dataset.target;
-    if (which === "sun") target = { x: 0.5, y: 0.5 };
+    const body =
+      which === "sun" || which === "earth"
+        ? gestureTargets.getTargetScreen({
+            kind: "body",
+            id: which,
+            label: which,
+          })
+        : null;
+    if (body) target = { x: body.x / innerWidth, y: body.y / innerHeight };
+    else if (which === "sun") target = { x: 0.5, y: 0.5 };
     else if (which === "blank") target = { x: 0.78, y: 0.17 };
     else {
       const element =
@@ -96,21 +106,30 @@ function feature(
   index = 0,
   alignPalm = false,
   rollDegrees = 0,
+  indexAngle = 165,
 ): HandFeatures {
-  const { points, world } = handFixture(pose, {
+  const fixtureOptions = {
     relaxed: true,
     noise: 0.0003,
     frame: time / 50,
     mirror: index === 1,
     foldedPinch: pose === "PINCH",
     rotation: ((rollDegrees * Math.PI) / 180) * (index === 1 ? 1 : -1),
-  });
+    indexPipAngle: pose === "POINT" ? indexAngle : undefined,
+    otherFingerFlexion: pose === "POINT" ? 55 : undefined,
+  };
+  const { points, world } = handFixture(pose, fixtureOptions);
+  // Keep the palm fixed while flexion naturally moves the tip off its target.
+  const anchorPoints =
+    pose === "POINT"
+      ? handFixture(pose, { ...fixtureOptions, indexPipAngle: 165 }).points
+      : points;
   const sourceX = alignPalm
     ? [0, 5, 9, 13, 17].reduce((sum, i) => sum + points[i].x / 5, 0)
-    : points[8].x;
+    : anchorPoints[8].x;
   const sourceY = alignPalm
     ? [0, 5, 9, 13, 17].reduce((sum, i) => sum + points[i].y / 5, 0)
-    : points[8].y;
+    : anchorPoints[8].y;
   const dx = 1 - x - sourceX,
     dy = y - sourceY;
   points.forEach((point) => {
@@ -126,7 +145,17 @@ const timer = window.setInterval(() => {
   const time = performance.now(),
     elapsed = time - started;
   let hands: HandFeatures[] = [];
-  if (motion === "focus-v") {
+  if (motion.startsWith("index-")) {
+    const angle =
+      motion === "index-release"
+        ? 165
+        : motion === "index-slow"
+          ? 165 - 60 * clamp(elapsed / 5000)
+          : motion === "index-jitter"
+            ? 162 + Math.sin(elapsed / 90) * 3
+            : 165 - 62 * clamp(elapsed / 250);
+    hands = [feature("POINT", target.x, target.y, time, 0, false, 0, angle)];
+  } else if (motion === "focus-v") {
     if (interaction.isLocked()) {
       hands = [feature("V_GESTURE", 0.55, 0.46, time, 0, true, 25)];
     } else {
@@ -237,7 +266,7 @@ const timer = window.setInterval(() => {
   const s = store.get(),
     f = gestureFeedback.get();
   document.getElementById("lab-result")!.textContent =
-    `识别 ${s.gesture} | 状态 ${s.mode} | 锁 ${s.transitioning} | 资料 ${s.infoVisible} | 已选 ${s.selected ?? "无"} | 目标 ${f.target?.id ?? "无"} | ${f.readiness} / ${f.pinchPhase} | 松开 ${f.needsRelease} | 动作 ${f.action} | 旋钮 ${f.zoomMode} ${(f.zoomProgress * 100).toFixed(0)}% Δ${f.zoomDelta.toFixed(1)}° 速度${f.zoomSpeed.toFixed(3)} | 双掌 ${f.specialStage} ${(f.specialProgress * 100).toFixed(0)}% | 坍缩 ${particles.collapse.toFixed(2)} | 内部 ${particles.sunInterior.toFixed(2)} | 缩放 ${particles.targetScale.toFixed(2)} | 旋转 ${particles.targetRotation.toFixed(2)}`;
+    `识别 ${s.gesture} | 状态 ${s.mode} | 锁 ${s.transitioning} | 资料 ${s.infoVisible} | 已选 ${s.selected ?? "无"} | 目标 ${f.target?.id ?? "无"} | ${f.readiness} / ${f.pinchPhase} | 松开 ${f.needsRelease} | 动作 ${f.action} | 食指 ${f.indexAngle?.toFixed(0) ?? "—"}° ${f.indexPhase} 锁${(f.targetLockProgress * 100).toFixed(0)}% 对象${f.lockedTarget?.id ?? "无"} | 旋钮 ${f.zoomMode} ${(f.zoomProgress * 100).toFixed(0)}% Δ${f.zoomDelta.toFixed(1)}° 速度${f.zoomSpeed.toFixed(3)} | 双掌 ${f.specialStage} ${(f.specialProgress * 100).toFixed(0)}% | 坍缩 ${particles.collapse.toFixed(2)} | 内部 ${particles.sunInterior.toFixed(2)} | 缩放 ${particles.targetScale.toFixed(2)} | 旋转 ${particles.targetRotation.toFixed(2)}`;
 }, 50);
 window.addEventListener(
   "pagehide",

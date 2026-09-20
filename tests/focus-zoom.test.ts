@@ -64,6 +64,9 @@ function setup(t: TestContext, fixtureOptions: Geometry = {}) {
       relaxed: true,
       yaw: 0.5,
       pitch: 0.3,
+      ...(pose === "POINT"
+        ? { indexPipAngle: 165, otherFingerFlexion: 55 }
+        : {}),
       ...fixtureOptions,
       ...geometry,
       // The fixture mirrors after rotating. Convert from the user's visible
@@ -116,8 +119,10 @@ function setup(t: TestContext, fixtureOptions: Geometry = {}) {
   const selectEarth = () => {
     hold("POINT", 400);
     gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
-    send("POINT");
-    hold("PINCH", 200);
+    hold("POINT", config.TARGET_LOCK_TIME + 50);
+    assert.equal(gestureFeedback.get().indexPhase, "TARGET_LOCKED");
+    send("POINT", { indexPipAngle: 135 });
+    send("POINT", { indexPipAngle: 105 });
     assert.equal(store.get().selected, "earth");
     assert.equal(store.get().mode, "PLANET_TRANSITION");
     assert.equal(interaction.isLocked(), true);
@@ -136,7 +141,7 @@ function setup(t: TestContext, fixtureOptions: Geometry = {}) {
   };
   const focusEarth = () => {
     selectEarth();
-    hold("OPEN_PALM", 500);
+    hold("POINT", 500, { indexPipAngle: 165 });
     finishAndRevealFacts();
   };
   const empty = (dt = 50) => deliver([], dt);
@@ -186,6 +191,7 @@ function armDial(s: ReturnType<typeof setup>, options: Sample = {}) {
 test("a held V spanning the planet-entry animation starts a fresh 250ms baseline after unlock", (t) => {
   const s = setup(t);
   s.selectEarth();
+  s.hold("POINT", config.INDEX_RELEASE_HOLD + 50);
   for (let frame = 0; frame < 20; frame++) {
     s.send("V_GESTURE", { visualRoll: frame > 10 ? 25 : 0 });
     assert.equal(particles.targetScale, 1);
@@ -263,19 +269,21 @@ test("releasing V stops immediately, preserves facts, returns to focus, and perm
   assert.equal(particles.targetScale, stoppedScale);
 });
 
-test("a selection pinch held across the entry animation cannot select another planet", (t) => {
+test("a bent index held across entry cannot select another planet until explicit release and a new lock", (t) => {
   const s = setup(t);
   s.selectEarth();
-  s.hold("PINCH", 800);
+  s.hold("POINT", 800, { indexPipAngle: 105 });
   s.finishAndRevealFacts();
   gestureTargets.set({ kind: "body", id: "mars", label: "火星" });
-  s.hold("PINCH", 800);
+  s.hold("POINT", 800, { indexPipAngle: 105 });
   assert.equal(store.get().selected, "earth");
   assert.equal(store.get().mode, "PLANET_FOCUS");
   assert.equal(gestureFeedback.get().zoomMode, "IDLE");
   assert.equal(particles.targetScale, 1);
-  s.send("POINT");
-  s.hold("PINCH", 200);
+  s.hold("POINT", config.INDEX_RELEASE_HOLD + config.TARGET_LOCK_TIME + 150);
+  assert.equal(gestureFeedback.get().indexPhase, "TARGET_LOCKED");
+  s.send("POINT", { indexPipAngle: 135 });
+  s.send("POINT", { indexPipAngle: 105 });
   assert.equal(store.get().selected, "mars");
   assert.equal(store.get().mode, "PLANET_TRANSITION");
 });

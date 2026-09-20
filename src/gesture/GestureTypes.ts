@@ -7,6 +7,7 @@ export type Gesture =
   | "NONE"
   | "OPEN_PALM"
   | "POINT"
+  | "INDEX_PRESS"
   | "PINCH"
   | "FIVE_PINCH"
   | "FIST"
@@ -25,6 +26,17 @@ export interface HandFeatures {
   handedness?: "Left" | "Right" | "Unknown";
   center: { x: number; y: number };
   pointer: { x: number; y: number };
+  /** Smoothed mirrored fingertip velocity, in normalized screen units/second. */
+  pointerVelocity?: { x: number; y: number };
+  /** Strict index MCP(5)-PIP(6)-DIP(7) joint angle in degrees. */
+  indexAngle?: number;
+  indexAngleValid?: boolean;
+  /** Recent filtered PIP angular velocity; bending is negative degrees/second. */
+  indexAngularVelocity?: number;
+  /** Threshold hysteresis: BETWEEN is used before a decisive sample or on invalid geometry. */
+  indexState?: "EXTENDED" | "BENT" | "BETWEEN";
+  /** Index dominance evidence; unrelated to MediaPipe tracking confidence. */
+  pointConfidence?: number;
   /** Mirrored thumb/index midpoint, smoothed independently of the pointing tip. */
   pinchPoint?: { x: number; y: number };
   fingerState?: {

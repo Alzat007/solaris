@@ -6,9 +6,14 @@ import { store } from "../interaction/store";
 import { interaction } from "../interaction/InteractionController";
 import { rotation } from "../interaction/rotation";
 import { gestureConfig as config } from "../gesture/gestureConfig";
+import { gestureFeedback } from "../gesture/gestureFeedback";
 import { gestureTargets } from "../gesture/gestureTargets";
 import { planets } from "../data/planets";
-import { pickPlanet } from "./planetPicking";
+import {
+  pickPlanet,
+  planetObjects,
+  projectPlanetTarget,
+} from "./planetPicking";
 import { PointerFallback } from "./PointerFallback";
 export function InputField() {
   const { camera, gl, size } = useThree();
@@ -25,6 +30,37 @@ export function InputField() {
   const pointer = useMemo(() => new Vector2(), []);
   useEffect(() => {
     const canvas = gl.domElement;
+    const unregisterScreen = gestureTargets.registerScreenResolver((target) => {
+      if (target.kind === "ui") {
+        const element = Array.from(
+          document.querySelectorAll<HTMLButtonElement>(
+            "button[data-gesture-id]",
+          ),
+        ).find((button) => button.dataset.gestureId === target.id);
+        if (!element || element.disabled || !element.getClientRects().length)
+          return null;
+        const rect = element.getBoundingClientRect();
+        return {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2,
+          radius: Math.max(rect.width, rect.height) / 2 + 5,
+        };
+      }
+      const rect = canvas.getBoundingClientRect();
+      const projected = projectPlanetTarget(
+        target.id,
+        camera,
+        rect.width,
+        rect.height,
+      );
+      return projected
+        ? {
+            x: rect.left + projected.x,
+            y: rect.top + projected.y,
+            radius: projected.radius + 5,
+          }
+        : null;
+    });
     const pick = (x: number, y: number) => {
       const rect = canvas.getBoundingClientRect();
       pointer.set(
@@ -118,6 +154,7 @@ export function InputField() {
     window.addEventListener("blur", cancel);
     return () => {
       unsubscribe();
+      unregisterScreen();
       fallback.cancel();
       canvas.removeEventListener("pointerdown", down);
       canvas.removeEventListener("pointermove", move);
@@ -170,10 +207,14 @@ export function InputField() {
         (0.025 + particles.pinchStrength * 0.025) * particles.influence,
       );
     }
+    const feedback = gestureFeedback.get();
+    const lockedTarget = !interaction.isLocked() ? feedback.lockedTarget : null;
     let button: HTMLButtonElement | null = null;
     if (
       hand &&
-      (state.gesture === "POINT" || state.gesture === "PINCH") &&
+      (state.gesture === "POINT" ||
+        state.gesture === "PINCH" ||
+        !!lockedTarget) &&
       !interaction.isLocked()
     ) {
       const rect = gl.domElement.getBoundingClientRect();
@@ -207,13 +248,28 @@ export function InputField() {
             button.textContent?.trim() ||
             "选择",
         });
-        if (state.hover) store.set({ hover: null });
+        if (
+          state.hover !==
+          (lockedTarget?.kind === "body" ? lockedTarget.id : null)
+        )
+          store.set({
+            hover: lockedTarget?.kind === "body" ? lockedTarget.id : null,
+          });
       } else {
         const best =
           interaction.machine.can("SELECT") && particles.sunInterior < 0.05
-            ? pickPlanet(particles.handNDC, camera, size.width, size.height)
+            ? pickPlanet(
+                particles.handNDC,
+                camera,
+                size.width,
+                size.height,
+                planetObjects,
+                config.POINT_TARGET_RADIUS_MULTIPLIER,
+              )
             : null;
-        if (state.hover !== best) store.set({ hover: best });
+        const visibleHover =
+          lockedTarget?.kind === "body" ? lockedTarget.id : best;
+        if (state.hover !== visibleHover) store.set({ hover: visibleHover });
         gestureTargets.set(
           best
             ? {

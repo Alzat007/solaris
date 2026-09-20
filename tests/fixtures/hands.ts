@@ -33,6 +33,8 @@ export function handFixture(
     gripDirection = "forward",
     gripDepth = 0.045,
     thumbPose = "open",
+    indexPipAngle,
+    otherFingerFlexion,
   }: {
     relaxed?: boolean;
     noise?: number;
@@ -51,6 +53,10 @@ export function handFixture(
     gripDirection?: "forward" | "camera";
     gripDepth?: number;
     thumbPose?: "open" | "tucked" | "index-contact";
+    /** Strict MCP-PIP-DIP angle, independent of DIP-tip flexion. */
+    indexPipAngle?: number;
+    /** PIP flexion for the other three fingers; e.g. 55-75 degrees is half-bent. */
+    otherFingerFlexion?: number;
   } = {},
 ) {
   const world: Landmark[] = Array.from({ length: 21 }, () => ({
@@ -84,11 +90,15 @@ export function handFixture(
       ((gesture === "V_SIGN" || gesture === "V_GESTURE") && finger < 2);
     // A relaxed palm has 35° PIP and 10° DIP flexion, without curling its tips.
     const bend = finger === 3 ? softPinky : flexion;
-    const bends = extended
+    let bends = extended
       ? bend > 0
         ? [0, bend, bend + 10]
         : [0, 0, 0]
       : [25, 110, 180];
+    if (finger > 0 && otherFingerFlexion !== undefined)
+      bends = [20, 20 + otherFingerFlexion, 55 + otherFingerFlexion];
+    if (finger === 0 && indexPipAngle !== undefined)
+      bends = [0, 180 - indexPipAngle, 190 - indexPipAngle];
     // This family has a slightly longer little finger, allowing the 55 mm
     // camera-facing target to be reached without stretching its bone chain.
     const pinkyScale =

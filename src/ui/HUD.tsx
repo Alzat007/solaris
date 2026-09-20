@@ -8,6 +8,7 @@ import { HandIcon, OrbitIcon, SoundIcon } from "./Icons";
 import { GestureHint } from "./GestureHint";
 import { PlanetInfo } from "./PlanetInfo";
 import { GestureCursor } from "../gesture/GestureCursor";
+import { IndexTargetFeedback } from "../gesture/IndexTargetFeedback";
 import { GestureTutorial } from "../gesture/GestureTutorial";
 import { VZoomDial } from "../gesture/VZoomDial";
 import { HandFeedback } from "./HandFeedback";
@@ -55,6 +56,7 @@ export function HUD() {
       className={`hud ${s.mode === "INTRO" ? "intro-hud" : ""}${s.tracking === "online" ? " hand-active" : ""}${insideSun ? " sun-interior-hud" : ""}`}
     >
       <GestureCursor />
+      <IndexTargetFeedback />
       <VZoomDial />
       <GestureTutorial />
       <header className="topbar">
@@ -158,7 +160,7 @@ export function HUD() {
             <br />
             <span>尽在掌中</span>
           </h1>
-          <p className="welcome-caption">指 · 捏 · 拖 · 转 · 拨 · 握</p>
+          <p className="welcome-caption">指 · 弯 · 拖 · 转 · 拨 · 握</p>
           <button
             className="enter-button"
             disabled={s.mode === "INTRO" || s.tracking === "loading"}
@@ -252,7 +254,7 @@ export function HUD() {
           </div>
           <div className="quiet-status">
             {s.tracking === "online"
-              ? "指 · 捏 · 拖 · 转 · 拨 · 握"
+              ? "指 · 弯 · 拖 · 转 · 拨 · 握"
               : "漫游无垠宇宙"}
           </div>
           <GestureHint />
@@ -362,13 +364,15 @@ export function HUD() {
             ×
           </button>
           <p className="eyebrow">宇宙探索指南</p>
-          <h2>指、捏、拖、转、拨、握。</h2>
+          <h2>指、弯、拖、转、拨、握。</h2>
           <div className="help-columns">
             <div>
               <h3>核心互动</h3>
               <p>
-                指向 → 捏合
-                <span>食指瞄准，拇指碰食指确认；进入后资料自动浮现</span>
+                指向 → 轻弯食指
+                <span>
+                  伸直食指瞄准星球，等圆环填满后轻弯一下食指进入；再伸直食指，准备下一次选择。进入后资料自动浮现。
+                </span>
               </p>
               <p>
                 捏住 → 拖动<span>抓住太阳系空白，移动手旋转</span>
@@ -408,7 +412,7 @@ export function HUD() {
             </div>
           </div>
           <p className="help-note">
-            左右手都可以旋转缩放；手腕回到起始角度会暂停，平移手掌不会缩放。星球聚焦与太阳系中均可使用；动画结束后继续探索。若有画面却一直没有手部骨架，可点击「切换兼容识别」。摄像头画面仅在本机处理。
+            选择时让手掌稳定，只弯食指；捏合仅用于抓住空白拖动。左右手都可以旋转缩放，手腕回到起始角度会暂停；动画结束后继续探索。若有画面却一直没有手部骨架，可点击「切换兼容识别」。摄像头画面仅在本机处理。
           </p>
         </section>
       )}

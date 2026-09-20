@@ -79,22 +79,24 @@ export function CameraPreview() {
           const p = hand.landmarks[index];
           const fingertip = index > 0 && index % 4 === 0;
           const victoryTip = victory && (index === 8 || index === 12);
-          ctx.fillStyle = victoryTip
-            ? "#b4f5ff"
-            : fingertip
-              ? "#eafaff"
-              : "#b6dce6";
+          const indexTip = !victory && index === 8;
+          ctx.fillStyle =
+            victoryTip || indexTip
+              ? "#b4f5ff"
+              : fingertip
+                ? "#eafaff"
+                : "#b6dce6";
           ctx.beginPath();
           ctx.arc(
             (1 - p.x) * c.width,
             p.y * c.height,
-            fingertip ? (victoryTip ? 5.5 : 4.5) : 1.8,
+            fingertip ? (victoryTip || indexTip ? 5.5 : 4.5) : 1.8,
             0,
             Math.PI * 2,
           );
           ctx.fill();
           if (fingertip) {
-            ctx.strokeStyle = victoryTip ? "#e8ffff" : "#80d7ea";
+            ctx.strokeStyle = victoryTip || indexTip ? "#e8ffff" : "#80d7ea";
             ctx.lineWidth = 1.4;
             ctx.stroke();
           }
@@ -128,7 +130,7 @@ export function CameraPreview() {
         title={
           !expanded
             ? "点击展开手部骨架，检查整只手是否在画面内"
-            : "亮点标出指尖；食指和中指亮起时已识别 ✌。画面仅在本机处理"
+            : "亮点突出食指，方便对照轻弯动作；识别 ✌ 时同时突出食指和中指。画面仅在本机处理"
         }
       >
         <span>

@@ -30,7 +30,7 @@ export function GestureDebug() {
       <DebugHands />
       <pre>
         {[
-          "SOLARIS / V ROTATION ZOOM",
+          "SOLARIS / INDEX TRIGGER + V ZOOM",
           `Camera: ${camera.stage} · ${camera.backend || "—"}${camera.compatibility ? " · COMPAT" : ""}`,
           `Detection: ${camera.rawHands} raw / ${camera.validHands} valid · ${camera.frames} frames`,
           `Inference: ${camera.inferenceMs.toFixed(1)} ms${camera.frozen ? " · VIDEO FROZEN" : ""}`,
@@ -39,6 +39,16 @@ export function GestureDebug() {
           `Hand Geometry: ${f.trackingConfidence >= 0.55 ? "VALID" : "WEAK"}`,
           `Current Gesture: ${gestureLabels[s.gesture] || "姿势未确定"} (${s.gesture})`,
           `Action: ${f.action}`,
+          `Index Phase: ${f.indexPhase}`,
+          `Index Angle: ${f.indexAngle === null ? "—" : `${f.indexAngle.toFixed(1)}°`}`,
+          `Index Angular Velocity: ${f.indexAngularVelocity >= 0 ? "+" : ""}${f.indexAngularVelocity.toFixed(1)}°/s`,
+          `Index State: ${f.indexState}`,
+          `Point Confidence: ${f.pointConfidence.toFixed(2)}`,
+          `Hover Target: ${f.hoverTarget ? `${f.hoverTarget.kind}/${f.hoverTarget.id}` : "—"}`,
+          `Locked Target: ${f.lockedTarget ? `${f.lockedTarget.kind}/${f.lockedTarget.id}` : "—"}`,
+          `Target Lock: ${(f.targetLockProgress * 100).toFixed(0)}%`,
+          `Index Press: ${(f.indexPressProgress * 100).toFixed(0)}%`,
+          `Index Release Required: ${f.indexNeedsRelease}`,
           `Pinch State: ${f.pinchPhase}`,
           `Pinch Distance: ${f.pinchDistance.toFixed(3)}`,
           `Palm Position: ${f.palmX.toFixed(3)}, ${f.palmY.toFixed(3)}`,

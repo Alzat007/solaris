@@ -1003,3 +1003,222 @@ test("palm-axis angles around minus/plus PI retain the correct shortest signed d
     assert.ok(Math.abs(wrappedRadians(b - a) - (mirror ? 0.15 : 0.08)) < 1e-12);
   }
 });
+
+test("index-dominant pointing accepts naturally half-bent fingers and a free thumb on either hand", () => {
+  for (const mirror of [false, true]) {
+    for (const otherFingerFlexion of [45, 55, 75]) {
+      for (const thumbPose of ["open", "tucked"] as const) {
+        const recognizer = new GestureRecognizer();
+        for (let frame = 0; frame < 16; frame++) {
+          const fixture = handFixture("POINT", {
+            indexPipAngle: 160,
+            otherFingerFlexion,
+            thumbPose,
+            mirror,
+            yaw: 0.7,
+            pitch: -0.45,
+            noise: 0.0003,
+            depthNoise: 0.001,
+            frame,
+          });
+          const hand = recognizer.analyze(
+            fixture.points,
+            fixture.world,
+            frame * 50,
+          );
+          const context = `mirror=${mirror}, half-bend=${otherFingerFlexion}, thumb=${thumbPose}, frame=${frame}`;
+          assert.equal(hand.gesture, "POINT", context);
+          assert.ok(
+            hand.pointConfidence! >= gestureConfig.INDEX_POINT_MIN_CONFIDENCE,
+            context,
+          );
+          assert.equal(hand.indexAngleValid, true);
+          assert.equal(hand.indexState, "EXTENDED", context);
+        }
+      }
+    }
+  }
+});
+
+test("index PIP measurement is a true MCP-PIP-DIP joint angle under rotation, mirror and screen fallback", () => {
+  for (const indexPipAngle of [170, 155, 135, 110, 105, 80]) {
+    for (const mirror of [false, true]) {
+      const fixture = handFixture("POINT", {
+        indexPipAngle,
+        otherFingerFlexion: 55,
+        mirror,
+        yaw: 0.8,
+        pitch: -0.5,
+        rotation: 0.4,
+      });
+      for (const world of [fixture.world, undefined]) {
+        const hand = new GestureRecognizer().analyze(fixture.points, world, 0);
+        assert.equal(hand.indexAngleValid, true);
+        assert.ok(Math.abs(hand.indexAngle! - indexPipAngle) < 1e-8);
+        assert.notEqual(
+          hand.gesture,
+          "INDEX_PRESS",
+          "only a locked selection controller may emit an action",
+        );
+      }
+    }
+  }
+});
+
+test("the PIP angle ignores fingertip-only motion and prefers world geometry over distorted screen points", () => {
+  const fixture = handFixture("POINT", { indexPipAngle: 160 });
+  fixture.world[8] = { x: 0.1, y: -0.02, z: -0.06 };
+  fixture.points[8] = { x: 0.2, y: 0.8, z: -0.1 };
+  fixture.points[7] = { ...fixture.points[5] };
+  const hand = new GestureRecognizer().analyze(
+    fixture.points,
+    fixture.world,
+    0,
+  );
+  assert.equal(hand.indexAngleValid, true);
+  assert.ok(Math.abs(hand.indexAngle! - 160) < 1e-8);
+});
+
+test("index state uses separate press/release thresholds and retains its state in the middle band", () => {
+  const recognizer = new GestureRecognizer();
+  const samples = [
+    [130, "BETWEEN"],
+    [160, "EXTENDED"],
+    [144, "EXTENDED"],
+    [116, "EXTENDED"],
+    [114, "BENT"],
+    [116, "BENT"],
+    [144, "BENT"],
+    [146, "EXTENDED"],
+  ] as const;
+  samples.forEach(([indexPipAngle, expected], frame) => {
+    const fixture = handFixture("POINT", {
+      indexPipAngle,
+      otherFingerFlexion: 55,
+    });
+    const hand = recognizer.analyze(fixture.points, fixture.world, frame * 50);
+    assert.equal(hand.indexState, expected, `PIP angle ${indexPipAngle}`);
+  });
+});
+
+test("a light 160-to-105-degree index curl provides negative angular velocity without requiring a fist", () => {
+  const recognizer = new GestureRecognizer();
+  let time = 0;
+  const send = (indexPipAngle: number) => {
+    const fixture = handFixture("POINT", {
+      indexPipAngle,
+      otherFingerFlexion: 55,
+    });
+    return recognizer.analyze(fixture.points, fixture.world, (time += 50));
+  };
+  assert.equal(send(160).indexAngularVelocity, 0);
+  for (const angle of [145, 130, 110, 105]) {
+    const hand = send(angle);
+    assert.ok(
+      hand.indexAngularVelocity! < -gestureConfig.INDEX_PRESS_MIN_VELOCITY,
+    );
+    assert.notEqual(hand.gesture, "FIST");
+  }
+  let held = send(105);
+  for (let frame = 0; frame < 14; frame++) held = send(105);
+  assert.ok(
+    Math.abs(held.indexAngularVelocity!) < 0.1,
+    "held curls carry no ongoing press velocity",
+  );
+  const released = send(160);
+  assert.ok(released.indexAngularVelocity! > 0);
+  assert.equal(released.indexState, "EXTENDED");
+});
+
+test("degenerate PIP geometry and long frame gaps clear derivative history instead of creating a press spike", () => {
+  const recognizer = new GestureRecognizer();
+  const straight = handFixture("POINT", { indexPipAngle: 160 });
+  const bent = handFixture("POINT", { indexPipAngle: 105 });
+  recognizer.analyze(straight.points, straight.world, 0);
+  assert.ok(
+    recognizer.analyze(bent.points, bent.world, 50).indexAngularVelocity! < 0,
+  );
+  const degenerate = handFixture("POINT", { indexPipAngle: 105 });
+  degenerate.world[6] = { ...degenerate.world[5] };
+  const invalid = recognizer.analyze(degenerate.points, degenerate.world, 100);
+  assert.equal(invalid.indexAngleValid, false);
+  assert.equal(invalid.indexState, "BETWEEN");
+  assert.equal(invalid.indexAngularVelocity, 0);
+  assert.equal(
+    recognizer.analyze(bent.points, bent.world, 150).indexAngularVelocity,
+    0,
+  );
+  const reset = recognizer.analyze(
+    straight.points,
+    straight.world,
+    150 + gestureConfig.FRAME_GAP_RESET + 1,
+  );
+  assert.equal(reset.indexAngularVelocity, 0);
+  assert.equal(reset.indexState, "EXTENDED");
+  assert.deepEqual(reset.pointerVelocity, { x: 0, y: 0 });
+});
+
+test("natural landmark jitter cannot toggle index state while its PIP stays inside the hysteresis band", () => {
+  const recognizer = new GestureRecognizer();
+  for (const start of [160, 105]) {
+    recognizer.reset();
+    const initial = handFixture("POINT", { indexPipAngle: start });
+    recognizer.analyze(initial.points, initial.world, 0);
+    for (let frame = 1; frame <= 30; frame++) {
+      const fixture = handFixture("POINT", {
+        indexPipAngle: 130,
+        otherFingerFlexion: 55,
+        noise: 0.0002,
+        depthNoise: 0.0005,
+        mirror: true,
+        yaw: 0.5,
+        frame,
+      });
+      const hand = recognizer.analyze(
+        fixture.points,
+        fixture.world,
+        frame * 50,
+      );
+      assert.ok(Math.abs(hand.indexAngle! - 130) < 6);
+      assert.equal(hand.indexState, start === 160 ? "EXTENDED" : "BENT");
+    }
+  }
+});
+
+test("pointer filtering follows deliberate fast movement more closely and stabilizes slow aim", () => {
+  const gains: number[] = [];
+  for (const displacement of [0.005, 0.1]) {
+    const recognizer = new GestureRecognizer();
+    const initial = handFixture("POINT", { indexPipAngle: 160 });
+    const first = recognizer.analyze(initial.points, initial.world, 0);
+    const moved = handFixture("POINT", { indexPipAngle: 160 });
+    moved.points[8].x -= displacement;
+    const hand = recognizer.analyze(moved.points, moved.world, 50);
+    gains.push((hand.pointer.x - first.pointer.x) / displacement);
+    assert.ok(
+      hand.pointerVelocity!.x > 0,
+      "mirror-space right motion has positive cursor velocity",
+    );
+    let resting = hand;
+    for (let frame = 2; frame <= 20; frame++)
+      resting = recognizer.analyze(moved.points, moved.world, frame * 50);
+    assert.ok(Math.abs(resting.pointerVelocity!.x) < 0.01);
+  }
+  assert.ok(gains[0] < 0.5, `slow aim response=${gains[0]}`);
+  assert.ok(gains[1] > 0.6 && gains[1] < 1, `fast aim response=${gains[1]}`);
+});
+
+test("widened Point recognition never claims V, open palm, real pinch, or a full fist", () => {
+  for (const pose of ["V_GESTURE", "OPEN_PALM", "PINCH", "FIST"] as const) {
+    for (const mirror of [false, true]) {
+      const fixture = handFixture(pose, { mirror, relaxed: true });
+      const hand = new GestureRecognizer().analyze(
+        fixture.points,
+        fixture.world,
+        0,
+      );
+      assert.equal(hand.gesture, pose);
+      assert.equal(hand.pointConfidence, 0);
+    }
+  }
+});

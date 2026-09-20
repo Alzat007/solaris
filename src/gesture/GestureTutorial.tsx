@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSolaris } from "../interaction/store";
 import { useGestureFeedback } from "./gestureFeedback";
 
-const completionKey = "solarisGestureTutorialCompleted";
+const completionKey = "solarisIndexTriggerTutorialCompleted";
 function isCompleted() {
   try {
     return localStorage.getItem(completionKey) === "true";
@@ -10,56 +10,28 @@ function isCompleted() {
     return false;
   }
 }
-const steps = [
-  ["指向", "POINT"],
-  ["捏合进入", "PINCH TO ENTER"],
-  ["左右拨动", "SWIPE TO EXPLORE"],
-  ["握拳返回", "MAKE A FIST TO RETURN"],
-];
 
-/** Teach one successful interaction at a time, then disappear permanently. */
+/** Only a successful index press completes this lesson; mouse selection cannot. */
 export function GestureTutorial() {
   const s = useSolaris();
   const f = useGestureFeedback();
   const [complete, setComplete] = useState(isCompleted);
-  const [step, setStep] = useState(0);
   const [started, setStarted] = useState(false);
   const lastActionAt = useRef(f.actionAt);
   useEffect(() => {
-    if (complete) return;
     const newAction = f.actionAt !== lastActionAt.current;
     lastActionAt.current = f.actionAt;
-    if (f.handCount > 0 && !started) setStarted(true);
-    if (step === 0 && f.target?.kind === "body") setStep(1);
-    if (step < 2 && s.selected && !s.transitioning) setStep(2);
-    if (step < 3 && s.mode === "SUN_INTERIOR" && !s.transitioning) setStep(3);
-    if (newAction && step === 2 && f.lastAction === "SWIPE") setStep(3);
-    if (newAction && step >= 2 && f.lastAction === "FIST_BACK") {
+    if (complete) return;
+    if (f.handCount > 0) setStarted(true);
+    if (newAction && f.lastAction === "INDEX_PRESS") {
       setComplete(true);
       try {
         localStorage.setItem(completionKey, "true");
       } catch {
-        /* Storage may be unavailable in private browsing. */
+        // The lesson still completes for this session without browser storage.
       }
     }
-  }, [
-    complete,
-    f.actionAt,
-    f.handCount,
-    f.target,
-    f.lastAction,
-    s.selected,
-    s.mode,
-    s.transitioning,
-    started,
-    step,
-  ]);
-  useEffect(() => {
-    if (complete || step !== 2 || s.transitioning || s.tracking !== "online")
-      return;
-    const timer = window.setTimeout(() => setStep(3), 3000);
-    return () => window.clearTimeout(timer);
-  }, [complete, step, s.transitioning, s.tracking]);
+  }, [complete, f.actionAt, f.handCount, f.lastAction]);
   if (
     complete ||
     !started ||
@@ -67,26 +39,39 @@ export function GestureTutorial() {
     s.help ||
     s.transitioning ||
     f.locked ||
+    f.readiness !== "READY" ||
     f.zoomMode !== "IDLE" ||
     s.gesture === "V_GESTURE" ||
+    ["PINCH_DRAG", "FIST_BACK", "COLLAPSE", "REBIRTH"].includes(f.action) ||
+    s.mode === "SUN_INTERIOR" ||
+    s.mode === "COLLAPSE" ||
     f.presence === "NO_HAND"
   )
     return null;
+  const ready = Boolean(f.lockedTarget);
+  const releasing = f.indexNeedsRelease || f.indexPhase === "WAIT_RELEASE";
+  const title = releasing
+    ? "重新伸直食指"
+    : ready
+      ? f.lockedTarget?.kind === "body"
+        ? "轻弯食指进入"
+        : "轻弯食指确认"
+      : "指向星球";
+  const detail = releasing
+    ? "伸直后，可继续选择"
+    : ready
+      ? "保持手掌稳定，弯一下食指"
+      : "食指伸直，等星球圆环填满";
   return (
-    <div
-      className="gesture-tutorial"
-      role="status"
-      aria-live="polite"
-      key={step}
-    >
+    <div className="gesture-tutorial" role="status" aria-live="polite">
       <span className="tutorial-symbol" aria-hidden="true">
-        {["⊙", "◉", "↔", "◌"][step]}
+        {ready ? "⌁" : "☝"}
       </span>
       <span>
-        {steps[step][0]}
-        <small>{steps[step][1]}</small>
+        {title}
+        <small>{detail}</small>
       </span>
-      <i aria-hidden="true">{String(step + 1).padStart(2, "0")} / 04</i>
+      <i aria-hidden="true">{ready ? "02" : "01"} / 02</i>
     </div>
   );
 }

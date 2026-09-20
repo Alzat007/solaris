@@ -29,7 +29,7 @@ export function GestureHint() {
             ]
           : [
               [
-                hand ? "指向 · 捏合" : touch ? "点按天体" : "点击天体",
+                hand ? "指向 · 轻弯食指" : touch ? "点按天体" : "点击天体",
                 "进入探索",
               ],
               [

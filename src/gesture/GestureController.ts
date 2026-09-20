@@ -11,6 +11,7 @@ import {
 import { gestureTargets } from "./gestureTargets";
 import { HoldStateMachine, PinchStateMachine } from "./GestureStateMachine";
 import { SolarEffectGesture, SwipeTracker } from "./GestureMotion";
+import { IndexTriggerSelection } from "./IndexTriggerSelection";
 import { VRotationZoom } from "./VRotationZoom";
 import { settleDialScale } from "./dialScale";
 import type { HandFeatures, HandFrame } from "./GestureTypes";
@@ -37,10 +38,12 @@ export class GestureController {
   private lastFrame = 0;
   private cooldownUntil = 0;
   private triggeredUntil = 0;
-  private pointTarget: GestureTarget | null = null;
-  private pointAt = 0;
-  private captured: GestureTarget | null = null;
-  private pinchContext: "select" | "blank" | "drag" | "consumed" | null = null;
+  private index = new IndexTriggerSelection();
+  private indexHandId = "";
+  // A completed/pressed index must release before Back. Mere re-entry only
+  // requires release for selection; it must not disable a fresh fist forever.
+  private indexBackNeedsRelease = false;
+  private pinchContext: "blank" | "drag" | "consumed" | null = null;
   private pinchOriginX = 0;
   private pinchOriginY = 0;
   private dragLastX = 0;
@@ -69,7 +72,6 @@ export class GestureController {
       if (this.zoom.cancel()) interaction.endScale();
       this.zoomHandId = "";
     }
-    this.captured = null;
     this.pinchContext = null;
     this.fist.reset();
     this.swipe.reset();
@@ -80,7 +82,8 @@ export class GestureController {
     this.stopMotion();
     rotation.stop();
     this.pinches.clear();
-    this.pointTarget = null;
+    this.index.cancel(true);
+    this.indexHandId = "";
     this.readyAt = time + config.HAND_REENTRY_DELAY;
   }
   private trigger(
@@ -104,7 +107,7 @@ export class GestureController {
       target.kind === "body"
         ? interaction.selectBody(target.id)
         : gestureTargets.activateUI(target.id);
-    if (applied) this.trigger("PINCH_SELECT", time, config.SELECT_COOLDOWN);
+    if (applied) this.trigger("INDEX_PRESS", time, config.SELECT_COOLDOWN);
     return applied;
   }
   private settleDial() {
@@ -112,6 +115,37 @@ export class GestureController {
       particles.targetScale,
       particles.scale,
     );
+  }
+  private updateIndex(
+    hand: HandFeatures | null,
+    target: GestureTarget | null,
+    time: number,
+    enabled = true,
+  ) {
+    const result = this.index.update(hand, target, time, enabled);
+    if (!this.index.needsRelease) this.indexBackNeedsRelease = false;
+    else if (
+      result.triggered ||
+      (this.index.state === "INDEX_PRESSING" &&
+        hand?.indexAngleValid === true &&
+        (hand.indexAngle ?? Infinity) < config.INDEX_PRESS_THRESHOLD_DEG)
+    )
+      this.indexBackNeedsRelease = true;
+    return result;
+  }
+  private indexFeedback(hand?: HandFeatures) {
+    return {
+      indexPhase: this.index.state,
+      indexAngle: hand?.indexAngleValid ? (hand.indexAngle ?? null) : null,
+      indexAngularVelocity: hand?.indexAngularVelocity ?? 0,
+      indexState: hand?.indexState ?? ("BETWEEN" as const),
+      pointConfidence: hand?.pointConfidence ?? 0,
+      hoverTarget: this.index.hoverTarget,
+      lockedTarget: this.index.lockedTarget,
+      targetLockProgress: this.index.lockProgress,
+      indexPressProgress: this.index.pressProgress,
+      indexNeedsRelease: this.index.needsRelease,
+    };
   }
   private zoomFeedback(hand?: HandFeatures) {
     return {
@@ -148,7 +182,8 @@ export class GestureController {
         this.handSignature = "";
       }
       this.pinches.clear();
-      this.pointTarget = null;
+      this.updateIndex(null, null, time, false);
+      this.indexHandId = "";
       particles.cursorVisible = false;
       particles.active = false;
       gestureTargets.set(null);
@@ -171,6 +206,7 @@ export class GestureController {
         pinchProgress: 0,
         fistProgress: 0,
         ...this.zoomFeedback(),
+        ...this.indexFeedback(),
         specialProgress: 0,
         specialStage: "IDLE",
         needsRelease: false,
@@ -183,9 +219,12 @@ export class GestureController {
     }
     // Keep the captured dial hand primary even if detection order changes or
     // a second hand enters. An active dial owns arbitration until release.
+    const indexOwner = this.index.owned
+      ? hands.find((hand, index) => this.id(hand, index) === this.indexHandId)
+      : undefined;
     const owner = this.zoom.owned
       ? hands.find((hand, index) => this.id(hand, index) === this.zoomHandId)
-      : hands.find((hand) => hand.gesture === "V_GESTURE");
+      : (indexOwner ?? hands.find((hand) => hand.gesture === "V_GESTURE"));
     const first = owner ?? hands[0],
       second = hands.find((hand) => hand !== first);
     const firstId = this.id(first, 0),
@@ -193,7 +232,7 @@ export class GestureController {
     const signature = second ? [firstId, secondId].sort().join("|") : firstId;
     // The captured hand may disappear while another remains visible. Let the
     // dial pause for its grace window without lending ownership to that hand.
-    const continuingDial = this.zoom.owned;
+    const continuingDial = this.zoom.owned || !!indexOwner;
     const reappeared =
       !this.visible ||
       (!continuingDial && signature !== this.handSignature) ||
@@ -213,7 +252,7 @@ export class GestureController {
     const confidenceReady = trackingConfidence >= config.MIN_CONFIDENCE;
     if (!confidenceReady) this.enterReentry(time);
     const pointer =
-      first.gesture === "POINT" || first.gesture === "PINCH"
+      first.gesture === "POINT" || first.gesture === "PINCH" || this.index.owned
         ? first.pointer
         : first.center;
     particles.handTargetNDC.set(pointer.x * 2 - 1, 1 - pointer.y * 2);
@@ -253,14 +292,12 @@ export class GestureController {
         enabled,
         second.gesture === "PINCH",
       );
-    const currentTarget =
-      first.gesture === "POINT" || first.gesture === "PINCH"
-        ? gestureTargets.get()
+    const currentTarget = gestureTargets.get();
+    const selectableTarget =
+      currentTarget &&
+      (currentTarget.kind === "ui" || overview(mode) || focused(mode))
+        ? currentTarget
         : null;
-    if (first.gesture === "POINT") {
-      this.pointTarget = currentTarget;
-      this.pointAt = time;
-    }
     if (first.gesture !== "FIST" && (!second || second.gesture !== "FIST"))
       this.fistNeedsRelease = false;
     let action: GestureAction = first.gesture === "POINT" ? "POINT" : "NONE";
@@ -273,11 +310,12 @@ export class GestureController {
         p1?.phase === "PINCH_START" ||
         this.fist.progress > 0 ||
         this.zoom.progress > 0 ||
+        this.index.lockProgress > 0 ||
         specialProgress > 0;
       const target =
         this.pinchContext === "drag" || this.zoom.owned || action === "V_ZOOM"
           ? null
-          : currentTarget;
+          : (this.index.lockedTarget ?? this.index.hoverTarget);
       const fingers = first.fingerState;
       particles.collapseCharge =
         overview(mode) && !locked ? specialProgress : 0;
@@ -296,10 +334,14 @@ export class GestureController {
         pinchProgress,
         fistProgress: this.fist.progress,
         ...this.zoomFeedback(first),
+        ...this.indexFeedback(first),
         specialProgress,
         specialStage: this.special.stage,
         needsRelease:
-          p0.needsRelease || !!p1?.needsRelease || this.fistNeedsRelease,
+          p0.needsRelease ||
+          !!p1?.needsRelease ||
+          this.fistNeedsRelease ||
+          this.index.needsRelease,
         handCount: hands.length,
         confidence,
         trackingConfidence,
@@ -319,8 +361,10 @@ export class GestureController {
     if (!enabled) {
       this.stopMotion();
       rotation.stop();
-      if (locked || !ready) this.pointTarget = null;
-      if (first.gesture === "FIST" || second?.gesture === "FIST")
+      this.updateIndex(first, null, time, false);
+      // Re-entry resets hold progress until ready, then permits a fresh 600ms
+      // fist. A fist held through a scene transition still needs a release.
+      if (locked && (first.gesture === "FIST" || second?.gesture === "FIST"))
         this.fistNeedsRelease = true;
       report();
       return;
@@ -331,7 +375,7 @@ export class GestureController {
       const zoom = this.zoom.update(hand, time, particles.targetScale);
       if (!zoom.owned) return false;
       this.pinchContext = "consumed";
-      this.captured = this.pointTarget = null;
+      this.updateIndex(first, null, time, false);
       p0.reset(true);
       p1?.reset(true);
       this.fist.reset();
@@ -378,6 +422,7 @@ export class GestureController {
       specialProgress = this.special.progress;
       if (event || specialProgress > 0) {
         action = mode === "COLLAPSE" ? "REBIRTH" : "COLLAPSE";
+        this.updateIndex(first, null, time, false);
         this.fist.reset();
         this.swipe.reset();
         if (
@@ -395,6 +440,35 @@ export class GestureController {
       particles.collapseCharge = 0;
     }
 
+    const updateSelection = () => {
+      const result = this.updateIndex(first, selectableTarget, time);
+      if (this.index.state !== "POINT_IDLE") this.indexHandId = firstId;
+      if (!result.owned && !result.triggered) return false;
+      this.pinchContext = "consumed";
+      p0.reset(true);
+      p1?.reset(true);
+      this.fist.reset();
+      this.swipe.reset();
+      rotation.stop();
+      pinchProgress = 0;
+      action =
+        this.index.state === "INDEX_PRESSING" || result.triggered
+          ? "INDEX_PRESS"
+          : "POINT";
+      if (result.triggered) {
+        this.fistNeedsRelease = true;
+        if (this.select(result.triggered, time))
+          store.set({ gesture: "INDEX_PRESS" });
+      }
+      report();
+      return true;
+    };
+
+    // A locked aim is a clutch: bending moves the cursor but cannot transfer
+    // the captured target or arm V zoom/swipe/fist at the same time.
+    const wasIndexOwned = this.index.owned;
+    if (wasIndexOwned && updateSelection()) return;
+
     // Priority 2: V detection starts the exclusive rotation clutch. Five-tip
     // clustering remains diagnostic geometry and never starts a zoom.
     if (canDial(mode) && first.gesture === "V_GESTURE") {
@@ -408,11 +482,17 @@ export class GestureController {
       return;
     }
 
+    if (!wasIndexOwned && !second) {
+      if (updateSelection()) return;
+    } else if (!wasIndexOwned) {
+      this.updateIndex(first, null, time, false);
+    }
+
     // Two-hand pinches no longer zoom. Consume them so neither hand inherits a
     // click after the other disappears; open palms still own cosmic effects.
     if (second && p1) {
       this.pinchContext = "consumed";
-      this.captured = this.pointTarget = null;
+      this.updateIndex(first, null, time, false);
       this.swipe.reset();
       if (
         first.gesture === "PINCH" ||
@@ -429,37 +509,24 @@ export class GestureController {
       }
     }
 
-    // Priorities 3/4: a pinch captures exactly one target OR empty space.
-    // Crossing a body while holding an empty-space pinch can only drag.
+    // Pinch remains a blank-space drag only. It can never select a body or
+    // HUD button, and a hold beginning over a target is consumed until release.
     if (!second) {
       if (p0.justReleased || first.gesture !== "PINCH") {
         if (this.pinchContext === "drag") rotation.end();
         this.pinchContext = null;
-        this.captured = null;
       }
       if (p0.justStarted) {
-        this.captured =
-          currentTarget ??
-          (time - this.pointAt <= config.TARGET_GRACE_TIME
-            ? this.pointTarget
-            : null);
-        this.pinchContext = this.captured ? "select" : "blank";
+        this.pinchContext = currentTarget ? "consumed" : "blank";
         this.pinchOriginX = this.dragLastX = first.pointer.x;
         this.pinchOriginY = first.pointer.y;
         this.dragLastTime = time;
       }
       if (p0.phase === "PINCH_START" || p0.phase === "PINCH_HOLD") {
+        this.updateIndex(first, null, time, false);
         this.fist.reset();
         this.swipe.reset();
-        if (p0.justHeld && this.pinchContext === "select") {
-          if (
-            this.captured &&
-            (this.captured.kind === "ui" || overview(mode) || focused(mode))
-          )
-            this.select(this.captured, time);
-          this.pinchContext = "consumed";
-          action = "PINCH_SELECT";
-        } else if (
+        if (
           p0.phase === "PINCH_HOLD" &&
           overview(mode) &&
           (this.pinchContext === "blank" || this.pinchContext === "drag")
@@ -486,7 +553,7 @@ export class GestureController {
             this.dragLastTime = time;
             action = "PINCH_DRAG";
           }
-        } else action = "PINCH_SELECT";
+        }
         report();
         return;
       }
@@ -504,7 +571,8 @@ export class GestureController {
       fistHand &&
       fistHand.confidence >= config.MIN_CONFIDENCE &&
       canBack &&
-      !this.fistNeedsRelease
+      !this.fistNeedsRelease &&
+      !this.indexBackNeedsRelease
     ) {
       const id = fistHand.id ?? fistHand.handedness ?? "fist";
       if (id !== this.fistId) {
@@ -551,8 +619,9 @@ export class GestureController {
     this.readyAt = 0;
     this.lastFrame = 0;
     this.cooldownUntil = this.triggeredUntil = 0;
-    this.pointTarget = null;
-    this.pointAt = 0;
+    this.index.reset();
+    this.indexHandId = "";
+    this.indexBackNeedsRelease = false;
     this.fistId = "";
     this.fistNeedsRelease = false;
     this.pairedReleaseAt = -Infinity;

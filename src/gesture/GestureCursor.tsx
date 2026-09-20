@@ -6,7 +6,7 @@ import { useGestureFeedback } from "./gestureFeedback";
 /** Read the render-side cursor so its light ring and hit test never drift apart. */
 export function GestureCursor() {
   const cursor = useRef<HTMLDivElement>(null);
-  const { tracking, mode } = useSolaris();
+  const { tracking, mode, transitioning } = useSolaris();
   const f = useGestureFeedback();
   const online = tracking === "online";
   const visible = online && f.presence !== "NO_HAND";
@@ -36,31 +36,57 @@ export function GestureCursor() {
   if (!visible) return null;
   const zooming = f.zoomMode !== "IDLE";
   const fist = !zooming && f.action === "FIST_BACK";
+  const indexSelecting =
+    !zooming &&
+    !fist &&
+    !f.locked &&
+    !transitioning &&
+    f.readiness === "READY" &&
+    [
+      "POINT_HOVER",
+      "TARGET_LOCKING",
+      "TARGET_LOCKED",
+      "INDEX_PRESSING",
+      "INDEX_TRIGGERED",
+    ].includes(f.indexPhase);
   const progress = zooming
     ? f.zoomActive
       ? 0
       : f.zoomProgress
-    : fist
-      ? f.fistProgress
-      : f.specialProgress;
+    : indexSelecting
+      ? f.targetLockProgress
+      : fist
+        ? f.fistProgress
+        : f.specialProgress;
   const special = !zooming && f.specialStage !== "IDLE";
-  const targetLabel = zooming
-    ? ""
-    : fist
-      ? "返回"
-      : special
-        ? f.specialStage === "PAUSED"
-          ? "留在镜头内"
-          : mode === "COLLAPSE"
-            ? f.specialProgress > 0
-              ? `展开 ${Math.round(f.specialProgress * 100)}%`
-              : "展开 · 重生"
-            : f.specialProgress > 0
-              ? `凝聚 ${Math.round(f.specialProgress * 100)}%`
-              : "双掌合拢"
-        : f.target?.label;
+  const targetLabel =
+    zooming || f.locked || transitioning || f.readiness !== "READY"
+      ? ""
+      : fist
+        ? "返回"
+        : special
+          ? f.specialStage === "PAUSED"
+            ? "留在镜头内"
+            : mode === "COLLAPSE"
+              ? f.specialProgress > 0
+                ? `展开 ${Math.round(f.specialProgress * 100)}%`
+                : "展开 · 重生"
+              : f.specialProgress > 0
+                ? `凝聚 ${Math.round(f.specialProgress * 100)}%`
+                : "双掌合拢"
+          : f.indexNeedsRelease
+            ? "伸直食指"
+            : f.indexPhase === "INDEX_PRESSING"
+              ? "轻弯 · 确认"
+              : f.lockedTarget
+                ? `${f.lockedTarget.label} · 轻弯食指`
+                : f.target?.label;
   const style = {
-    "--pinch-progress": zooming ? 0 : f.pinchProgress,
+    "--pinch-progress": zooming
+      ? 0
+      : indexSelecting
+        ? f.indexPressProgress
+        : f.pinchProgress,
     "--gesture-progress": Math.max(0, Math.min(1, progress)),
   } as CSSProperties;
   return (
@@ -71,6 +97,7 @@ export function GestureCursor() {
         data-state={f.presence}
         data-readiness={f.readiness}
         data-pinch={f.pinchPhase}
+        data-index-phase={f.indexPhase}
         data-special-stage={f.specialStage}
         data-zoom-active={f.zoomActive}
         style={style}

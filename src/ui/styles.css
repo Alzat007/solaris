@@ -1158,6 +1158,13 @@ footer {
     0 0 0 4px #7edffb0c,
     0 0 20px #6ce0ff50;
 }
+.gesture-cursor[data-index-phase="TARGET_LOCKED"] .gesture-cursor-ring,
+.gesture-cursor[data-index-phase="INDEX_PRESSING"] .gesture-cursor-ring {
+  border-color: #defaff;
+  box-shadow:
+    0 0 0 3px #91e7ff12,
+    0 0 18px #81e5ff55;
+}
 .gesture-cursor[data-readiness="RECONNECTING"] .gesture-cursor-ring {
   border-style: dashed;
   opacity: 0.55;
@@ -1211,6 +1218,96 @@ footer {
   }
   to {
     transform: scale(3.1);
+    opacity: 0;
+  }
+}
+.index-target-anchor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 11;
+  will-change: transform;
+  visibility: hidden;
+}
+.index-target-feedback {
+  position: absolute;
+  width: var(--target-diameter, 40px);
+  height: var(--target-diameter, 40px);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 180ms ease-out;
+  color: #bfeaf4;
+}
+.index-target-feedback[data-visible="true"] {
+  opacity: 1;
+}
+.index-target-ring {
+  position: absolute;
+  inset: 0;
+  transform: scale(calc(1 - var(--index-press-progress, 0) * 0.11));
+  transition: transform 65ms linear;
+}
+.index-target-ring > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform: rotate(-90deg);
+}
+.index-target-ring circle {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+.index-target-orbit {
+  stroke: #9dddec45;
+  stroke-width: 0.8;
+}
+.index-target-progress {
+  stroke: #b9edfa;
+  stroke-width: 1.2;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--target-lock-progress, 0));
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 3px #7ddfff6b);
+  transition: stroke-dashoffset 65ms linear;
+}
+.index-target-feedback[data-locked="true"] .index-target-progress {
+  stroke: #e0faff;
+  filter: drop-shadow(0 0 4px #7ddfffa0);
+}
+.index-target-label {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 10px);
+  transform: translateX(-50%);
+  text-align: center;
+  white-space: nowrap;
+  font-size: 11px;
+  line-height: 1.6;
+  letter-spacing: 0.08em;
+  text-shadow: 0 1px 8px #000;
+}
+.index-target-label small {
+  display: block;
+  font-size: 9px;
+  color: #95b8c2;
+}
+.index-target-pulse {
+  position: absolute;
+  inset: 2%;
+  border: 1px solid #d6faff;
+  border-radius: 50%;
+  animation: index-target-confirm 380ms ease-out both;
+}
+@keyframes index-target-confirm {
+  from {
+    transform: scale(0.93);
+    opacity: 0.85;
+  }
+  to {
+    transform: scale(1.22);
     opacity: 0;
   }
 }

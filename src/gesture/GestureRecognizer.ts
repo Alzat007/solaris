@@ -43,6 +43,10 @@ export class GestureRecognizer {
   private scores = new Float64Array(4);
   private wristRatios = new Float64Array(4);
   private curlAngles = new Float64Array(4);
+  private previousIndexAngle: number | null = null;
+  private indexAngularVelocity = 0;
+  private indexState: NonNullable<HandFeatures["indexState"]> = "BETWEEN";
+  private previousRawPointer: { x: number; y: number } | null = null;
   private corrected: Landmark[] = Array.from({ length: 21 }, () => ({
     x: 0,
     y: 0,
@@ -53,6 +57,10 @@ export class GestureRecognizer {
     this.time = 0;
     this.pinched = false;
     this.extended.fill(false);
+    this.previousIndexAngle = null;
+    this.indexAngularVelocity = 0;
+    this.indexState = "BETWEEN";
+    this.previousRawPointer = null;
   }
   analyze(
     points: Landmark[],
@@ -83,12 +91,29 @@ export class GestureRecognizer {
     const alpha = 1 - Math.exp(-dt / gestureConfig.CURSOR_SMOOTHING_TIME);
     const prev = this.previous;
     const center = smoothPosition(1 - palmX, palmY, prev?.center, alpha);
-    const pointer = smoothPosition(
-      1 - points[8].x,
-      points[8].y,
-      prev?.pointer,
-      alpha,
+    const rawPointer = { x: 1 - points[8].x, y: points[8].y };
+    const rawPointerSpeed = this.previousRawPointer
+      ? Math.hypot(
+          rawPointer.x - this.previousRawPointer.x,
+          rawPointer.y - this.previousRawPointer.y,
+        ) / dt
+      : 0;
+    const pointerSpeedMix = clamp(
+      (rawPointerSpeed - config.POINTER_SLOW_SPEED_SCREEN) /
+        (config.POINTER_FAST_SPEED_SCREEN - config.POINTER_SLOW_SPEED_SCREEN),
     );
+    const pointerResponse =
+      config.POINTER_SLOW_SMOOTHING_TIME +
+      pointerSpeedMix *
+        (config.POINTER_FAST_SMOOTHING_TIME -
+          config.POINTER_SLOW_SMOOTHING_TIME);
+    const pointer = smoothPosition(
+      rawPointer.x,
+      rawPointer.y,
+      prev?.pointer,
+      1 - Math.exp(-dt / pointerResponse),
+    );
+    this.previousRawPointer = rawPointer;
     const pinchPoint = smoothPosition(
       1 - (points[4].x + points[8].x) / 2,
       (points[4].y + points[8].y) / 2,
@@ -106,6 +131,51 @@ export class GestureRecognizer {
             ((center.y - prev.center.y) / dt - prev.velocity.y) * va,
         }
       : { x: 0, y: 0 };
+    const previousPointerVelocity = prev?.pointerVelocity ?? { x: 0, y: 0 };
+    const pointerVelocity = prev
+      ? {
+          x:
+            previousPointerVelocity.x +
+            ((pointer.x - prev.pointer.x) / dt - previousPointerVelocity.x) *
+              va,
+          y:
+            previousPointerVelocity.y +
+            ((pointer.y - prev.pointer.y) / dt - previousPointerVelocity.y) *
+              va,
+        }
+      : { x: 0, y: 0 };
+    // Selection measures the actual PIP hinge, not the fingertip or the
+    // existing full-finger curl score. World geometry is preferred; corrected
+    // screen geometry is a fallback only when world landmarks are absent.
+    const indexProximalLength = distance(w[5], w[6]);
+    const indexMiddleLength = distance(w[6], w[7]);
+    const indexAngleValid =
+      Number.isFinite(indexProximalLength) &&
+      Number.isFinite(indexMiddleLength) &&
+      indexProximalLength > config.INDEX_ANGLE_MIN_BONE_LENGTH &&
+      indexMiddleLength > config.INDEX_ANGLE_MIN_BONE_LENGTH;
+    const indexAngle = indexAngleValid ? angle(w[5], w[6], w[7]) : 0;
+    if (indexAngleValid) {
+      const actualDt = (time - this.time) / 1000;
+      if (this.previousIndexAngle !== null && actualDt > 0) {
+        const angularAlpha =
+          1 -
+          Math.exp(-actualDt / config.INDEX_ANGULAR_VELOCITY_SMOOTHING_TIME);
+        this.indexAngularVelocity +=
+          ((indexAngle - this.previousIndexAngle) / actualDt -
+            this.indexAngularVelocity) *
+          angularAlpha;
+      } else this.indexAngularVelocity = 0;
+      if (indexAngle < gestureConfig.INDEX_PRESS_THRESHOLD_DEG)
+        this.indexState = "BENT";
+      else if (indexAngle > gestureConfig.INDEX_RELEASE_THRESHOLD_DEG)
+        this.indexState = "EXTENDED";
+      this.previousIndexAngle = indexAngle;
+    } else {
+      this.previousIndexAngle = null;
+      this.indexAngularVelocity = 0;
+      this.indexState = "BETWEEN";
+    }
     const scores = this.scores;
     for (let i = 0; i < 4; i++) {
       const base = 5 + i * 4;
@@ -194,6 +264,19 @@ export class GestureRecognizer {
     for (let i = 0; i < 4; i++)
       if (scores[i] >= config.OPEN_FINGER_STRONG_SCORE) openCount++;
     const openEvidence = Math.min(...scores);
+    const otherFingerScore = Math.max(scores[1], scores[2], scores[3]);
+    const indexDominance = scores[0] - otherFingerScore;
+    const pointing =
+      indexAngleValid &&
+      scores[0] >= config.POINT_INDEX_MIN_SCORE &&
+      otherFingerScore <= config.POINT_OTHER_MAX_SCORE &&
+      indexDominance >= config.POINT_DOMINANCE_MIN_SCORE;
+    const pointConfidence = pointing
+      ? clamp(
+          scores[0] * 0.7 +
+            clamp(indexDominance / config.POINT_DOMINANCE_SCORE_RANGE) * 0.3,
+        )
+      : 0;
     // A victory sign tolerates comfortable flexion and a free thumb. Separate
     // extended/folded evidence prevents a true bent-index pinch from claiming
     // this pose, even when its middle finger happens to remain raised.
@@ -321,6 +404,11 @@ export class GestureRecognizer {
     ) {
       gesture = "PINCH";
       confidence = clamp(1 - pinchDistance);
+    } else if (pointing) {
+      // Index dominance permits the other fingers to rest half-bent. V and
+      // actual thumb/index contact above retain their own gesture priority.
+      gesture = "POINT";
+      confidence = pointConfidence;
     } else if (
       (index && middle && ring && pinky) ||
       // One softer finger is common on a laptop camera. It must still have
@@ -329,17 +417,6 @@ export class GestureRecognizer {
     ) {
       gesture = "OPEN_PALM";
       confidence = openness;
-    } else if (
-      index &&
-      !middle &&
-      !ring &&
-      !pinky &&
-      scores[1] < config.POINT_FOLDED_MAX_SCORE &&
-      scores[2] < config.POINT_FOLDED_MAX_SCORE &&
-      scores[3] < config.POINT_FOLDED_MAX_SCORE
-    ) {
-      gesture = "POINT";
-      confidence = (scores[0] + 3 - scores[1] - scores[2] - scores[3]) / 4;
     }
     // Intermediate aperture is useful only after a deliberately armed grip.
     // Ordinary two-finger contact cannot claim this channel while the other
@@ -398,6 +475,12 @@ export class GestureRecognizer {
     const result: HandFeatures = {
       center,
       pointer,
+      pointerVelocity,
+      indexAngle,
+      indexAngleValid,
+      indexAngularVelocity: this.indexAngularVelocity,
+      indexState: this.indexState,
+      pointConfidence: gesture === "POINT" ? pointConfidence : 0,
       pinchPoint,
       velocity,
       fingerState: { thumb, index, middle, ring, pinky },

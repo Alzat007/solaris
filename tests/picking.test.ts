@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { Group, PerspectiveCamera, Vector2 } from "three";
-import { pickPlanet } from "../src/scene/planetPicking";
+import { pickPlanet, projectPlanetTarget } from "../src/scene/planetPicking";
 import type { PlanetId } from "../src/data/planets";
 import type { CelestialId } from "../src/gesture/gestureFeedback";
 
@@ -58,7 +58,7 @@ test("small targets have equal pixel tolerance on portrait and landscape screens
   }
 });
 
-test("hidden, collapsed or behind-camera planets cannot become pinch targets", () => {
+test("hidden, collapsed or behind-camera planets cannot become selectable targets", () => {
   const { camera, objects, planet } = setup(800, 800);
   planet.visible = false;
   assert.equal(pickPlanet(new Vector2(), camera, 800, 800, objects), null);
@@ -94,4 +94,29 @@ test("hidden parent hierarchies exclude both planet and Sun targets", () => {
   assert.equal(pickPlanet(new Vector2(), camera, 800, 800, objects), null);
   parent.visible = true;
   assert.equal(pickPlanet(new Vector2(), camera, 800, 800, objects), "sun");
+});
+
+test("gesture hover expands the disc by 30 percent without changing mouse picking", () => {
+  const { camera, objects } = setup(1200, 800);
+  const screen = projectPlanetTarget("earth", camera, 1200, 800, objects)!;
+  const at = (ratio: number) =>
+    new Vector2((screen.radius * ratio * 2) / 1200, 0);
+  assert.equal(pickPlanet(at(1.25), camera, 1200, 800, objects), null);
+  assert.equal(pickPlanet(at(1.25), camera, 1200, 800, objects, 1.3), "earth");
+  assert.equal(pickPlanet(at(1.4), camera, 1200, 800, objects, 1.3), null);
+});
+test("target-ring projection follows the visible body and rejects hidden objects", () => {
+  const { camera, objects, planet } = setup(1200, 800);
+  const screen = projectPlanetTarget("earth", camera, 1200, 800, objects)!;
+  assert.equal(screen.x, 600);
+  assert.equal(screen.y, 400);
+  assert.ok(screen.radius > 90 && screen.radius < 100);
+  planet.position.x = 1;
+  planet.updateMatrixWorld();
+  assert.ok(
+    projectPlanetTarget("earth", camera, 1200, 800, objects)!.x > screen.x,
+  );
+  planet.visible = false;
+  assert.equal(projectPlanetTarget("earth", camera, 1200, 800, objects), null);
+  assert.equal(projectPlanetTarget("sun", camera, 1200, 800, objects), null);
 });
