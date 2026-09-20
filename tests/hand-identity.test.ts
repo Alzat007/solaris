@@ -204,8 +204,8 @@ test("unknown poses and relaxed palms keep identity instead of causing a reconne
     assert.equal(result.length, 1);
     assert.equal(result[0].id, first.id);
     assert.equal(result[0].trackingConfidence, 1);
-    if (pose === "V_SIGN" || pose === "THREE")
-      assert.equal(result[0].gesture, "NONE");
+    if (pose === "V_SIGN") assert.equal(result[0].gesture, "V_GESTURE");
+    if (pose === "THREE") assert.equal(result[0].gesture, "NONE");
   });
 });
 
@@ -229,4 +229,162 @@ test("an unavailable world estimate falls back to valid screen geometry", () => 
   const hand = tracker.update(frame(badWorld), 0)[0];
   assert.equal(hand.gesture, "POINT");
   assert.equal(hand.trackingConfidence, 1);
+});
+
+function detectedPose(pose: "V_GESTURE" | "PINCH", x = 0) {
+  const fixture = handFixture(pose, { relaxed: true });
+  for (const p of fixture.points) p.x += x;
+  return { ...fixture, category: [{ categoryName: "Right", score: 0.99 }] };
+}
+
+test("a single held V retains identity through one or two natural empty detections", () => {
+  const tracker = new HandIdentityTracker();
+  const first = tracker.update(frame(detectedPose("V_GESTURE")), 0)[0];
+  assert.equal(first.gesture, "V_GESTURE");
+  assert.deepEqual(tracker.update(frame(), 50), []);
+  assert.deepEqual(tracker.update(frame(), 100), []);
+  const returned = tracker.update(
+    frame(detectedPose("V_GESTURE", 0.006)),
+    150,
+  )[0];
+  assert.equal(returned.id, first.id);
+  assert.equal(returned.gesture, "V_GESTURE");
+});
+
+test("repeated misses cannot refresh V identity grace or preserve it beyond 150ms", () => {
+  for (const finalEmptyFrame of [false, true]) {
+    const tracker = new HandIdentityTracker();
+    const first = tracker.update(frame(detectedPose("V_GESTURE")), 0)[0];
+    tracker.update(frame(), 50);
+    tracker.update(frame(), 100);
+    tracker.update(frame(), 150);
+    if (finalEmptyFrame) tracker.update(frame(), 151);
+    const returned = tracker.update(frame(detectedPose("V_GESTURE")), 200)[0];
+    assert.notEqual(returned.id, first.id);
+  }
+});
+
+test("ordinary pinch loss and malformed V observations still discard identity immediately", () => {
+  const pinch = new HandIdentityTracker();
+  const firstPinch = pinch.update(frame(detectedPose("PINCH")), 0)[0];
+  pinch.update(frame(), 50);
+  assert.notEqual(
+    pinch.update(frame(detectedPose("PINCH")), 100)[0].id,
+    firstPinch.id,
+  );
+  const victory = new HandIdentityTracker();
+  const firstV = victory.update(frame(detectedPose("V_GESTURE")), 0)[0];
+  const bad = detectedPose("V_GESTURE");
+  bad.points[8].x = NaN;
+  assert.deepEqual(victory.update(frame(bad), 50), []);
+  assert.notEqual(
+    victory.update(frame(detectedPose("V_GESTURE")), 100)[0].id,
+    firstV.id,
+  );
+});
+
+test("V grace does not preserve identity for a spatially unrelated returning hand", () => {
+  const tracker = new HandIdentityTracker();
+  const first = tracker.update(frame(detectedPose("V_GESTURE", -0.2)), 0)[0];
+  tracker.update(frame(), 50);
+  const unrelated = tracker.update(
+    frame(detectedPose("V_GESTURE", 0.2)),
+    100,
+  )[0];
+  assert.notEqual(unrelated.id, first.id);
+});
+
+test("a missing V beside a continuously visible hand returns with its own identity and no phantom frames", () => {
+  const tracker = new HandIdentityTracker();
+  const first = tracker.update(
+    frame(detectedPose("V_GESTURE", -0.15), detected(0.15, 0, "Left")),
+    0,
+  );
+  const victoryId = first.find((hand) => hand.gesture === "V_GESTURE")!.id;
+  const companionId = first.find((hand) => hand.gesture === "POINT")!.id;
+  for (const time of [50, 100]) {
+    const partial = tracker.update(
+      frame(detected(0.15 + time / 5000, 0, "Left")),
+      time,
+    );
+    assert.equal(
+      partial.length,
+      1,
+      "retained identity cannot become a phantom detection",
+    );
+    assert.equal(partial[0].id, companionId);
+  }
+  const returned = tracker.update(
+    frame(detected(0.18, 0, "Left"), detectedPose("V_GESTURE", -0.14)),
+    150,
+  );
+  assert.equal(
+    returned.find((hand) => hand.gesture === "V_GESTURE")!.id,
+    victoryId,
+  );
+  assert.equal(
+    returned.find((hand) => hand.gesture === "POINT")!.id,
+    companionId,
+  );
+});
+
+test("a visible companion cannot prolong an occluded V's identity beyond its own last valid timestamp", () => {
+  const tracker = new HandIdentityTracker();
+  const first = tracker.update(
+    frame(detectedPose("V_GESTURE", -0.15), detected(0.15, 0, "Left")),
+    0,
+  );
+  const victoryId = first.find((hand) => hand.gesture === "V_GESTURE")!.id;
+  const companionId = first.find((hand) => hand.gesture === "POINT")!.id;
+  for (const time of [50, 100, 150, 200]) {
+    const partial = tracker.update(frame(detected(0.15, 0, "Left")), time);
+    assert.equal(partial.length, 1);
+    assert.equal(partial[0].id, companionId);
+  }
+  const returned = tracker.update(
+    frame(detectedPose("V_GESTURE", -0.15), detected(0.15, 0, "Left")),
+    250,
+  );
+  assert.notEqual(
+    returned.find((hand) => hand.gesture === "V_GESTURE")!.id,
+    victoryId,
+  );
+  assert.equal(
+    returned.find((hand) => hand.gesture === "POINT")!.id,
+    companionId,
+  );
+});
+
+test("partial malformed V geometry and a missing pinch cannot inherit the V-only identity grace", () => {
+  for (const pose of ["V_GESTURE", "PINCH"] as const) {
+    const tracker = new HandIdentityTracker();
+    const first = tracker.update(
+      frame(detectedPose(pose, -0.15), detected(0.15, 0, "Left")),
+      0,
+    );
+    const originalId = first.find((hand) => hand.gesture === pose)!.id;
+    const companionId = first.find((hand) => hand.gesture === "POINT")!.id;
+    const bad = detectedPose(pose, -0.15);
+    bad.points[8].z = NaN;
+    const partial = tracker.update(
+      pose === "V_GESTURE"
+        ? frame(bad, detected(0.15, 0, "Left"))
+        : frame(detected(0.15, 0, "Left")),
+      50,
+    );
+    assert.equal(partial.length, 1);
+    assert.equal(partial[0].id, companionId);
+    const returned = tracker.update(
+      frame(detectedPose(pose, -0.15), detected(0.15, 0, "Left")),
+      100,
+    );
+    assert.notEqual(
+      returned.find((hand) => hand.gesture === pose)!.id,
+      originalId,
+    );
+    assert.equal(
+      returned.find((hand) => hand.gesture === "POINT")!.id,
+      companionId,
+    );
+  }
 });

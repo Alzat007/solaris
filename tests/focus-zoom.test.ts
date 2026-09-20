@@ -1,7 +1,7 @@
 import test, { type TestContext } from "node:test";
 import assert from "node:assert/strict";
 import { gsap } from "gsap";
-import { GestureRecognizer } from "../src/gesture/GestureRecognizer";
+import { HandIdentityTracker } from "../src/gesture/HandIdentityTracker";
 import { GestureController } from "../src/gesture/GestureController";
 import { interaction } from "../src/interaction/InteractionController";
 import { InteractionStateMachine } from "../src/interaction/InteractionStateMachine";
@@ -13,18 +13,23 @@ import { gestureConfig as config } from "../src/gesture/gestureConfig";
 import { handFixture } from "./fixtures/hands";
 
 type Pose = Parameters<typeof handFixture>[0];
+type Geometry = NonNullable<Parameters<typeof handFixture>[1]>;
+type Sample = Geometry & {
+  visualRoll?: number;
+  x?: number;
+  y?: number;
+  dt?: number;
+};
 
-/** Replay anatomical landmarks through the production recognizer, gesture
- * arbitration and real scene scale/selection methods. Only animation time and
- * the automatic facts timer are advanced explicitly; no action is stubbed. */
-function setup(
-  t: TestContext,
-  fixtureOptions: NonNullable<Parameters<typeof handFixture>[1]> = {},
-) {
+/** Anatomical landmarks pass through the production identity tracker (which
+ * owns GestureRecognizer), arbitration, and real scene scale/selection methods.
+ * Animation time, render-following and the facts timer are advanced explicitly.
+ * This verifies integration, not real-camera model accuracy. */
+function setup(t: TestContext, fixtureOptions: Geometry = {}) {
   gsap.globalTimeline.clear();
   gsap.ticker.sleep();
   const controller = new GestureController();
-  const recognizer = new GestureRecognizer();
+  const tracker = new HandIdentityTracker();
   interaction.machine = new InteractionStateMachine();
   interaction.ready();
   store.set({
@@ -39,6 +44,7 @@ function setup(
   });
   Object.assign(particles, {
     targetScale: 1,
+    scale: 1,
     focus: 0,
     collapse: 0,
     sunInterior: 0,
@@ -50,26 +56,61 @@ function setup(
   t.mock.timers.enable({ apis: ["setTimeout"] });
   let time = 1000;
   let frame = 0;
-  const send = (pose: Pose, gripSpread = 0, dt = 50) => {
-    time += dt;
+  const sample = (pose: Pose, options: Sample = {}) => {
+    const { visualRoll = 0, x = 0, y = 0, dt: _dt, ...geometry } = options;
+    const mirror = geometry.mirror ?? fixtureOptions.mirror ?? false;
     const fixture = handFixture(pose, {
-      gripSpread,
       foldedPinch: true,
       relaxed: true,
       yaw: 0.5,
       pitch: 0.3,
       ...fixtureOptions,
+      ...geometry,
+      // The fixture mirrors after rotating. Convert from the user's visible
+      // clockwise direction, which must work identically for both hands.
+      rotation: ((visualRoll * Math.PI) / 180) * (mirror ? 1 : -1),
       frame: frame++,
     });
-    const hand = recognizer.analyze(fixture.points, fixture.world, time);
-    hand.id = "continuous-first-hand";
-    controller.update({ hands: [hand], time });
-    return hand;
+    for (const point of fixture.points) {
+      point.x += x;
+      point.y += y;
+    }
+    return { ...fixture, handedness: mirror ? "Left" : "Right" };
   };
-  const hold = (pose: Pose, duration: number, gripSpread = 0) => {
+  const deliver = (samples: ReturnType<typeof sample>[], dt = 50) => {
+    time += dt;
+    const hands = tracker.update(
+      {
+        landmarks: samples.map((s) => s.points),
+        worldLandmarks: samples.map((s) => s.world),
+        handedness: samples.map((s) => [
+          { categoryName: s.handedness, score: 0.99 },
+        ]),
+      },
+      time,
+    );
+    controller.update({ hands, time });
+    // There is no WebGL render loop in this test. Let the visual scale catch
+    // its real target so stop-settling sees an up-to-date rendered position.
+    particles.scale = particles.targetScale;
+    return hands;
+  };
+  const send = (pose: Pose, options: Sample = {}) =>
+    deliver([sample(pose, options)], options.dt)[0];
+  const hold = (pose: Pose, duration: number, options: Sample = {}) => {
     for (let elapsed = 0; elapsed < duration; elapsed += 50)
-      send(pose, gripSpread);
+      send(pose, options);
   };
+  const pair = (pose: Pose) =>
+    deliver([
+      sample(pose, { mirror: false, x: -0.18 }),
+      sample(pose, { mirror: true, x: 0.18 }),
+    ]);
+  const withCompanion = (pose: Pose | null, options: Sample = {}) =>
+    deliver([
+      ...(pose ? [sample(pose, options)] : []),
+      sample("OPEN_PALM", { mirror: true, x: 0.22 }),
+    ]);
   const timeline = () =>
     (interaction as unknown as { transition: gsap.core.Timeline }).transition;
   const selectEarth = () => {
@@ -91,95 +132,138 @@ function setup(
     assert.equal(store.get().infoVisible, false);
     t.mock.timers.tick(config.INFO_REVEAL_DELAY);
     assert.equal(store.get().infoVisible, true);
-    // Automatic facts are orthogonal UI state, not an unsupported scene mode.
     assert.equal(store.get().mode, "PLANET_FOCUS");
   };
-  const empty = () => {
-    time += 50;
-    controller.update({ hands: [], time });
+  const focusEarth = () => {
+    selectEarth();
+    hold("OPEN_PALM", 500);
+    finishAndRevealFacts();
   };
+  const empty = (dt = 50) => deliver([], dt);
   t.after(() => {
     controller.reset();
+    tracker.reset();
     gsap.globalTimeline.clear();
     gsap.ticker.sleep();
     t.mock.timers.reset();
     gestureTargets.set(null);
   });
-  return { send, hold, selectEarth, finishAndRevealFacts, empty };
+  return {
+    send,
+    hold,
+    pair,
+    withCompanion,
+    selectEarth,
+    finishAndRevealFacts,
+    focusEarth,
+    empty,
+  };
 }
 
-function assertFreshConfirmation(send: ReturnType<typeof setup>["send"]) {
-  send("FIVE_PINCH");
-  for (
-    let elapsed = 50;
-    elapsed < config.ONE_HAND_ZOOM_HOLD_TIME;
-    elapsed += 50
-  ) {
-    send("FIVE_PINCH");
+function armDial(s: ReturnType<typeof setup>, options: Sample = {}) {
+  const originalScale = particles.targetScale;
+  assert.equal(s.send("V_GESTURE", options).gesture, "V_GESTURE");
+  for (let elapsed = 50; elapsed < config.V_GESTURE_HOLD_TIME; elapsed += 50) {
+    s.send("V_GESTURE", options);
+    assert.equal(gestureFeedback.get().zoomMode, "V_DETECTED");
     assert.equal(gestureFeedback.get().zoomActive, false);
-    assert.equal(particles.targetScale, 1);
-    assert.equal(store.get().mode, "PLANET_FOCUS");
+    assert.equal(particles.targetScale, originalScale);
   }
-  send("FIVE_PINCH");
-  assert.equal(gestureFeedback.get().zoomActive, true);
+  s.send("V_GESTURE", options);
+  assert.equal(gestureFeedback.get().zoomMode, "ZOOM_DIAL_ARMED");
+  assert.equal(
+    particles.targetScale,
+    originalScale,
+    "arming must not snap to a zoom limit",
+  );
+  s.send("V_GESTURE", options);
+  assert.equal(gestureFeedback.get().zoomMode, "ZOOM_DIAL_ACTIVE");
   assert.equal(store.get().mode, "UNIVERSE_SCALE");
-  assert.equal(particles.targetScale, config.ZOOM_MIN);
-  assert.equal(store.get().selected, "earth");
-  assert.equal(store.get().infoVisible, true);
+  assert.equal(particles.targetScale, originalScale);
+  return gestureFeedback.get().zoomBaseAngle;
 }
 
-test("a five-finger gesture released during the selection animation can zoom on the first fresh post-animation attempt", (t) => {
+test("a held V spanning the planet-entry animation starts a fresh 250ms baseline after unlock", (t) => {
   const s = setup(t);
   s.selectEarth();
-  s.hold("FIVE_PINCH", 400);
-  assert.equal(particles.targetScale, 1);
-  s.hold("OPEN_PALM", 400);
-  assert.equal(particles.targetScale, 1);
-  s.finishAndRevealFacts();
-  assertFreshConfirmation(s.send);
-});
-
-test("a five-finger hold crossing the camera animation starts only after fresh confirmation in planet focus", (t) => {
-  const s = setup(t);
-  s.selectEarth();
-  for (let elapsed = 0; elapsed < 1000; elapsed += 50) {
-    s.send("FIVE_PINCH");
+  for (let frame = 0; frame < 20; frame++) {
+    s.send("V_GESTURE", { visualRoll: frame > 10 ? 25 : 0 });
     assert.equal(particles.targetScale, 1);
-    assert.equal(gestureFeedback.get().zoomActive, false);
+    assert.equal(gestureFeedback.get().zoomMode, "IDLE");
     assert.equal(store.get().mode, "PLANET_TRANSITION");
   }
   s.finishAndRevealFacts();
-  assertFreshConfirmation(s.send);
-});
-
-test("a natural five-finger bunch followed immediately by trusted intermediate opening completes one zoom cycle", (t) => {
-  const s = setup(t);
-  s.selectEarth();
-  s.hold("OPEN_PALM", 500);
-  s.finishAndRevealFacts();
-  assert.equal(s.send("FIVE_PINCH", 0).gesture, "FIVE_PINCH");
-  const intermediate = s.send("FIVE_PINCH", 0.35);
-  assert.equal(intermediate.gesture, "NONE");
-  assert.ok(
-    intermediate.gripConfidence! >= config.ONE_HAND_ZOOM_MIN_CONFIDENCE,
+  armDial(s, { visualRoll: 25 });
+  s.hold("V_GESTURE", 500, { visualRoll: 25 });
+  assert.equal(
+    particles.targetScale,
+    1,
+    "the held pose becomes the fresh neutral angle",
   );
-  s.send("FIVE_PINCH", 0.5);
-  s.send("FIVE_PINCH", 0.6);
-  assert.equal(particles.targetScale, 1);
-  assert.equal(gestureFeedback.get().zoomActive, false);
-  s.send("FIVE_PINCH", 0.7);
-  assert.equal(gestureFeedback.get().zoomActive, true);
-  assert.equal(store.get().mode, "UNIVERSE_SCALE");
-  assert.equal(store.get().selected, "earth");
-  s.hold("OPEN_PALM", 700);
-  assert.ok(particles.targetScale > config.ZOOM_MAX - 0.02);
-  assert.equal(gestureFeedback.get().zoomActive, false);
-  assert.equal(store.get().mode, "PLANET_FOCUS");
   assert.equal(store.get().selected, "earth");
   assert.equal(store.get().infoVisible, true);
 });
 
-test("a two-finger selection pinch held across the same animation cannot select a second planet", (t) => {
+test("a neutral V, five-degree tremor, and fast lateral V movement cannot zoom or swipe", (t) => {
+  const s = setup(t);
+  s.focusEarth();
+  const base = armDial(s);
+  for (let frame = 0; frame < 30; frame++) {
+    s.send("V_GESTURE", {
+      visualRoll: frame % 2 ? -5 : 5,
+      x: Math.sin(frame * 0.5) * 0.2,
+    });
+    assert.equal(particles.targetScale, 1);
+    assert.equal(gestureFeedback.get().zoomSpeed, 0);
+    assert.equal(gestureFeedback.get().zoomBaseAngle, base);
+    assert.equal(store.get().mode, "UNIVERSE_SCALE");
+    assert.equal(store.get().selected, "earth");
+    assert.equal(store.get().infoVisible, true);
+  }
+});
+
+for (const mirror of [false, true]) {
+  test(`${mirror ? "left" : "right"} hand rotates clockwise to enlarge Earth and counterclockwise to shrink`, (t) => {
+    const s = setup(t, { mirror, flexion: 55, thumbPose: "tucked" });
+    s.focusEarth();
+    const base = armDial(s);
+    s.hold("V_GESTURE", 600, { visualRoll: 35 });
+    const enlarged = particles.targetScale;
+    assert.ok(enlarged > 1.1, `clockwise scale=${enlarged}`);
+    assert.equal(gestureFeedback.get().zoomDirection, "IN");
+    assert.ok(Math.abs(gestureFeedback.get().zoomDelta - 35) < 0.1);
+    s.hold("V_GESTURE", 800, { visualRoll: -35 });
+    assert.ok(particles.targetScale < enlarged - 0.1);
+    assert.equal(gestureFeedback.get().zoomDirection, "OUT");
+    assert.ok(Math.abs(gestureFeedback.get().zoomDelta + 35) < 0.1);
+    assert.equal(gestureFeedback.get().zoomBaseAngle, base);
+    assert.equal(store.get().selected, "earth");
+    assert.equal(store.get().infoVisible, true);
+  });
+}
+
+test("releasing V stops immediately, preserves facts, returns to focus, and permits a fresh neutral angle", (t) => {
+  const s = setup(t);
+  s.focusEarth();
+  const oldBase = armDial(s);
+  s.hold("V_GESTURE", 600, { visualRoll: 30 });
+  const stoppedScale = particles.targetScale;
+  s.send("OPEN_PALM");
+  assert.equal(gestureFeedback.get().zoomSpeed, 0);
+  assert.equal(particles.targetScale, stoppedScale);
+  s.hold("OPEN_PALM", config.V_GESTURE_RELEASE_GRACE);
+  assert.equal(gestureFeedback.get().zoomMode, "ZOOM_DIAL_RELEASE");
+  assert.equal(store.get().mode, "PLANET_FOCUS");
+  assert.equal(store.get().selected, "earth");
+  assert.equal(store.get().infoVisible, true);
+  assert.equal(particles.targetScale, stoppedScale);
+  const newBase = armDial(s, { visualRoll: 20 });
+  assert.notEqual(newBase, oldBase);
+  s.hold("V_GESTURE", 500, { visualRoll: 20 });
+  assert.equal(particles.targetScale, stoppedScale);
+});
+
+test("a selection pinch held across the entry animation cannot select another planet", (t) => {
   const s = setup(t);
   s.selectEarth();
   s.hold("PINCH", 800);
@@ -188,7 +272,7 @@ test("a two-finger selection pinch held across the same animation cannot select 
   s.hold("PINCH", 800);
   assert.equal(store.get().selected, "earth");
   assert.equal(store.get().mode, "PLANET_FOCUS");
-  assert.equal(gestureFeedback.get().zoomActive, false);
+  assert.equal(gestureFeedback.get().zoomMode, "IDLE");
   assert.equal(particles.targetScale, 1);
   s.send("POINT");
   s.hold("PINCH", 200);
@@ -196,69 +280,94 @@ test("a two-finger selection pinch held across the same animation cannot select 
   assert.equal(store.get().mode, "PLANET_TRANSITION");
 });
 
-test("turning a pending five-finger zoom into a fist cannot scale or accidentally return", (t) => {
+test("simultaneous two-hand pinches never select Earth or start zoom", (t) => {
   const s = setup(t);
-  s.selectEarth();
-  s.hold("OPEN_PALM", 500);
-  s.finishAndRevealFacts();
-  s.send("FIVE_PINCH");
-  s.hold("FIST", 900);
-  assert.equal(store.get().mode, "PLANET_FOCUS");
-  assert.equal(store.get().selected, "earth");
-  assert.equal(gestureFeedback.get().zoomActive, false);
-  assert.equal(particles.targetScale, 1);
-  s.send("OPEN_PALM");
-  assertFreshConfirmation(s.send);
+  s.hold("POINT", 400);
+  for (let frame = 0; frame < 16; frame++) {
+    gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
+    const hands = s.pair("PINCH");
+    assert.equal(hands.length, 2);
+    assert.ok(hands.every((hand) => hand.gesture === "PINCH"));
+    assert.equal(store.get().selected, null);
+    assert.equal(store.get().mode, "SOLAR_SYSTEM");
+    assert.equal(particles.targetScale, 1);
+    assert.equal(gestureFeedback.get().zoomMode, "IDLE");
+  }
 });
 
-test("a lost hand still requires an explicit release before focused five-finger zoom can restart", (t) => {
+test("legacy five-tip gathering and opening remain diagnostic and never scale the focused planet", (t) => {
   const s = setup(t);
-  s.selectEarth();
-  s.hold("OPEN_PALM", 500);
-  s.finishAndRevealFacts();
-  s.empty();
-  s.hold("FIVE_PINCH", 1000);
-  assert.equal(store.get().mode, "PLANET_FOCUS");
-  assert.equal(gestureFeedback.get().zoomActive, false);
-  assert.equal(particles.targetScale, 1);
-  s.send("OPEN_PALM");
-  assertFreshConfirmation(s.send);
+  s.focusEarth();
+  gestureTargets.set({ kind: "body", id: "mars", label: "火星" });
+  for (const gripDirection of ["forward", "camera"] as const) {
+    assert.equal(s.send("FIVE_PINCH", { gripDirection }).gesture, "FIVE_PINCH");
+    s.hold("FIVE_PINCH", 600, { gripDirection });
+    for (let step = 0; step <= 20; step++) {
+      s.send("FIVE_PINCH", { gripDirection, gripSpread: step / 20 });
+      assert.equal(particles.targetScale, 1);
+      assert.equal(gestureFeedback.get().zoomMode, "IDLE");
+      assert.equal(store.get().mode, "PLANET_FOCUS");
+      assert.equal(store.get().selected, "earth");
+      assert.equal(store.get().infoVisible, true);
+    }
+  }
 });
 
-for (const depth of [0.045, 0.055]) {
-  test(`camera-facing five-tip gathering at ${depth} m continuously scales the selected planet`, (t) => {
-    const s = setup(t, {
-      gripDirection: "camera",
-      gripDepth: depth,
-      mirror: depth === 0.045,
-      noise: 0.0005,
-      depthNoise: 0.001,
-    });
-    s.selectEarth();
-    s.hold("OPEN_PALM", 500);
-    s.finishAndRevealFacts();
-    assert.equal(s.send("FIVE_PINCH").gesture, "FIVE_PINCH");
-    s.hold("FIVE_PINCH", 300);
-    assert.equal(gestureFeedback.get().zoomActive, true);
-    assert.equal(particles.targetScale, config.ZOOM_MIN);
-    for (let step = 1; step <= 20; step++) {
-      const hand = s.send("FIVE_PINCH", step / 20);
-      assert.ok(["FIVE_PINCH", "NONE", "OPEN_PALM"].includes(hand.gesture));
-      assert.ok(hand.gripConfidence! >= config.ONE_HAND_ZOOM_MIN_CONFIDENCE);
-      assert.equal(gestureFeedback.get().zoomActive, true);
-      assert.equal(store.get().selected, "earth");
+for (const missedFrames of [1, 2]) {
+  test(`${missedFrames} genuine empty model frame(s) preserve V identity, baseline and scale on recovery`, (t) => {
+    const s = setup(t);
+    s.focusEarth();
+    const base = armDial(s);
+    s.hold("V_GESTURE", 500, { visualRoll: 30 });
+    const lastHand = s.send("V_GESTURE", { visualRoll: 30 });
+    const frozenScale = particles.targetScale;
+    for (let frame = 0; frame < missedFrames; frame++) {
+      s.empty();
+      assert.equal(gestureFeedback.get().zoomSpeed, 0);
+      assert.equal(gestureFeedback.get().zoomBaseAngle, base);
+      assert.equal(particles.targetScale, frozenScale);
     }
-    assert.ok(particles.targetScale > 1.65);
-    for (let step = 19; step >= 0; step--) {
-      s.send("FIVE_PINCH", step / 20);
-      assert.equal(gestureFeedback.get().zoomActive, true);
-      assert.equal(store.get().selected, "earth");
-    }
-    s.hold("FIVE_PINCH", 400);
-    assert.ok(particles.targetScale < config.ZOOM_MIN + 0.03);
-    assert.equal(store.get().infoVisible, true);
-    s.empty();
-    assert.equal(store.get().mode, "PLANET_FOCUS");
+    const recovered = s.send("V_GESTURE", { visualRoll: 30 });
+    assert.equal(recovered.id, lastHand.id);
+    assert.equal(gestureFeedback.get().zoomMode, "ZOOM_DIAL_ACTIVE");
+    assert.equal(gestureFeedback.get().zoomBaseAngle, base);
+    assert.equal(
+      particles.targetScale,
+      frozenScale,
+      "recovery cannot replay the missing interval",
+    );
+    s.send("V_GESTURE", { visualRoll: 30 });
+    assert.ok(particles.targetScale > frozenScale);
     assert.equal(store.get().selected, "earth");
+    assert.equal(store.get().infoVisible, true);
   });
 }
+
+test("an active V owner can disappear briefly while the second hand stays visible without losing its dial", (t) => {
+  const s = setup(t);
+  s.focusEarth();
+  const base = armDial(s);
+  s.hold("V_GESTURE", 500, { visualRoll: 30 });
+  const together = s.withCompanion("V_GESTURE", { visualRoll: 30 });
+  const ownerId = together.find((hand) => hand.gesture === "V_GESTURE")!.id;
+  const companionId = together.find((hand) => hand.gesture === "OPEN_PALM")!.id;
+  const frozenScale = particles.targetScale;
+  for (let frame = 0; frame < 2; frame++) {
+    const partial = s.withCompanion(null);
+    assert.equal(partial.length, 1);
+    assert.equal(partial[0].id, companionId);
+    assert.equal(gestureFeedback.get().zoomBaseAngle, base);
+    assert.equal(gestureFeedback.get().zoomSpeed, 0);
+    assert.equal(particles.targetScale, frozenScale);
+  }
+  const returned = s.withCompanion("V_GESTURE", { visualRoll: 30 });
+  assert.equal(
+    returned.find((hand) => hand.gesture === "V_GESTURE")!.id,
+    ownerId,
+  );
+  assert.equal(gestureFeedback.get().zoomMode, "ZOOM_DIAL_ACTIVE");
+  assert.equal(gestureFeedback.get().zoomBaseAngle, base);
+  assert.equal(particles.targetScale, frozenScale);
+  assert.equal(store.get().selected, "earth");
+  assert.equal(store.get().infoVisible, true);
+});

@@ -4,7 +4,7 @@ import { GestureRecognizer } from "../src/gesture/GestureRecognizer";
 import { handFixture } from "./fixtures/hands";
 import { gestureConfig } from "../src/gesture/gestureConfig";
 const classified = (pose: string) =>
-  pose === "V_SIGN" || pose === "THREE" ? "NONE" : pose;
+  pose === "V_SIGN" ? "V_GESTURE" : pose === "THREE" ? "NONE" : pose;
 
 for (const gesture of [
   "OPEN_PALM",
@@ -334,7 +334,7 @@ test("relaxing V/THREE with noisy depth still cannot masquerade as an open palm"
         fixture.world,
         frame * 50,
       );
-      assert.equal(hand.gesture, "NONE");
+      assert.equal(hand.gesture, classified(pose));
     }
   }
 });
@@ -606,10 +606,7 @@ test("fingertips gathered towards the camera classify despite being behind the M
               "FIVE_PINCH",
               `depth=${depth}, mirror=${mirror}, yaw=${yaw}, pitch=${pitch}, frame=${frame}`,
             );
-            assert.ok(
-              hand.gripConfidence! >=
-                gestureConfig.ONE_HAND_ZOOM_MIN_CONFIDENCE,
-            );
+            assert.ok(hand.gripConfidence! >= 0.65);
           }
         }
       }
@@ -644,10 +641,7 @@ test("camera-facing bunch keeps reliable geometry across slow opening and closin
             frame * 50,
           );
           const context = `depth=${depth}, spread=${spread}, mirror=${mirror}, relaxed=${relaxed}, gesture=${hand.gesture}, confidence=${hand.gripConfidence}`;
-          assert.ok(
-            hand.gripConfidence! >= gestureConfig.ONE_HAND_ZOOM_MIN_CONFIDENCE,
-            context,
-          );
+          assert.ok(hand.gripConfidence! >= 0.65, context);
           assert.notEqual(hand.gesture, "FIST", context);
           assert.notEqual(hand.gesture, "PINCH", context);
           if (frame <= 50)
@@ -812,5 +806,200 @@ test("camera-facing bunch matches fallback geometry and stays invariant to hand 
       assert.equal(hand.gesture, world.gesture);
       assert.ok(Math.abs(hand.gripAperture! - world.gripAperture!) < 1e-12);
     }
+  }
+});
+
+test("victory tolerates bent extended fingers, a free thumb and laptop-camera tilt", () => {
+  for (const flexion of [20, 40, 60]) {
+    for (const thumbPose of ["open", "tucked", "index-contact"] as const) {
+      for (const mirror of [false, true]) {
+        const recognizer = new GestureRecognizer();
+        for (let frame = 0; frame < 16; frame++) {
+          const fixture = handFixture("V_GESTURE", {
+            flexion,
+            thumbPose,
+            mirror,
+            yaw: 0.7,
+            pitch: -0.45,
+            noise: 0.0004,
+            depthNoise: 0.0015,
+            frame,
+          });
+          const hand = recognizer.analyze(
+            fixture.points,
+            fixture.world,
+            frame * 50,
+          );
+          const context = `flexion=${flexion}, thumb=${thumbPose}, mirror=${mirror}, frame=${frame}`;
+          assert.equal(hand.gesture, "V_GESTURE", context);
+          assert.ok(
+            hand.vConfidence! >= gestureConfig.V_GESTURE_MIN_CONFIDENCE,
+            context,
+          );
+          assert.equal(hand.palmRollValid, true, context);
+        }
+      }
+    }
+  }
+});
+
+test("a genuinely folded index pinch stays PINCH even with the middle finger extended", () => {
+  for (const compactPinch of [false, true]) {
+    const fixture = handFixture("PINCH", { foldedPinch: true, compactPinch });
+    const victory = handFixture("V_GESTURE");
+    for (let i = 9; i <= 12; i++) {
+      fixture.points[i] = { ...victory.points[i] };
+      fixture.world[i] = { ...victory.world[i] };
+    }
+    const hand = new GestureRecognizer().analyze(
+      fixture.points,
+      fixture.world,
+      0,
+    );
+    assert.equal(hand.gesture, "PINCH");
+    assert.equal(hand.vConfidence, 0);
+  }
+});
+
+const wrappedRadians = (angle: number) =>
+  Math.atan2(Math.sin(angle), Math.cos(angle));
+
+test("palm roll follows the mirrored MCP axis, independent of image aspect", () => {
+  for (const aspect of [9 / 16, 4 / 3, 16 / 9]) {
+    for (const mirror of [false, true]) {
+      const fixture = handFixture("V_GESTURE", { mirror, rotation: 0.35 });
+      const points = fixture.world.map((p) => ({
+        x: 0.5 + (p.x * 3) / aspect,
+        y: 0.4 + p.y * 3,
+        z: (p.z * 3) / aspect,
+      }));
+      const hand = new GestureRecognizer().analyze(
+        points,
+        fixture.world,
+        0,
+        aspect,
+      );
+      const expected = Math.atan2(
+        fixture.world[17].y - fixture.world[5].y,
+        -(fixture.world[17].x - fixture.world[5].x),
+      );
+      assert.ok(Math.abs(wrappedRadians(hand.palmRoll! - expected)) < 1e-12);
+      assert.equal(hand.palmRollValid, true);
+    }
+  }
+});
+
+test("clockwise in the mirrored preview yields positive roll for either hand", () => {
+  for (const mirror of [false, true]) {
+    const base = handFixture("V_GESTURE", { mirror });
+    const first = new GestureRecognizer().analyze(base.points, base.world, 0);
+    for (const visualRotation of [-0.6, -0.2, 0.2, 0.6]) {
+      // The fixture mirrors *after* rotating, so reverse its input rotation for
+      // the other hand to produce the same visible clockwise motion.
+      const fixture = handFixture("V_GESTURE", {
+        mirror,
+        rotation: visualRotation * (mirror ? 1 : -1),
+      });
+      const hand = new GestureRecognizer().analyze(
+        fixture.points,
+        fixture.world,
+        0,
+      );
+      assert.ok(
+        Math.abs(
+          wrappedRadians(hand.palmRoll! - first.palmRoll!) - visualRotation,
+        ) < 1e-12,
+      );
+    }
+  }
+});
+
+test("translating the whole V or moving fingertips does not turn the palm dial", () => {
+  const original = handFixture("V_GESTURE");
+  const first = new GestureRecognizer().analyze(
+    original.points,
+    original.world,
+    0,
+  );
+  for (const [dx, dy] of [
+    [0.2, 0],
+    [-0.2, 0.1],
+    [0, -0.15],
+  ]) {
+    const fixture = handFixture("V_GESTURE");
+    for (const p of fixture.points) {
+      p.x += dx;
+      p.y += dy;
+    }
+    for (const i of [4, 8, 12, 16, 20]) {
+      fixture.points[i].x += Math.sin(i) * 0.007;
+      fixture.points[i].y += Math.cos(i) * 0.005;
+    }
+    const hand = new GestureRecognizer().analyze(
+      fixture.points,
+      fixture.world,
+      0,
+    );
+    assert.equal(hand.gesture, "V_GESTURE");
+    assert.ok(
+      Math.abs(wrappedRadians(hand.palmRoll! - first.palmRoll!)) < 1e-12,
+    );
+  }
+});
+
+test("roll stays measurable through moderate tilt and rejects severe edge-on palms", () => {
+  for (const mirror of [false, true]) {
+    for (const [yaw, pitch, valid] of [
+      [0.8, 0.5, true],
+      [-0.8, -0.5, true],
+      [Math.PI / 2, 0, false],
+      [0, Math.PI / 2, false],
+    ] as const) {
+      const fixture = handFixture("V_GESTURE", { mirror, yaw, pitch });
+      const hand = new GestureRecognizer().analyze(
+        fixture.points,
+        fixture.world,
+        0,
+      );
+      assert.equal(
+        hand.gesture,
+        "V_GESTURE",
+        "pose and roll validity are independent",
+      );
+      assert.equal(hand.palmRollValid, valid, `yaw=${yaw}, pitch=${pitch}`);
+    }
+  }
+  const collapsed = handFixture("V_GESTURE");
+  collapsed.points[17] = {
+    ...collapsed.points[5],
+    x: collapsed.points[5].x + 0.00001,
+  };
+  const hand = new GestureRecognizer().analyze(
+    collapsed.points,
+    collapsed.world,
+    0,
+  );
+  assert.equal(hand.palmRollValid, false);
+  assert.ok(Number.isFinite(hand.palmRoll));
+});
+
+test("palm-axis angles around minus/plus PI retain the correct shortest signed delta", () => {
+  for (const mirror of [false, true]) {
+    const start = mirror ? Math.PI - 0.07 : 0;
+    const end = start + (mirror ? 0.15 : -0.08);
+    const first = handFixture("V_GESTURE", { mirror, rotation: start });
+    const second = handFixture("V_GESTURE", { mirror, rotation: end });
+    const a = new GestureRecognizer().analyze(
+      first.points,
+      first.world,
+      0,
+    ).palmRoll!;
+    const b = new GestureRecognizer().analyze(
+      second.points,
+      second.world,
+      0,
+    ).palmRoll!;
+    assert.ok(Math.abs(b - a) > 6, "raw atan2 crosses its branch cut");
+    assert.ok(Math.abs(wrappedRadians(b - a) - (mirror ? 0.15 : 0.08)) < 1e-12);
   }
 });

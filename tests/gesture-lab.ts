@@ -60,7 +60,7 @@ document.getElementById("lab-buttons")!.addEventListener("click", (event) => {
   motion = button.dataset.motion ?? "";
   started = performance.now();
   focusUnlockedAt = null;
-  if (motion === "focus-grip-fast") interaction.selectBody("earth");
+  if (motion === "focus-v") interaction.selectBody("earth");
   recognizers.forEach((r) => r.reset());
   if (button.dataset.target) {
     pose = "POINT";
@@ -95,8 +95,7 @@ function feature(
   time: number,
   index = 0,
   alignPalm = false,
-  gripSpread = 0,
-  gripDirection: "forward" | "camera" = "forward",
+  rollDegrees = 0,
 ): HandFeatures {
   const { points, world } = handFixture(pose, {
     relaxed: true,
@@ -104,8 +103,7 @@ function feature(
     frame: time / 50,
     mirror: index === 1,
     foldedPinch: pose === "PINCH",
-    gripSpread,
-    gripDirection,
+    rotation: ((rollDegrees * Math.PI) / 180) * (index === 1 ? 1 : -1),
   });
   const sourceX = alignPalm
     ? [0, 5, 9, 13, 17].reduce((sum, i) => sum + points[i].x / 5, 0)
@@ -120,31 +118,54 @@ function feature(
     point.y += dy;
   });
   const hand = recognizers[index].analyze(points, world, time);
-  hand.id = index === 0 ? "lab-left" : "lab-right";
-  hand.handedness = index === 0 ? "Left" : "Right";
+  hand.id = index === 0 ? "lab-right" : "lab-left";
+  hand.handedness = index === 0 ? "Right" : "Left";
   return hand;
 }
 const timer = window.setInterval(() => {
   const time = performance.now(),
     elapsed = time - started;
   let hands: HandFeatures[] = [];
-  if (motion === "focus-grip-fast") {
+  if (motion === "focus-v") {
     if (interaction.isLocked()) {
-      // The user attempts a grip, then releases while the camera is flying.
+      hands = [feature("V_GESTURE", 0.55, 0.46, time, 0, true, 25)];
+    } else {
+      focusUnlockedAt ??= time;
       hands = [
         feature(
-          elapsed > 350 && elapsed < 650 ? "FIVE_PINCH" : "OPEN_PALM",
-          0.5,
-          0.5,
+          "V_GESTURE",
+          0.55,
+          0.46,
           time,
           0,
           true,
+          30 * clamp((time - focusUnlockedAt - 800) / 700),
         ),
       ];
-    } else {
-      focusUnlockedAt ??= time;
-      const spread = clamp((time - focusUnlockedAt - 50) / 250);
-      hands = [feature("FIVE_PINCH", 0.5, 0.5, time, 0, true, spread)];
+    }
+  } else if (motion.startsWith("v-")) {
+    const index = motion.includes("left-hand") ? 1 : 0;
+    const progress = clamp((elapsed - 1000) / 800);
+    const degrees =
+      motion === "v-jitter"
+        ? Math.sin(elapsed / 180) * 5
+        : motion === "v-still" || motion === "v-translate"
+          ? 0
+          : (motion.endsWith("-out") ? -1 : 1) * 30 * progress;
+    const x =
+      motion === "v-translate" ? 0.5 + Math.sin(elapsed / 170) * 0.22 : 0.56;
+    if (!(motion === "v-missing" && elapsed > 2000 && elapsed % 1800 < 100)) {
+      hands = [
+        feature(
+          elapsed < 400 ? "OPEN_PALM" : "V_GESTURE",
+          x,
+          0.45,
+          time,
+          index,
+          true,
+          degrees,
+        ),
+      ];
     }
   } else if (motion === "drag") {
     const progress = clamp((elapsed - 900) / 1000);
@@ -166,27 +187,6 @@ const timer = window.setInterval(() => {
         time,
         0,
         true,
-      ),
-    ];
-  } else if (motion.startsWith("five-zoom")) {
-    const spread =
-      elapsed < 1000
-        ? 0
-        : motion.endsWith("-in")
-          ? clamp((elapsed - 1000) / 1200)
-          : elapsed < 1850
-            ? clamp((elapsed - 1000) / 750)
-            : 1 - clamp((elapsed - 1850) / 1000);
-    hands = [
-      feature(
-        elapsed < 500 ? "OPEN_PALM" : "FIVE_PINCH",
-        0.5,
-        0.5,
-        time,
-        0,
-        true,
-        spread,
-        motion.includes("camera") ? "camera" : "forward",
       ),
     ];
   } else if (motion === "reentry") {
@@ -237,7 +237,7 @@ const timer = window.setInterval(() => {
   const s = store.get(),
     f = gestureFeedback.get();
   document.getElementById("lab-result")!.textContent =
-    `识别 ${s.gesture} | 状态 ${s.mode} | 锁 ${s.transitioning} | 资料 ${s.infoVisible} | 已选 ${s.selected ?? "无"} | 目标 ${f.target?.id ?? "无"} | ${f.readiness} / ${f.pinchPhase} | 松开 ${f.needsRelease} | 动作 ${f.action} | 五指 ${f.zoomActive ? "开合中" : "待机"} ${(f.zoomProgress * 100).toFixed(0)}% 开度${f.zoomAperture.toFixed(2)} | 双掌 ${f.specialStage} ${(f.specialProgress * 100).toFixed(0)}% | 坍缩 ${particles.collapse.toFixed(2)} | 内部 ${particles.sunInterior.toFixed(2)} | 缩放 ${particles.targetScale.toFixed(2)} | 旋转 ${particles.targetRotation.toFixed(2)}`;
+    `识别 ${s.gesture} | 状态 ${s.mode} | 锁 ${s.transitioning} | 资料 ${s.infoVisible} | 已选 ${s.selected ?? "无"} | 目标 ${f.target?.id ?? "无"} | ${f.readiness} / ${f.pinchPhase} | 松开 ${f.needsRelease} | 动作 ${f.action} | 旋钮 ${f.zoomMode} ${(f.zoomProgress * 100).toFixed(0)}% Δ${f.zoomDelta.toFixed(1)}° 速度${f.zoomSpeed.toFixed(3)} | 双掌 ${f.specialStage} ${(f.specialProgress * 100).toFixed(0)}% | 坍缩 ${particles.collapse.toFixed(2)} | 内部 ${particles.sunInterior.toFixed(2)} | 缩放 ${particles.targetScale.toFixed(2)} | 旋转 ${particles.targetRotation.toFixed(2)}`;
 }, 50);
 window.addEventListener(
   "pagehide",

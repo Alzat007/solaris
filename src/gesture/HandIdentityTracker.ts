@@ -18,6 +18,8 @@ type Track = {
   vx: number;
   vy: number;
   time: number;
+  lastGesture: HandFeatures["gesture"];
+  missing: boolean;
   recognizer: GestureRecognizer;
 };
 type Detection = {
@@ -41,9 +43,9 @@ const validPoints = (points: Landmark[] | undefined) => {
   return true;
 };
 
-/** Matches the model's unordered detections using handedness and predicted
- * two-dimensional position. Lost/ambiguous observations discard identity so a
- * newly appearing hand cannot inherit another hand's drag or velocity. */
+/** Matches unordered detections by handedness and predicted position. Loss or
+ * ambiguity discards identity, except a single held V's short detection grace;
+ * a newly appearing hand cannot inherit another hand's drag or velocity. */
 export class HandIdentityTracker {
   private tracks: Track[] = [];
   private serial = 0;
@@ -70,7 +72,6 @@ export class HandIdentityTracker {
     const inputCount = result.landmarks.length;
     let count = 0;
     if (
-      inputCount === 0 ||
       inputCount > 2 ||
       !Number.isFinite(time) ||
       !Number.isFinite(aspect) ||
@@ -79,11 +80,34 @@ export class HandIdentityTracker {
       this.reset();
       return [];
     }
+    if (inputCount === 0) {
+      // Retain only recent V observations internally. Their last *valid*
+      // timestamps never advance on a miss; no phantom hand reaches callers.
+      // Pinch/drag identity still disappears on the first missing sample.
+      const retained =
+        time > this.lastTime
+          ? this.tracks.filter((track) => this.canRetainV(track, time))
+          : [];
+      if (retained.length) {
+        for (const track of retained) track.missing = true;
+        this.tracks = retained;
+        return [];
+      }
+      this.reset();
+      return [];
+    }
     if (
       time - this.lastTime > gestureConfig.FRAME_GAP_RESET ||
       time <= this.lastTime
     )
       this.reset();
+    // Another visible hand may keep the global frame clock fresh while a V
+    // owner is occluded. Expire its own last-valid timestamp independently.
+    this.tracks = this.tracks.filter((track) => {
+      if (!track.missing || this.canRetainV(track, time)) return true;
+      track.recognizer.reset();
+      return false;
+    });
     for (let i = 0; i < inputCount; i++) {
       const points = result.landmarks[i];
       const category = result.handedness?.[i]?.[0];
@@ -205,6 +229,8 @@ export class HandIdentityTracker {
               vx: 0,
               vy: 0,
               time,
+              lastGesture: "NONE",
+              missing: false,
               recognizer: new GestureRecognizer(),
             };
       const hand = track.recognizer.analyze(
@@ -233,8 +259,27 @@ export class HandIdentityTracker {
       track.x = detection.x;
       track.y = detection.y;
       track.time = time;
+      track.lastGesture = hand.gesture;
+      track.missing = false;
       nextTracks.push(track);
       hands.push(hand);
+    }
+    // A natural partial detection can omit the dial owner while the other
+    // hand remains visible. Preserve that V's identity for the same grace,
+    // without inheriting pinch/drag history or reporting an invisible hand.
+    // Invalid geometry is not a model miss, so it never takes this path.
+    if (count === inputCount && nextTracks.length < 2) {
+      const missing = this.tracks
+        .filter(
+          (track) =>
+            !nextTracks.includes(track) && this.canRetainV(track, time),
+        )
+        .sort((a, b) => a.order - b.order);
+      for (const track of missing) {
+        if (nextTracks.length >= 2) break;
+        track.missing = true;
+        nextTracks.push(track);
+      }
     }
     this.tracks = nextTracks;
     this.lastTime = time;
@@ -243,5 +288,13 @@ export class HandIdentityTracker {
     if (hands.length === 2 && nextTracks[0].order > nextTracks[1].order)
       hands.reverse();
     return hands;
+  }
+
+  private canRetainV(track: Track, time: number) {
+    return (
+      track.lastGesture === "V_GESTURE" &&
+      time > track.time &&
+      time - track.time <= gestureConfig.V_GESTURE_RELEASE_GRACE
+    );
   }
 }

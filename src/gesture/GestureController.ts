@@ -11,12 +11,18 @@ import {
 import { gestureTargets } from "./gestureTargets";
 import { HoldStateMachine, PinchStateMachine } from "./GestureStateMachine";
 import { SolarEffectGesture, SwipeTracker } from "./GestureMotion";
-import { SingleHandZoom } from "./SingleHandZoom";
+import { VRotationZoom } from "./VRotationZoom";
+import { settleDialScale } from "./dialScale";
 import type { HandFeatures, HandFrame } from "./GestureTypes";
 
 const overview = (mode: string) =>
   mode === "SOLAR_SYSTEM" || mode === "POINTER";
 const focused = (mode: string) => mode === "PLANET_FOCUS" || mode === "INFO";
+const canDial = (mode: string) =>
+  overview(mode) ||
+  focused(mode) ||
+  mode === "SUN_FOCUS" ||
+  mode === "UNIVERSE_SCALE";
 
 /** Arbitration only. Geometry, pinch lifecycle, effects, targets and rendering
  * live in separate modules. One winning action owns each detection frame. */
@@ -39,7 +45,8 @@ export class GestureController {
   private pinchOriginY = 0;
   private dragLastX = 0;
   private dragLastTime = 0;
-  private zoom = new SingleHandZoom();
+  private zoom = new VRotationZoom();
+  private zoomHandId = "";
   private fistId = "";
   private fistNeedsRelease = false;
   private pairedReleaseAt = -Infinity;
@@ -55,9 +62,13 @@ export class GestureController {
     }
     return machine;
   }
-  private stopMotion() {
+  private stopMotion(preserveDial = false) {
     rotation.end();
-    if (this.zoom.cancel()) interaction.endScale();
+    if (!preserveDial) {
+      if (this.zoom.speed !== 0) this.settleDial();
+      if (this.zoom.cancel()) interaction.endScale();
+      this.zoomHandId = "";
+    }
     this.captured = null;
     this.pinchContext = null;
     this.fist.reset();
@@ -96,12 +107,46 @@ export class GestureController {
     if (applied) this.trigger("PINCH_SELECT", time, config.SELECT_COOLDOWN);
     return applied;
   }
+  private settleDial() {
+    particles.targetScale = settleDialScale(
+      particles.targetScale,
+      particles.scale,
+    );
+  }
+  private zoomFeedback(hand?: HandFeatures) {
+    return {
+      zoomProgress: this.zoom.progress,
+      zoomMode: this.zoom.state,
+      zoomBaseAngle: this.zoom.baseAngle,
+      zoomCurrentAngle: this.zoom.currentAngle,
+      zoomDelta: this.zoom.delta,
+      zoomSpeed: this.zoom.speed,
+      zoomDirection: this.zoom.direction,
+      zoomScale: particles.targetScale,
+      zoomActive: this.zoom.active,
+      vConfidence: hand?.vConfidence ?? 0,
+    };
+  }
   update({ hands, time }: HandFrame) {
     if (!hands.length) {
-      this.stopMotion();
+      // A short detection miss freezes the dial immediately, but must not
+      // discard its calibrated angle. The identity tracker retains only a
+      // recent V hand for the same grace window; other gestures still reset.
+      const previousSpeed = this.zoom.speed;
+      const missing =
+        this.zoom.owned && !interaction.isLocked() && canDial(store.get().mode)
+          ? this.zoom.update(null, time, particles.targetScale)
+          : null;
+      if (missing && previousSpeed !== 0 && this.zoom.speed === 0)
+        this.settleDial();
+      const preserveDial = !!missing?.owned;
+      if (missing?.ended) interaction.endScale();
+      this.stopMotion(preserveDial);
       rotation.stop();
-      this.visible = false;
-      this.handSignature = "";
+      if (!preserveDial || missing?.ended) {
+        this.visible = false;
+        this.handSignature = "";
+      }
       this.pinches.clear();
       this.pointTarget = null;
       particles.cursorVisible = false;
@@ -117,7 +162,7 @@ export class GestureController {
       gestureFeedback.set({
         presence: "NO_HAND",
         readiness: "RECONNECTING",
-        action: "NONE",
+        action: preserveDial ? "V_ZOOM" : "NONE",
         handCount: 0,
         confidence: 0,
         trackingConfidence: 0,
@@ -125,10 +170,7 @@ export class GestureController {
         pinchPhase: "IDLE",
         pinchProgress: 0,
         fistProgress: 0,
-        zoomProgress: 0,
-        zoomAperture: 0,
-        zoomScale: particles.targetScale,
-        zoomActive: false,
+        ...this.zoomFeedback(),
         specialProgress: 0,
         specialStage: "IDLE",
         needsRelease: false,
@@ -139,14 +181,22 @@ export class GestureController {
       this.lastFrame = time;
       return;
     }
-    const first = hands[0],
-      second = hands[1];
+    // Keep the captured dial hand primary even if detection order changes or
+    // a second hand enters. An active dial owns arbitration until release.
+    const owner = this.zoom.owned
+      ? hands.find((hand, index) => this.id(hand, index) === this.zoomHandId)
+      : hands.find((hand) => hand.gesture === "V_GESTURE");
+    const first = owner ?? hands[0],
+      second = hands.find((hand) => hand !== first);
     const firstId = this.id(first, 0),
       secondId = second ? this.id(second, 1) : "";
     const signature = second ? [firstId, secondId].sort().join("|") : firstId;
+    // The captured hand may disappear while another remains visible. Let the
+    // dial pause for its grace window without lending ownership to that hand.
+    const continuingDial = this.zoom.owned;
     const reappeared =
       !this.visible ||
-      signature !== this.handSignature ||
+      (!continuingDial && signature !== this.handSignature) ||
       time - this.lastFrame > config.FRAME_GAP_RESET;
     if (reappeared) this.enterReentry(time);
     this.visible = true;
@@ -225,9 +275,7 @@ export class GestureController {
         this.zoom.progress > 0 ||
         specialProgress > 0;
       const target =
-        this.pinchContext === "drag" ||
-        this.zoom.owned ||
-        action === "ONE_HAND_ZOOM"
+        this.pinchContext === "drag" || this.zoom.owned || action === "V_ZOOM"
           ? null
           : currentTarget;
       const fingers = first.fingerState;
@@ -247,17 +295,11 @@ export class GestureController {
         pinchPhase: p0.phase,
         pinchProgress,
         fistProgress: this.fist.progress,
-        zoomProgress: this.zoom.progress,
-        zoomAperture: this.zoom.aperture,
-        zoomScale: particles.targetScale,
-        zoomActive: this.zoom.active,
+        ...this.zoomFeedback(first),
         specialProgress,
         specialStage: this.special.stage,
         needsRelease:
-          p0.needsRelease ||
-          !!p1?.needsRelease ||
-          this.fistNeedsRelease ||
-          (!second && this.zoom.needsRelease),
+          p0.needsRelease || !!p1?.needsRelease || this.fistNeedsRelease,
         handCount: hands.length,
         confidence,
         trackingConfidence,
@@ -276,16 +318,49 @@ export class GestureController {
     };
     if (!enabled) {
       this.stopMotion();
-      // Lost/reacquired hands still need a release. A scene animation only
-      // suspends zoom: a new confirmation may start after it has finished.
-      if (!ready && first.gesture === "FIVE_PINCH") this.zoom.cancel(true);
-      if (!second) this.zoom.observeRelease(first);
       rotation.stop();
       if (locked || !ready) this.pointTarget = null;
       if (first.gesture === "FIST" || second?.gesture === "FIST")
         this.fistNeedsRelease = true;
       report();
       return;
+    }
+
+    const updateDial = (hand: HandFeatures | null) => {
+      const previousSpeed = this.zoom.speed;
+      const zoom = this.zoom.update(hand, time, particles.targetScale);
+      if (!zoom.owned) return false;
+      this.pinchContext = "consumed";
+      this.captured = this.pointTarget = null;
+      p0.reset(true);
+      p1?.reset(true);
+      this.fist.reset();
+      this.swipe.reset();
+      this.special.reset();
+      rotation.stop();
+      if (zoom.scale !== undefined) interaction.scale(zoom.scale);
+      if (previousSpeed !== 0 && this.zoom.speed === 0) this.settleDial();
+      if (zoom.ended) interaction.endScale();
+      if (zoom.started) {
+        gestureFeedback.set({ lastAction: "V_ZOOM", actionAt: time });
+        particles.gesturePulse = 1;
+      }
+      action = "V_ZOOM";
+      pinchProgress = 0;
+      report();
+      return true;
+    };
+
+    // Already-owned dial outranks every gesture, including a newly appearing
+    // second hand. Outside supported scenes the scene/animation lock wins.
+    if (this.zoom.owned) {
+      if (canDial(mode)) {
+        if (updateDial(owner ?? null)) return;
+      } else {
+        if (this.zoom.speed !== 0) this.settleDial();
+        if (this.zoom.cancel()) interaction.endScale();
+        this.zoomHandId = "";
+      }
     }
 
     // Priority 1: the optional two-open-palm collapse / rebirth effect.
@@ -320,31 +395,18 @@ export class GestureController {
       particles.collapseCharge = 0;
     }
 
-    // Priority 2: all five fingertips own one complete open/close zoom cycle.
-    // Nothing in that cycle may become a click, drag, return or planet swipe.
-    if (
-      !second &&
-      (overview(mode) || focused(mode) || mode === "UNIVERSE_SCALE")
-    ) {
-      const zoom = this.zoom.update(first, time);
-      if (zoom.owned) {
-        this.pinchContext = "consumed";
-        this.captured = this.pointTarget = null;
-        p0.reset(true);
-        this.fist.reset();
-        this.swipe.reset();
-        rotation.stop();
-        if (zoom.scale !== undefined) interaction.scale(zoom.scale);
-        if (zoom.ended) interaction.endScale();
-        if (zoom.started) {
-          gestureFeedback.set({ lastAction: "ONE_HAND_ZOOM", actionAt: time });
-          particles.gesturePulse = 1;
-        }
-        action = this.zoom.needsRelease ? "NONE" : "ONE_HAND_ZOOM";
-        report();
-        return;
-      }
-    } else if (this.zoom.cancel()) interaction.endScale();
+    // Priority 2: V detection starts the exclusive rotation clutch. Five-tip
+    // clustering remains diagnostic geometry and never starts a zoom.
+    if (canDial(mode) && first.gesture === "V_GESTURE") {
+      this.zoomHandId = firstId;
+      if (updateDial(first)) return;
+      this.swipe.reset();
+      this.fist.reset();
+      p0.reset(true);
+      p1?.reset(true);
+      report();
+      return;
+    }
 
     // Two-hand pinches no longer zoom. Consume them so neither hand inherits a
     // click after the other disappears; open palms still own cosmic effects.
@@ -481,7 +543,7 @@ export class GestureController {
   }
   reset() {
     this.stopMotion();
-    this.zoom.cancel(false);
+    this.zoom.cancel();
     rotation.stop();
     this.pinches.clear();
     this.visible = false;

@@ -7,7 +7,14 @@ import type { Gesture, Landmark } from "../../src/gesture/GestureTypes";
 export function handFixture(
   gesture: Extract<
     Gesture,
-    "OPEN_PALM" | "POINT" | "PINCH" | "FIST" | "V_SIGN" | "THREE" | "FIVE_PINCH"
+    | "OPEN_PALM"
+    | "POINT"
+    | "PINCH"
+    | "FIST"
+    | "V_SIGN"
+    | "V_GESTURE"
+    | "THREE"
+    | "FIVE_PINCH"
   >,
   {
     relaxed = false,
@@ -25,6 +32,7 @@ export function handFixture(
     gripSpread = 0,
     gripDirection = "forward",
     gripDepth = 0.045,
+    thumbPose = "open",
   }: {
     relaxed?: boolean;
     noise?: number;
@@ -42,6 +50,7 @@ export function handFixture(
     /** Changes finger flexion relative to the palm, not the whole hand pose. */
     gripDirection?: "forward" | "camera";
     gripDepth?: number;
+    thumbPose?: "open" | "tucked" | "index-contact";
   } = {},
 ) {
   const world: Landmark[] = Array.from({ length: 21 }, () => ({
@@ -72,7 +81,7 @@ export function handFixture(
       (gesture === "PINCH" && (!foldedPinch || finger === 0)) ||
       (gesture === "POINT" && finger === 0) ||
       (gesture === "THREE" && finger < 3) ||
-      (gesture === "V_SIGN" && finger < 2);
+      ((gesture === "V_SIGN" || gesture === "V_GESTURE") && finger < 2);
     // A relaxed palm has 35° PIP and 10° DIP flexion, without curling its tips.
     const bend = finger === 3 ? softPinky : flexion;
     const bends = extended
@@ -95,6 +104,13 @@ export function handFixture(
       };
     });
   });
+  if (thumbPose === "tucked") {
+    world[2] = { x: -0.04, y: 0.04, z: -0.01 };
+    world[3] = { x: -0.02, y: 0.03, z: -0.025 };
+    world[4] = { x: -0.001, y: 0.018, z: -0.03 };
+  } else if (thumbPose === "index-contact") {
+    world[4] = { ...world[8], x: world[8].x - 0.003 };
+  }
   if (gesture === "PINCH") {
     // Index bends toward the opposing thumb; other fingers remain visibly open.
     world[6] = { x: -0.038, y: -0.032, z: -0.008 };

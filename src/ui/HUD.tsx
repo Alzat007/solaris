@@ -9,6 +9,7 @@ import { GestureHint } from "./GestureHint";
 import { PlanetInfo } from "./PlanetInfo";
 import { GestureCursor } from "../gesture/GestureCursor";
 import { GestureTutorial } from "../gesture/GestureTutorial";
+import { VZoomDial } from "../gesture/VZoomDial";
 import { HandFeedback } from "./HandFeedback";
 import { CameraPreview } from "../gesture/CameraPreview";
 import { CameraStatus } from "./CameraStatus";
@@ -54,6 +55,7 @@ export function HUD() {
       className={`hud ${s.mode === "INTRO" ? "intro-hud" : ""}${s.tracking === "online" ? " hand-active" : ""}${insideSun ? " sun-interior-hud" : ""}`}
     >
       <GestureCursor />
+      <VZoomDial />
       <GestureTutorial />
       <header className="topbar">
         <button
@@ -156,7 +158,7 @@ export function HUD() {
             <br />
             <span>尽在掌中</span>
           </h1>
-          <p className="welcome-caption">指 · 捏 · 拖 · 拨 · 握</p>
+          <p className="welcome-caption">指 · 捏 · 拖 · 转 · 拨 · 握</p>
           <button
             className="enter-button"
             disabled={s.mode === "INTRO" || s.tracking === "loading"}
@@ -250,7 +252,7 @@ export function HUD() {
           </div>
           <div className="quiet-status">
             {s.tracking === "online"
-              ? "指 · 捏 · 拖 · 拨 · 握"
+              ? "指 · 捏 · 拖 · 转 · 拨 · 握"
               : "漫游无垠宇宙"}
           </div>
           <GestureHint />
@@ -360,7 +362,7 @@ export function HUD() {
             ×
           </button>
           <p className="eyebrow">宇宙探索指南</p>
-          <h2>指、捏、拖、拨、握。</h2>
+          <h2>指、捏、拖、转、拨、握。</h2>
           <div className="help-columns">
             <div>
               <h3>核心互动</h3>
@@ -372,9 +374,10 @@ export function HUD() {
                 捏住 → 拖动<span>抓住太阳系空白，移动手旋转</span>
               </p>
               <p>
-                五指聚拢 · 开合缩放
+                ✌ 旋转手腕 · 缩放
                 <span>
-                  五个指尖靠在一起，朝向镜头也可以；再逐渐张开，张开变大、聚拢变小
+                  食指和中指自然伸开，保持片刻；以此刻为中点，向右拧放大、向左拧缩小。松开
+                  ✌ 即停止。
                 </span>
               </p>
               <p>
@@ -405,7 +408,7 @@ export function HUD() {
             </div>
           </div>
           <p className="help-note">
-            缩放时让五个指尖相靠，别卷进掌心握成拳。完全张开停半秒，或移开手，结束缩放并保留大小。松开后再捏合；动画结束后继续探索。若有画面却一直没有手部骨架，可点击「切换兼容识别」。摄像头画面仅在本机处理。
+            左右手都可以旋转缩放；手腕回到起始角度会暂停，平移手掌不会缩放。星球聚焦与太阳系中均可使用；动画结束后继续探索。若有画面却一直没有手部骨架，可点击「切换兼容识别」。摄像头画面仅在本机处理。
           </p>
         </section>
       )}

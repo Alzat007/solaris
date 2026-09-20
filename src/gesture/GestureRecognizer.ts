@@ -194,6 +194,15 @@ export class GestureRecognizer {
     for (let i = 0; i < 4; i++)
       if (scores[i] >= config.OPEN_FINGER_STRONG_SCORE) openCount++;
     const openEvidence = Math.min(...scores);
+    // A victory sign tolerates comfortable flexion and a free thumb. Separate
+    // extended/folded evidence prevents a true bent-index pinch from claiming
+    // this pose, even when its middle finger happens to remain raised.
+    const vExtended = Math.min(scores[0], scores[1]);
+    const vFolded = Math.max(scores[2], scores[3]);
+    const victory =
+      vExtended >= config.V_EXTENDED_MIN_SCORE &&
+      vFolded <= config.V_FOLDED_MAX_SCORE;
+    const vConfidence = victory ? clamp((vExtended + 1 - vFolded) / 2) : 0;
     // Five fingertips must gather outside the palm, not curl back into a fist.
     // RMS aperture uses every fingertip and a 3D palm scale: camera distance,
     // translation and hand roll cannot masquerade as opening the hand.
@@ -285,7 +294,11 @@ export class GestureRecognizer {
       maxRadius <= config.FIVE_PINCH_RADIUS_MAX;
     let gesture: Gesture = "NONE";
     let confidence = 0.6;
-    if (fivePinch) {
+    if (victory) {
+      // Incidental thumb contact while holding V must not select a planet.
+      gesture = "V_GESTURE";
+      confidence = vConfidence;
+    } else if (fivePinch) {
       gesture = "FIVE_PINCH";
       confidence = clamp(
         0.75 + (1 - gripAperture / config.FIVE_PINCH_APERTURE_MAX) * 0.25,
@@ -359,8 +372,29 @@ export class GestureRecognizer {
         : gesture === "NONE" && intermediateGrip
           ? 0.8
           : 0;
-    // V signs and three-finger poses intentionally stay NONE: neither is a
-    // command in V2, but their independently measured fingers remain debuggable.
+    // Screen mirroring negates x, while y still grows downwards: positive
+    // changes are visually clockwise for either hand. The opposite hand's
+    // axis differs by roughly PI, which the dial's per-gesture baseline removes.
+    // Never multiply by handedness here; that would reverse left-hand motion.
+    const rollX = -(p[17].x - p[5].x);
+    const rollY = p[17].y - p[5].y;
+    const rollProjection = Math.hypot(rollX, rollY);
+    const screenAX = p[5].x - p[0].x,
+      screenAY = p[5].y - p[0].y,
+      screenAZ = p[5].z - p[0].z;
+    const screenBX = p[17].x - p[0].x,
+      screenBY = p[17].y - p[0].y,
+      screenBZ = p[17].z - p[0].z;
+    const screenNX = screenAY * screenBZ - screenAZ * screenBY,
+      screenNY = screenAZ * screenBX - screenAX * screenBZ,
+      screenNZ = screenAX * screenBY - screenAY * screenBX;
+    const screenNormalLength = Math.hypot(screenNX, screenNY, screenNZ);
+    const palmRollValid =
+      Number.isFinite(rollProjection) &&
+      rollProjection >= config.PALM_ROLL_MIN_SCREEN &&
+      rollProjection / width >= config.PALM_ROLL_MIN_PROJECTION &&
+      Math.abs(screenNZ) / Math.max(screenNormalLength, 1e-8) >=
+        config.PALM_ROLL_MIN_FACING;
     const result: HandFeatures = {
       center,
       pointer,
@@ -372,6 +406,9 @@ export class GestureRecognizer {
       pinchDistance,
       gripAperture,
       gripConfidence,
+      vConfidence,
+      palmRoll: Math.atan2(rollY, rollX),
+      palmRollValid,
       pinchStrength: clamp(
         1 -
           (pinchDistance - config.PINCH_STRENGTH_START) /

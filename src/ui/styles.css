@@ -1624,21 +1624,8 @@ footer {
   }
 }
 
-/* A small aperture ring makes five-finger scaling visible at the hand. */
-.gesture-zoom-aperture {
-  position: absolute;
-  inset: -5px;
-  border: 1px dashed #9dedf6a6;
-  border-radius: 50%;
-  transform: scale(calc(0.75 + var(--zoom-aperture, 0) * 0.7));
-  transition: transform 90ms linear;
-  box-shadow: 0 0 16px #58d7e92b;
-}
-.gesture-cursor.is-scaling .gesture-cursor-ring {
-  border-color: #bceff2;
-}
-.hand-zoom-progress > i {
-  background: #a7e5eb;
+.gesture-cursor.is-scaling {
+  opacity: 0;
 }
 @media (max-width: 700px) {
   .hand-active .gesture-hints {
@@ -1653,9 +1640,172 @@ footer {
 .hand-feedback .recognized-pose {
   color: #b0cdd4;
 }
-.hand-feedback .recognized-pose[data-gesture="FIVE_PINCH"] {
-  color: #e4b681;
+.hand-feedback .recognized-pose[data-gesture="V_GESTURE"] {
+  color: #b7edf5;
 }
-.camera-preview[data-gesture="FIVE_PINCH"] {
-  border-color: #c9a16d66;
+.camera-preview[data-gesture="V_GESTURE"] {
+  border-color: #a2e5ec66;
+}
+
+/* A quiet palm-following rotary instrument, with no persistent slider. */
+.v-zoom-dial-anchor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 12;
+  pointer-events: none;
+  will-change: transform;
+}
+.v-zoom-dial {
+  position: absolute;
+  width: 136px;
+  left: -68px;
+  top: -56px;
+  text-align: center;
+  color: #b7e6ef;
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity 220ms ease-out,
+    transform 220ms ease-out;
+  text-shadow: 0 1px 8px #02060b;
+}
+.v-zoom-dial[data-visible="true"] {
+  opacity: 1;
+  transform: scale(1);
+}
+.v-zoom-dial-face {
+  position: relative;
+  width: 112px;
+  height: 112px;
+  margin: auto;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #02091091 0,
+    #041b291c 54%,
+    transparent 73%
+  );
+}
+.v-zoom-dial-scale {
+  position: absolute;
+  inset: 0;
+  width: 112px;
+  height: 112px;
+  fill: none;
+}
+.v-zoom-dial-orbit {
+  stroke: #81c2d32b;
+  stroke-width: 0.6;
+}
+.v-zoom-dial-ticks {
+  transform-origin: 56px 56px;
+  transform: rotate(var(--dial-angle, 0deg));
+  transition: transform 85ms linear;
+  stroke: #8bcadb5c;
+  stroke-width: 0.8;
+}
+.v-zoom-dial-ticks .major {
+  stroke: #b2e3ec9c;
+}
+.v-zoom-dial-zero {
+  stroke: #cdf6ffa8;
+  stroke-width: 0.8;
+}
+.v-zoom-dial-glow {
+  opacity: 0;
+  stroke: #aaf0ff;
+  stroke-width: 1.2;
+  filter: drop-shadow(0 0 4px #8bdcfa);
+  transition: opacity 180ms ease-out;
+}
+.v-zoom-dial[data-direction="IN"] .dial-in,
+.v-zoom-dial[data-direction="OUT"] .dial-out {
+  opacity: 0.95;
+}
+.v-zoom-dial-hold {
+  stroke: #a9e3f080;
+  stroke-width: 1.1;
+  stroke-dasharray: var(--dial-progress, 0) 1;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+.v-zoom-dial-minus,
+.v-zoom-dial-plus {
+  position: absolute;
+  top: 44px;
+  color: #7da6b16b;
+  font-size: 17px;
+  line-height: 24px;
+  transition:
+    color 140ms,
+    text-shadow 140ms;
+}
+.v-zoom-dial-minus {
+  left: -8px;
+}
+.v-zoom-dial-plus {
+  right: -8px;
+}
+.v-zoom-dial[data-direction="IN"] .v-zoom-dial-plus,
+.v-zoom-dial[data-direction="OUT"] .v-zoom-dial-minus {
+  color: #d4f8ff;
+  text-shadow: 0 0 10px #79daff;
+}
+.v-zoom-dial-value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 3px;
+}
+.v-zoom-dial-value small {
+  font-size: 7px;
+  letter-spacing: 0.25em;
+  color: #98c5d1;
+  padding-left: 0.25em;
+}
+.v-zoom-dial-value > span {
+  font-size: 21px;
+  line-height: 1.2;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+}
+.v-zoom-dial-value i {
+  font-size: 10px;
+  font-style: normal;
+  margin-left: 2px;
+  opacity: 0.75;
+}
+.v-zoom-dial-label {
+  display: block;
+  margin-top: 5px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+.v-zoom-tutorial {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 13px;
+  font-size: 11px;
+  color: #cdeef4;
+  letter-spacing: 0.08em;
+  animation: arrive 300ms both;
+}
+.v-zoom-tutorial > span {
+  font-size: 18px;
+  letter-spacing: 0.25em;
+  padding-left: 0.25em;
+}
+@media (prefers-reduced-motion: reduce) {
+  .v-zoom-dial,
+  .v-zoom-dial-ticks,
+  .v-zoom-dial-glow,
+  .v-zoom-dial-minus,
+  .v-zoom-dial-plus {
+    transition-duration: 0.01ms;
+  }
 }

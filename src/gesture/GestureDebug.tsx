@@ -3,6 +3,10 @@ import { DebugHands } from "../ui/DebugHands";
 import { gestureLabels } from "../ui/chinese";
 import { useGestureFeedback } from "./gestureFeedback";
 import { useCameraDiagnostics } from "./cameraDiagnostics";
+import { gestureConfig } from "./gestureConfig";
+
+const degrees = (radians: number | null) =>
+  radians === null ? "—" : `${((radians * 180) / Math.PI).toFixed(1)}°`;
 
 export function GestureDebug() {
   const s = useSolaris();
@@ -26,7 +30,7 @@ export function GestureDebug() {
       <DebugHands />
       <pre>
         {[
-          "SOLARIS / GESTURE SYSTEM V2.1",
+          "SOLARIS / V ROTATION ZOOM",
           `Camera: ${camera.stage} · ${camera.backend || "—"}${camera.compatibility ? " · COMPAT" : ""}`,
           `Detection: ${camera.rawHands} raw / ${camera.validHands} valid · ${camera.frames} frames`,
           `Inference: ${camera.inferenceMs.toFixed(1)} ms${camera.frozen ? " · VIDEO FROZEN" : ""}`,
@@ -48,8 +52,15 @@ export function GestureDebug() {
           `Target: ${f.target ? `${f.target.kind}/${f.target.id}` : "—"}`,
           `Pinch / Fist / Special: ${f.pinchProgress.toFixed(2)} / ${f.fistProgress.toFixed(2)} / ${f.specialProgress.toFixed(2)}`,
           `Special Stage: ${f.specialStage}`,
-          `Five-Finger Zoom: ${f.zoomActive ? "ACTIVE" : "IDLE"} · Hold ${(f.zoomProgress * 100).toFixed(0)}%`,
-          `Zoom Aperture: ${(f.zoomAperture * 100).toFixed(0)}% · Scale ${f.zoomScale.toFixed(2)}×`,
+          `Zoom Mode: ${f.zoomMode}`,
+          `Base Palm Angle: ${degrees(f.zoomBaseAngle)}`,
+          `Current Palm Angle: ${degrees(f.zoomCurrentAngle)}`,
+          `Delta: ${f.zoomDelta >= 0 ? "+" : ""}${f.zoomDelta.toFixed(1)}°`,
+          `Zoom Direction: ${f.zoomDirection}`,
+          `Zoom Speed: ${f.zoomSpeed >= 0 ? "+" : ""}${f.zoomSpeed.toFixed(3)} / s`,
+          `Dead Zone: ${gestureConfig.V_ZOOM_DEADZONE_DEG}°`,
+          `V Gesture Confidence: ${f.vConfidence.toFixed(2)}`,
+          `Zoom Scale: ${f.zoomScale.toFixed(2)}× · Hold ${(f.zoomProgress * 100).toFixed(0)}%`,
           `Last Action: ${f.lastAction}`,
           `FPS: ${s.fps} · Quality: ${s.quality}`,
         ].join("\n")}

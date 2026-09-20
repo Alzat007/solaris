@@ -13,7 +13,7 @@
         z-index: 100;
         bottom: 100px;
         left: 16px;
-        width: 300px;
+        width: 330px;
         background: #101c26ef;
         color: #ddd;
         padding: 12px;
@@ -24,6 +24,13 @@
       <p>只替换摄像头输入；真实模型、切换按钮与追踪链路保持运行。</p>
       <button id="blank">空白画面</button
       ><button id="sample">展示官方手部样图</button>
+      <button id="victory">展示官方 V 手势样图</button>
+      <div style="margin-top: 8px">
+        <button id="mirror" aria-pressed="false">镜像样图：关</button>
+        <button id="rotate-right">向右旋转 30°</button>
+        <button id="rotate-left">向左旋转 30°</button>
+        <button id="rotate-reset">旋转归零</button>
+      </div>
       <output id="camera-result" style="display: block"></output>
     </aside>
     <script type="module" src="./camera-lab.ts"></script>

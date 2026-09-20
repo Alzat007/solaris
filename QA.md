@@ -1,4 +1,6 @@
-# Verification · 2026-09-19
+# Verification · 2026-09-19–20
+
+Current contract: **V Gesture Rotation Zoom** (final section). Earlier sections are historical and may describe superseded gesture mappings.
 
 - `npm install`: successful; MediaPipe WASM copied locally by postinstall.
 - `npm run build`: TypeScript and Vite production compilation passed.
@@ -110,3 +112,39 @@ This supersedes the earlier two-hand pinch zoom entry; selection/drag, Fist Back
 - In the desktop browser at 1280 × 720, `/tests/camera-lab.html` replaced only getUserMedia with a labelled canvas video stream. The real local MediaPipe model ran on GPU over blank frames and showed the compatibility button after the delay. Clicking the production button switched to CPU with the camera request count still 1. Rendering the official `right_hands.jpg` test image into that stream produced rawHands=2, validHands=2, visible skeletons and online state. The no-hand notice disappeared. Closing tracking released the preview and returned to mouse mode. A fresh `?handTracking=cpu` visit stayed idle until clicked, then started directly on CPU.
 - The SDK emitted its OpenGL/ROI/feedback-tensor warnings and an informational XNNPACK-created line via stderr; inference continued and no application exception was observed. The external test image is only in ignored `artifacts/`, and both replay HTML entries remain outside the production build. No physical camera permission was requested, and the user's Windows Edge hardware has not been tested here.
 - TypeScript, production build and static export verification passed (four entry assets, seven runtime assets, `/solaris/` base).
+
+## V Gesture Rotation Zoom · 2026-09-20
+
+- All **193 automated tests passed**. This includes camera lifecycle / compatibility, scene transitions, mouse and touch fallback, recognizer geometry, hand identity, routing, pure rotation dial behavior, focus integration, and settling bounds.
+- TypeScript and the GitHub Pages production build passed. Static export verified 4 entry assets and 7 runtime assets under `/solaris/`. The Three.js scene, model files, camera lifecycle and mouse/touch input implementation were not replaced.
+- Removed `SingleHandZoom.ts`, its old tests, `ONE_HAND_ZOOM` routing/configuration, aperture feedback and official five-finger zoom instructions. `FIVE_PINCH` geometry is retained as diagnostic classification and a negative test; it cannot start zoom.
+- Added `VRotationZoom.ts`, `VZoomDial.tsx` and `dialScale.ts`; updated recognizer, identity tracker, gesture arbitration, feedback, configuration, help/onboarding, camera preview highlighting and debug UI. Full current module/parameter descriptions are in `GESTURE_SYSTEM_V2.md`.
+
+### Required acceptance cases
+
+| Case                                 | Evidence                                                                                                                                                              |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hold V without wrist roll            | Pure/controller/focus tests and browser replay retain 1.00 scale. Actual CPU model on a stationary V photograph retains 1.000.                                        |
+| Slight clockwise roll enlarges       | Quadratic-rate unit tests; browser anatomical replay and actual photo/model pipeline show positive delta and IN.                                                      |
+| Larger clockwise roll increases rate | Unit tests cover gentle onset, quadratic increase and 0.65/s cap beyond 40°.                                                                                          |
+| Counterclockwise roll shrinks        | Unit/integration tests for both hands; real model/photo readout shows OUT and decreasing scale.                                                                       |
+| ±5° tremor does not zoom             | Pure dial, anatomical geometry and focused-scene integration tests.                                                                                                   |
+| Lateral translation does not zoom    | Recognizer and routing/focus tests move the entire V hand without changing MCP roll or scale.                                                                         |
+| Fast V translation cannot swipe      | Routing/focus tests keep selection and orientation unchanged during high-velocity V motion.                                                                           |
+| Release stops                        | First invalid sample clears speed; target-to-render settling is capped at 0.01. Blank-photo browser input produces speed 0, then IDLE after grace.                    |
+| Left/right direction agrees          | Mirrored anatomical tests plus an official photograph and its pixel mirror, detected respectively as Right and Left; clockwise remains IN for both.                   |
+| 1–2 missed frames do not recalibrate | Pure, identity, routing and full focus pipeline preserve base/ID and avoid catch-up movement; partial owner loss while a second hand remains visible is also covered. |
+| Transition forbids zoom              | Controller and actual focus-transition tests; fresh 250ms hold required after unlock. Sun entry is always locked; Sun interior remains disabled.                      |
+| Zoom bounds cannot be exceeded       | Tests cover 0.35 and 1.75 limits; browser/model input reaches and retains both bounds.                                                                                |
+
+### Browser/model verification
+
+- In-app Chromium, 1280 × 720: local anatomical replay exercises actual production recognizer/controller/rendering. The circular dial shows percentage, mirrored direction glow and signed rotation in debug. First-use hint remained on stationary V and disappeared after successful zoom; a second test page retained completion.
+- `tests/camera-lab.html?handTracking=cpu&debugGesture=true` runs the pinned production MediaPipe model over a canvas video stream. The official [victory.jpg test asset](https://storage.googleapis.com/mediapipe-assets/victory.jpg), listed in [MediaPipe test data](https://github.com/google-ai-edge/mediapipe/blob/master/mediapipe/tasks/testdata/vision/BUILD), was downloaded only to ignored `artifacts/`. No real camera permissions were requested and neither the sample image nor the lab is published.
+- Unmirrored photo: detected Right + `V_GESTURE`, baseline approximately 28.8°, zero delta/speed at rest. Screen-clockwise rotation +30° produced positive delta and increasing scale (1.041 in one observed sample); counterclockwise rotation produced negative speed, and scale reached the lower bound.
+- Mirrored photo: detected Left + `V_GESTURE`, baseline approximately −29.4°. Clockwise rotation yielded approximately +29.9° / +0.286 per second; counterclockwise settled near −29.9° / −0.287 per second. Returning to neutral immediately stopped speed.
+- An abrupt one-frame photo jump from +30° to −30° briefly produced a model angle outlier before settling. These photo transformations are smoke tests, not a measured real-camera accuracy result. V confidence shown in debug is geometric evidence, not a calibrated accuracy score.
+- After releasing the dial, mouse selection entered Earth and automatically showed its information. The real-model V photo then armed in planet focus; clockwise rotation increased scale (0.350 → 0.381 in an observed update) while Earth and its information remained selected. Stopping the test camera restored mouse mode.
+- No application exception or shader failure observed. MediaPipe logged its expected XNNPACK informational stderr and OpenGL/feedback/ROI warnings.
+
+Physical MacBook / Windows Edge camera behavior at 50–100 cm, varied lighting, natural motion and occlusion still requires hands-on validation. Recommended tuning remains the V hold, grace, dead zone, angle smoothing and max speed, with palm projection gates checked when the V pose is visible but its angle is invalid.

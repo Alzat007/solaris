@@ -20,7 +20,7 @@ export function GestureHint() {
           ]
         : selected
           ? [
-              ...(hand ? [["五指开合", "缩放星球"]] : []),
+              ...(hand ? [["✌ 旋转手腕", "右拧放大 · 左拧缩小"]] : []),
               [hand ? "左右拨动" : touch ? "快速横滑" : "←  →", "切换星球"],
               [
                 hand ? "握拳保持" : touch ? "点按 SOLARIS" : "ESC",
@@ -36,7 +36,7 @@ export function GestureHint() {
                 hand ? "捏住空白 · 拖" : touch ? "单指拖动" : "拖动空白",
                 "旋转视角",
               ],
-              ...(hand ? [["五指聚拢 · 开合", "缩放宇宙"]] : []),
+              ...(hand ? [["✌ 旋转手腕", "右拧放大 · 左拧缩小"]] : []),
             ];
   return (
     <div className="gesture-hints">

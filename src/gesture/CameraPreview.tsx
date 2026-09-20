@@ -60,8 +60,8 @@ export function CameraPreview() {
       ctx.drawImage(video, 0, 0, c.width, c.height);
       ctx.restore();
       for (const hand of handTracking.frame.hands) {
-        const fivePinch = hand.gesture === "FIVE_PINCH";
-        ctx.strokeStyle = fivePinch ? "#efc18b" : "#9de5ee";
+        const victory = hand.gesture === "V_GESTURE";
+        ctx.strokeStyle = victory ? "#c1f5ff" : "#9de5ee";
         ctx.lineWidth = 2;
         ctx.lineJoin = "round";
         for (const bone of bones) {
@@ -78,22 +78,23 @@ export function CameraPreview() {
         for (let index = 0; index < hand.landmarks.length; index++) {
           const p = hand.landmarks[index];
           const fingertip = index > 0 && index % 4 === 0;
-          ctx.fillStyle = fingertip
-            ? fivePinch
-              ? "#ffbd77"
-              : "#eafaff"
-            : "#b6dce6";
+          const victoryTip = victory && (index === 8 || index === 12);
+          ctx.fillStyle = victoryTip
+            ? "#b4f5ff"
+            : fingertip
+              ? "#eafaff"
+              : "#b6dce6";
           ctx.beginPath();
           ctx.arc(
             (1 - p.x) * c.width,
             p.y * c.height,
-            fingertip ? (fivePinch ? 5.5 : 4.5) : 1.8,
+            fingertip ? (victoryTip ? 5.5 : 4.5) : 1.8,
             0,
             Math.PI * 2,
           );
           ctx.fill();
           if (fingertip) {
-            ctx.strokeStyle = fivePinch ? "#fff0c8" : "#80d7ea";
+            ctx.strokeStyle = victoryTip ? "#e8ffff" : "#80d7ea";
             ctx.lineWidth = 1.4;
             ctx.stroke();
           }
@@ -126,8 +127,8 @@ export function CameraPreview() {
         aria-controls="local-camera-preview"
         title={
           !expanded
-            ? "点击展开手部骨架，对照五个指尖的位置"
-            : "亮点标出五个指尖；识别为五指聚拢时变为暖色。画面仅在本机处理"
+            ? "点击展开手部骨架，检查整只手是否在画面内"
+            : "亮点标出指尖；食指和中指亮起时已识别 ✌。画面仅在本机处理"
         }
       >
         <span>

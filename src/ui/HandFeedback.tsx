@@ -14,11 +14,7 @@ export function HandFeedback() {
     f.action === "COLLAPSE" ||
     f.action === "REBIRTH" ||
     f.specialStage !== "IDLE";
-  const zooming = f.action === "ONE_HAND_ZOOM" || f.zoomActive;
-  const zoomPercent = Math.round(
-    Math.max(0, Math.min(1, f.zoomActive ? f.zoomAperture : f.zoomProgress)) *
-      100,
-  );
+  const zooming = f.zoomMode !== "IDLE" && f.zoomMode !== "ZOOM_DIAL_RELEASE";
   const progressVisible =
     special && !zooming && percent > 0 && !f.locked && !s.transitioning;
   const label = (() => {
@@ -30,11 +26,17 @@ export function HandFeedback() {
       if (s.mode === "BIG_BANG") return "宇宙正在重生";
       return "正在穿行";
     }
-    if (s.gesture === "FIVE_PINCH" && f.needsRelease && !f.zoomActive)
-      return "先张开五指，再聚拢";
-    if (f.zoomActive)
-      return `${s.selected ? "星球缩放" : "开合缩放"} · ${f.zoomScale.toFixed(2)}×`;
-    if (f.action === "ONE_HAND_ZOOM") return `逐渐张开 · 启动 ${zoomPercent}%`;
+    if (f.zoomActive || f.zoomMode === "ZOOM_DIAL_ARMED") {
+      const direction =
+        f.zoomDirection === "IN"
+          ? "向右放大"
+          : f.zoomDirection === "OUT"
+            ? "向左缩小"
+            : "旋转缩放";
+      return `${direction} · ${Math.round(f.zoomScale * 100)}%`;
+    }
+    if (f.zoomMode === "V_DETECTED") return "保持 ✌ · 准备旋转";
+    if (f.zoomMode === "ZOOM_DIAL_RELEASE") return "缩放已停止";
     if (f.action === "FIST_BACK") return "握住 · 返回";
     if (f.action === "PINCH_DRAG") return "已抓住 · 拖动旋转";
     if (s.mode === "COLLAPSE")
@@ -83,18 +85,6 @@ export function HandFeedback() {
           {` · ${pose}`}
         </span>
       </small>
-      {zooming && !f.locked && !s.transitioning && (
-        <div
-          className="hand-special-progress hand-zoom-progress"
-          role={f.zoomActive ? "meter" : "progressbar"}
-          aria-label={f.zoomActive ? "五指张开程度" : "五指缩放启动进度"}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={zoomPercent}
-        >
-          <i style={{ transform: `scaleX(${zoomPercent / 100})` }} />
-        </div>
-      )}
       {progressVisible && (
         <div
           className="hand-special-progress"

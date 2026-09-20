@@ -66,6 +66,9 @@ export function GestureTutorial() {
     s.tracking !== "online" ||
     s.help ||
     s.transitioning ||
+    f.locked ||
+    f.zoomMode !== "IDLE" ||
+    s.gesture === "V_GESTURE" ||
     f.presence === "NO_HAND"
   )
     return null;
