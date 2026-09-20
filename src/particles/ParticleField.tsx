@@ -8,6 +8,7 @@ import {
   ShaderMaterial,
   Vector3,
   Points,
+  MathUtils,
 } from "three";
 import { particles, particleStates } from "./ParticleEngine";
 import {
@@ -124,6 +125,10 @@ export function ParticleField({
           ? 0.33 * (1 - particles.focus * 0.8)
           : 0.48 * (selected && selected !== "saturn" ? 0.05 : 1);
     if (kind === "planet") u.uOpacity.value = particles.assembly * 0.8;
+    if (kind === "dust")
+      u.uOpacity.value *=
+        (1 + Math.sin(particles.collapse * Math.PI) * 1.8) *
+        (1 - MathUtils.smoothstep(particles.collapse, 0.75, 1) * 0.94);
     geometry.setDrawRange(
       0,
       Math.floor(

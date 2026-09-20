@@ -46,7 +46,7 @@ This section records the pre-V2 version. Its gesture mappings and interruption b
 
 ## Gesture System V2 · 2026-09-20
 
-This is the current interaction contract; all earlier gesture mappings above are historical.
+This establishes the current interaction contract; the V2.1 section below records subsequent recognition and visual refinements. Earlier gesture mappings above are historical.
 
 - `npm test`: all 86 tests pass. Coverage includes explicit pinch edges and hysteresis, one confirmation per pinch, cancelled holds, low-confidence and re-entry protection, identity/order/crossing handling, animation locks, UI confirmation in secondary scenes, blank-space drag ownership, midpoint-only two-hand zoom, focus-only directional swipes, Fist Back, deliberate collapse/rebirth, unified Sun picking, automatic information and mouse/touch fallback sequences.
 - Desktop in-app-browser replay at 1280 × 720 exercised real recognizer/controller/rendering code with anatomical synthetic 21-point landmarks. POINT on Earth followed by PINCH entered PLANET_FOCUS, displayed information automatically and remained there while the same pinch stayed held. No repeated selection occurred.
@@ -59,3 +59,15 @@ This is the current interaction contract; all earlier gesture mappings above are
 - At a 390 × 844 viewport, the Chinese help panel measured x=19.5, y=40, width=351, height=694; clientHeight=692 and scrollHeight=863. Document scrollWidth=390. Long help content scrolls within the viewport. Temporary viewport settings were reset after verification.
 - No console warnings/errors were captured in the final desktop replay. Camera permissions were not requested in this verification pass; synthetic integration and input-sequence tests do not establish real-hand accuracy or physical phone performance.
 - Final TypeScript check and `VITE_BASE_PATH=/solaris/ npm run build` passed. Static export verification passed for 4 entry assets and 7 runtime assets using the `/solaris/` base path.
+
+## Gesture System V2.1 · built-in webcam refinements · 2026-09-20
+
+- `npm test`: 106 tests passed, 0 failed. Added coverage includes relaxed and side-turned fingers, depth jitter, compact opposed pinch versus fist, handedness-label instability, partial invalid-hand results, weak-pose versus valid-geometry routing, noisy bilateral contraction, paused confirmation, relative closure for wider framing, unilateral/jump rejection and rebirth from separated palms.
+- Desktop browser replay uses the production recognizer, controller and renderer with synthetic landmarks. Natural two-palm contraction with jitter and a 150 ms weak-pose interval reached COLLAPSE, completed at collapse=1 and sunInterior=0, then bilateral expansion restored SOLAR_SYSTEM with collapse=0. The confirmation no longer requires the palms to touch. This does not verify physical-camera accuracy.
+- Screenshots verified a bright persistent gold/white energy core, a visible ring and surrounding streams after collapse. The singularity instruction sits below the core, and the hand feedback correctly prompts outward separation for rebirth. The new bottom collapse button also triggered the actual animation; transitions remained locked while running.
+- Final desktop replay verified POINT on Earth followed by PINCH entered PLANET_FOCUS with automatic information. FIST returned to SOLAR_SYSTEM. A held pinch did not select repeatedly.
+- The preview test used a clearly labelled synthetic canvas stream, without requesting camera permission or recording. The existing video and current landmark frame rendered as a mirrored preview and bone overlay. Entering information automatically collapsed the preview; manual expansion worked during reading and placed it at the upper left on desktop.
+- At 390 × 844, the expanded reading preview measured x=254.6, y=116, width=112, bottom=221.5. The information panel began at y=232; document scrollWidth remained 390. The temporary viewport override was reset.
+- No console warnings or errors were captured in the final desktop replay. Built-in webcam accuracy under the user's lighting, occlusion and distance remains a hands-on validation item; synthetic tests cannot establish that result.
+- Final TypeScript and GitHub Pages production build passed. Static export verification passed for 4 entry assets and 7 runtime assets using `/solaris/`. The replay harness and its synthetic-camera/slow-motion controls are development-only and are not included in the production entry.
+- README and implementation documentation now describe V2.1, including all 98 current configuration parameters (64 controller/motion and 34 recognizer/identity parameters).

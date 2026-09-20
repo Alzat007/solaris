@@ -6,7 +6,7 @@ import { useGestureFeedback } from "./gestureFeedback";
 /** Read the render-side cursor so its light ring and hit test never drift apart. */
 export function GestureCursor() {
   const cursor = useRef<HTMLDivElement>(null);
-  const { tracking } = useSolaris();
+  const { tracking, mode } = useSolaris();
   const f = useGestureFeedback();
   const online = tracking === "online";
   const visible = online && f.presence !== "NO_HAND";
@@ -36,6 +36,7 @@ export function GestureCursor() {
   if (!visible) return null;
   const fist = f.action === "FIST_BACK";
   const progress = fist ? f.fistProgress : f.specialProgress;
+  const special = f.specialStage !== "IDLE";
   const style = {
     "--pinch-progress": f.pinchProgress,
     "--gesture-progress": Math.max(0, Math.min(1, progress)),
@@ -44,10 +45,11 @@ export function GestureCursor() {
     <>
       <div
         ref={cursor}
-        className={`gesture-cursor${f.target ? " has-target" : ""}${fist ? " is-returning" : ""}`}
+        className={`gesture-cursor${f.target ? " has-target" : ""}${fist ? " is-returning" : ""}${special ? " is-condensing" : ""}`}
         data-state={f.presence}
         data-readiness={f.readiness}
         data-pinch={f.pinchPhase}
+        data-special-stage={f.specialStage}
         style={style}
         aria-hidden="true"
       >
@@ -61,7 +63,19 @@ export function GestureCursor() {
         )}
         {f.pulseId > 0 && <i className="gesture-pulse" key={f.pulseId} />}
         <span className="gesture-target-name">
-          {fist ? "返回" : f.target?.label}
+          {fist
+            ? "返回"
+            : special
+              ? f.specialStage === "PAUSED"
+                ? "留在镜头内"
+                : mode === "COLLAPSE"
+                  ? f.specialProgress > 0
+                    ? `展开 ${Math.round(f.specialProgress * 100)}%`
+                    : "展开 · 重生"
+                  : f.specialProgress > 0
+                    ? `凝聚 ${Math.round(f.specialProgress * 100)}%`
+                    : "双掌合拢"
+              : f.target?.label}
         </span>
       </div>
       <div

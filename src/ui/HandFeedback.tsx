@@ -1,48 +1,82 @@
 import { useSolaris } from "../interaction/store";
 import { useGestureFeedback } from "../gesture/gestureFeedback";
 
-/** One quiet line answers whether the hand is visible and an action is ready. */
+/** Show action progress before release reminders, especially for two-hand play. */
 export function HandFeedback() {
   const s = useSolaris();
   const f = useGestureFeedback();
-  if (s.tracking !== "online") return null;
-  const label =
-    f.presence === "NO_HAND"
-      ? "请让手留在镜头内"
-      : f.readiness === "RECONNECTING"
-        ? "正在稳定追踪"
-        : f.locked || s.transitioning
-          ? "正在穿行"
-          : f.needsRelease
-            ? "松开后再捏合"
-            : f.action === "FIST_BACK"
-              ? "握住 · 返回"
-              : f.action === "PINCH_DRAG"
-                ? "已抓住 · 拖动旋转"
-                : f.action === "TWO_HAND_ZOOM"
-                  ? "双手捏住 · 缩放"
-                  : f.action === "COLLAPSE"
-                    ? "双掌合拢 · 凝聚能量"
-                    : f.action === "REBIRTH"
-                      ? "双掌拉开 · 重生"
-                      : f.pinchPhase === "PINCH_START"
-                        ? "捏合确认"
-                        : f.presence === "GESTURE_TRIGGERED"
-                          ? "已确认"
-                          : f.cooldownMs > 0
-                            ? "松开手指，继续探索"
-                            : f.target
-                              ? `已指向 · ${f.target.label}`
-                              : "手已就绪";
+  if (s.tracking !== "online" && s.tracking !== "seeking") return null;
+  const percent = Math.round(Math.max(0, Math.min(1, f.specialProgress)) * 100);
+  const special =
+    f.action === "COLLAPSE" ||
+    f.action === "REBIRTH" ||
+    f.specialStage !== "IDLE";
+  const progressVisible =
+    special && percent > 0 && !f.locked && !s.transitioning;
+  const label = (() => {
+    if (f.presence === "NO_HAND" || f.handCount === 0)
+      return "请让整只手留在镜头内";
+    if (f.readiness === "RECONNECTING") return "正在稳定追踪";
+    if (f.locked || s.transitioning) {
+      if (s.mode === "COLLAPSE") return "正在坍缩 · 能量汇入中心";
+      if (s.mode === "BIG_BANG") return "宇宙正在重生";
+      return "正在穿行";
+    }
+    if (f.action === "FIST_BACK") return "握住 · 返回";
+    if (f.action === "PINCH_DRAG") return "已抓住 · 拖动旋转";
+    if (f.action === "TWO_HAND_ZOOM") return "双手捏住 · 缩放";
+    if (s.mode === "COLLAPSE")
+      return f.handCount >= 2
+        ? "双掌向两侧拉开 · 宇宙重生"
+        : "再抬起另一只手，准备重生";
+    if (f.specialStage === "PAUSED")
+      return f.handCount < 2
+        ? "请让另一只手也留在画面内"
+        : "双掌保持张开 · 继续合拢";
+    if (f.specialStage === "HOLD") return `保持片刻 · ${percent}%`;
+    if (f.specialStage === "APPROACH") return `缓慢合拢 · ${percent}%`;
+    if (f.specialStage === "READY") return "双掌张开 · 向中心靠近";
+    if (f.action === "COLLAPSE") return `双掌合拢 · ${percent}%`;
+    if (f.action === "REBIRTH") return "双掌拉开 · 重生";
+    if (f.needsRelease) return "松开后再捏合";
+    if (f.pinchPhase === "PINCH_START") return "捏合确认";
+    if (f.presence === "GESTURE_TRIGGERED") return "已确认";
+    if (f.cooldownMs > 0) return "松开手指，继续探索";
+    if (f.target) return `已指向 · ${f.target.label}`;
+    if (f.handCount >= 2 && s.mode === "SOLAR_SYSTEM")
+      return "双掌张开，再向中心合拢";
+    return "手已就绪";
+  })();
   return (
     <div
       className="hand-feedback"
       data-state={f.presence}
+      data-action={f.action}
+      data-special-stage={f.specialStage}
       role="status"
       aria-live="polite"
     >
-      <i aria-hidden="true" />
-      <span>{label}</span>
+      <div className="hand-feedback-line">
+        <i aria-hidden="true" />
+        <span>{label}</span>
+      </div>
+      <small>
+        {f.handCount > 0 ? `已识别 ${f.handCount} 只手` : "尚未识别到手"}
+      </small>
+      {progressVisible && (
+        <div
+          className="hand-special-progress"
+          role="progressbar"
+          aria-label={
+            s.mode === "COLLAPSE" ? "双掌展开重生进度" : "双掌坍缩确认进度"
+          }
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={percent}
+        >
+          <i style={{ transform: `scaleX(${percent / 100})` }} />
+        </div>
+      )}
     </div>
   );
 }

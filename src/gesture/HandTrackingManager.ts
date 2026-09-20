@@ -40,6 +40,7 @@ export class HandTrackingManager {
         video: {
           width: { ideal: 640 },
           height: { ideal: 480 },
+          frameRate: { ideal: 30, max: 30 },
           facingMode: "user",
         },
         audio: false,
@@ -142,8 +143,8 @@ export class HandTrackingManager {
         );
         this.lastFrameTime = start;
         this.frame = { hands, time: start };
-        // Empty/rejected detections reach the state machine immediately so it
-        // can release drag/zoom and arm its hand re-entry lock.
+        // Only absent / malformed geometry is removed. Uncertain poses remain
+        // tracked and reach the controller as such, without repeated re-entry.
         gestures.update(this.frame);
       } else if (start - this.lastFrameTime > gestureConfig.FRAME_GAP_RESET) {
         // A frozen video feed must not leave a held gesture active indefinitely.

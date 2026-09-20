@@ -463,13 +463,15 @@ footer {
   letter-spacing: 0.22em;
   margin: 20px 0;
 }
-.cosmic-event button {
+.cosmic-event button,
+.cosmic-action {
   font-size: 10px;
   letter-spacing: 0.15em;
   color: #ddbb8b;
   padding: 12px;
 }
-.cosmic-event button span {
+.cosmic-event button span,
+.cosmic-action span {
   display: block;
   margin-top: 10px;
   font-size: 8px;
@@ -1066,7 +1068,7 @@ footer {
   z-index: 4;
   text-shadow: 0 2px 9px #000;
 }
-.hand-feedback > i {
+.hand-feedback-line > i {
   width: 4px;
   height: 4px;
   border-radius: 50%;
@@ -1362,5 +1364,206 @@ footer {
 @media (max-height: 600px) and (min-width: 701px) {
   .hand-feedback {
     top: 83px;
+  }
+}
+
+/* Compact local camera alignment aid and explicit two-hand progress. */
+.hand-feedback {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  max-width: 88%;
+}
+.hand-feedback-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hand-feedback small {
+  color: #728f99;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+}
+.hand-special-progress {
+  width: 120px;
+  height: 2px;
+  background: #8ad7ed21;
+  overflow: hidden;
+}
+.hand-special-progress > i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #b0eafb;
+  box-shadow: 0 0 9px #7fdbf2;
+  transform-origin: left;
+  transition: transform 65ms linear;
+}
+.hand-feedback[data-special-stage="PAUSED"] .hand-special-progress > i {
+  background: #cdb47c;
+}
+.camera-preview {
+  position: absolute;
+  top: 134px;
+  right: 3.4%;
+  width: 160px;
+  overflow: hidden;
+  border: 1px solid #9cddf121;
+  border-radius: 5px;
+  background: #041016b8;
+  z-index: 4;
+  pointer-events: none;
+}
+.camera-preview[hidden],
+.camera-preview canvas[hidden] {
+  display: none;
+}
+.camera-preview canvas {
+  width: 100%;
+  height: auto;
+  max-height: 120px;
+  object-fit: contain;
+  opacity: 0.88;
+}
+.camera-preview-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  color: #9ebcc6;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+}
+.camera-preview-toggle i {
+  font-style: normal;
+  font-size: 7px;
+  color: #68828b;
+  margin-left: 4px;
+}
+.planet-nav .cosmic-toggle {
+  gap: 5px;
+  color: #9aabad;
+}
+.planet-nav .cosmic-toggle > span:first-child {
+  font-size: 15px;
+  line-height: 1;
+  color: #b8d9dc;
+}
+.gesture-cursor.is-condensing {
+  color: #e7d6a8;
+}
+.gesture-cursor.is-condensing .gesture-cursor-ring {
+  border-color: #e7d6a899;
+}
+.gesture-cursor[data-special-stage="PAUSED"] .gesture-progress-ring {
+  opacity: 0.5;
+}
+@media (max-width: 700px) {
+  .camera-preview {
+    top: 116px;
+    right: 6%;
+    width: 112px;
+  }
+  .camera-preview canvas {
+    max-height: 84px;
+  }
+  .camera-preview-toggle {
+    padding: 5px 6px;
+    font-size: 8px;
+  }
+  .camera-preview-toggle i {
+    display: none;
+  }
+  .hud:has(.camera-preview:not([hidden])[data-expanded="true"])
+    .gesture-tutorial {
+    left: 6%;
+    transform: none;
+    max-width: calc(88% - 130px);
+    gap: 7px;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+  }
+  .hud:has(.camera-preview:not([hidden])[data-expanded="true"])
+    .gesture-tutorial
+    small {
+    white-space: normal;
+  }
+  .hud:has(.camera-preview:not([hidden])[data-expanded="true"])
+    .tutorial-symbol {
+    font-size: 20px;
+  }
+  .planet-nav .cosmic-toggle {
+    gap: 4px;
+  }
+}
+@media (max-height: 600px) and (min-width: 701px) {
+  .camera-preview {
+    top: 120px;
+    width: 120px;
+  }
+  .camera-preview canvas {
+    max-height: 90px;
+  }
+}
+
+.hud:has(.camera-preview:not([hidden])) .tracking-prompt {
+  display: none;
+}
+
+/* Keep the singularity unobscured; instructions sit below its halo. */
+.cosmic-action {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 88px);
+  transform: translateX(-50%);
+  text-align: center;
+  white-space: nowrap;
+  animation: arrive 0.8s both;
+}
+@media (max-width: 700px) {
+  .cosmic-action {
+    top: calc(50% + 62px);
+    max-width: 88%;
+    white-space: normal;
+    font-size: 10px;
+  }
+  .cosmic-action span {
+    font-size: 8px;
+    line-height: 1.5;
+  }
+}
+@media (max-height: 560px) {
+  .cosmic-action {
+    top: calc(50% + 44px);
+    padding: 8px;
+  }
+  .cosmic-action span {
+    margin-top: 6px;
+  }
+}
+
+/* Reading starts compact, but users can reopen the hand-alignment view. */
+@media (min-width: 701px) {
+  .camera-preview[data-reading="true"] {
+    left: 3.4%;
+    right: auto;
+    top: 94px;
+  }
+}
+@media (max-width: 700px) {
+  .hud:has(.camera-preview:not([hidden])[data-reading="true"]) .planet-info {
+    top: max(27%, 150px);
+    max-height: calc(100% - 275px);
+    overflow-y: auto;
+    pointer-events: auto;
+    scrollbar-width: thin;
+  }
+  .hud:has(
+      .camera-preview:not([hidden])[data-reading="true"][data-expanded="true"]
+    )
+    .planet-info {
+    top: max(27%, 232px);
+    max-height: calc(100% - 357px);
   }
 }

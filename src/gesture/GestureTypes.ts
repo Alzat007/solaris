@@ -37,7 +37,10 @@ export interface HandFeatures {
   pinchDistance: number;
   pinchStrength: number;
   gesture: Gesture;
+  /** Pose evidence, independent of whether the hand is continuously tracked. */
   confidence: number;
+  /** Geometry validity (0–1); MediaPipe does not expose per-hand tracking scores. */
+  trackingConfidence?: number;
   landmarks: Landmark[];
   palmFacing: boolean;
   palmDirection: [number, number, number];

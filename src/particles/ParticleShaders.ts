@@ -21,7 +21,9 @@ void main(){
  p+=cross(vec3(0.,1.,0.),dir)*field*(.6+speed*.08)*(uState>3.5&&uState<4.5?3.:1.);
  p+=uVelocity*field*.08;
  p*=mix(.01,1.,smoothstep(0.,1.,uIntro));
- p*=1.-uCollapse*.994;
+ float pull=uCollapse*(3.5+seed*2.);
+ p.xz=mat2(cos(pull),-sin(pull),sin(pull),cos(pull))*p.xz;
+ p*=max(.006,pow(1.-uCollapse,1.55));
  float blast=sin(min(uExplosion*1.35,1.)*3.14159)*step(.0001,uExplosion);
  p+=normalize(position+vec3(.001))*blast*(18.+seed*38.);
  p+=normalize(position+vec3(.001))*uBurst*seed*5.;

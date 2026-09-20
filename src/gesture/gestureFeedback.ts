@@ -34,8 +34,10 @@ export interface GestureFeedbackState {
   needsRelease: boolean;
   fistProgress: number;
   specialProgress: number;
+  specialStage: "IDLE" | "READY" | "APPROACH" | "HOLD" | "PAUSED";
   handCount: number;
   confidence: number;
+  trackingConfidence: number;
   handedness: string;
   pinchDistance: number;
   palmX: number;
@@ -59,8 +61,10 @@ const initial: GestureFeedbackState = {
   needsRelease: false,
   fistProgress: 0,
   specialProgress: 0,
+  specialStage: "IDLE",
   handCount: 0,
   confidence: 0,
+  trackingConfidence: 0,
   handedness: "—",
   pinchDistance: 1,
   palmX: 0.5,

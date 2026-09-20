@@ -24,7 +24,7 @@ type Detection = {
   x: number;
   y: number;
   handedness: Handedness;
-  confidence: number;
+  source: number;
 };
 const validPoints = (points: Landmark[] | undefined) => {
   if (!points || points.length !== 21) return false;
@@ -53,7 +53,7 @@ export class HandIdentityTracker {
     x: 0,
     y: 0,
     handedness: "Unknown",
-    confidence: 0,
+    source: 0,
   }));
 
   reset() {
@@ -67,10 +67,11 @@ export class HandIdentityTracker {
     time: number,
     aspect = 4 / 3,
   ): HandFeatures[] {
-    const count = result.landmarks.length;
+    const inputCount = result.landmarks.length;
+    let count = 0;
     if (
-      count === 0 ||
-      count > 2 ||
+      inputCount === 0 ||
+      inputCount > 2 ||
       !Number.isFinite(time) ||
       !Number.isFinite(aspect) ||
       aspect <= 0
@@ -83,28 +84,24 @@ export class HandIdentityTracker {
       time <= this.lastTime
     )
       this.reset();
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < inputCount; i++) {
       const points = result.landmarks[i];
-      const world = result.worldLandmarks?.[i];
       const category = result.handedness?.[i]?.[0];
-      // MediaPipe enforces detection/presence confidence in its options. Its
-      // returned handedness score is additionally required for safe identity.
+      // Handedness confidence means left/right certainty, not hand presence.
+      // MediaPipe already enforces detection / presence in its model options.
+      // Reject malformed geometry individually so one occluded hand cannot
+      // erase its continuously tracked companion.
       if (
         !validPoints(points) ||
-        (world && !validPoints(world)) ||
-        (category &&
-          (!Number.isFinite(category.score) ||
-            category.score < gestureConfig.MIN_CONFIDENCE)) ||
         Math.hypot(
           (points[5].x - points[17].x) * aspect,
           points[5].y - points[17].y,
           (points[5].z - points[17].z) * aspect,
         ) < config.MIN_PALM_WIDTH
-      ) {
-        this.reset();
-        return [];
-      }
-      const detection = this.detections[i];
+      )
+        continue;
+      const detection = this.detections[count++];
+      detection.source = i;
       detection.x =
         (points[0].x +
           points[5].x +
@@ -120,12 +117,19 @@ export class HandIdentityTracker {
           points[17].y) /
         5;
       detection.handedness =
-        category?.categoryName === "Left"
-          ? "Left"
-          : category?.categoryName === "Right"
-            ? "Right"
-            : "Unknown";
-      detection.confidence = category?.score ?? 1;
+        !category ||
+        !Number.isFinite(category.score) ||
+        category.score < config.IDENTITY_HANDEDNESS_CONFIDENCE
+          ? "Unknown"
+          : category.categoryName === "Left"
+            ? "Left"
+            : category?.categoryName === "Right"
+              ? "Right"
+              : "Unknown";
+    }
+    if (count === 0) {
+      this.reset();
+      return [];
     }
     const oldCount = this.tracks.length;
     for (let i = 0; i < count; i++) {
@@ -139,12 +143,14 @@ export class HandIdentityTracker {
           t.handedness !== "Unknown" &&
           d.handedness !== t.handedness;
         this.costs[i * 2 + j] =
-          contradicts || step > config.IDENTITY_MAX_STEP_SCREEN
+          step > config.IDENTITY_MAX_STEP_SCREEN
             ? Infinity
             : Math.hypot(d.x - t.x - t.vx * dt, d.y - t.y - t.vy * dt) +
-              (d.handedness === t.handedness
-                ? 0
-                : config.IDENTITY_UNKNOWN_PENALTY);
+              (contradicts
+                ? config.IDENTITY_MISMATCH_PENALTY
+                : d.handedness === t.handedness
+                  ? 0
+                  : config.IDENTITY_UNKNOWN_PENALTY);
       }
     }
     // Enumerate at most nine assignments, including a new track (-1). This
@@ -173,7 +179,8 @@ export class HandIdentityTracker {
       const straight = this.costs[0] + this.costs[3];
       const crossed = this.costs[1] + this.costs[2];
       // At a truly ambiguous crossing, preserving a guess is less safe than a
-      // brief re-entry lock. Known left/right hands do not hit this branch.
+      // brief re-entry lock. Reliable opposite labels normally separate costs;
+      // if geometry and label evidence conflict equally, do not guess.
       if (
         Number.isFinite(straight) &&
         Number.isFinite(crossed) &&
@@ -201,18 +208,20 @@ export class HandIdentityTracker {
               recognizer: new GestureRecognizer(),
             };
       const hand = track.recognizer.analyze(
-        result.landmarks[i],
-        result.worldLandmarks?.[i],
+        result.landmarks[detection.source],
+        validPoints(result.worldLandmarks?.[detection.source])
+          ? result.worldLandmarks?.[detection.source]
+          : undefined,
         time,
         aspect,
       );
       hand.id = track.id;
-      hand.handedness = detection.handedness;
-      hand.confidence = Math.min(hand.confidence, detection.confidence);
-      if (hand.confidence < gestureConfig.MIN_CONFIDENCE) {
-        this.reset();
-        return [];
-      }
+      // Pose uncertainty pauses commands; it is not a lost hand. Keep the
+      // last reliable handedness through a momentary classifier flip.
+      if (track.handedness === "Unknown" && detection.handedness !== "Unknown")
+        track.handedness = detection.handedness;
+      hand.handedness = track.handedness;
+      hand.trackingConfidence = 1;
       if (match >= 0) {
         const dt = Math.max(
           (time - track.time) / 1000,
@@ -224,8 +233,6 @@ export class HandIdentityTracker {
       track.x = detection.x;
       track.y = detection.y;
       track.time = time;
-      if (detection.handedness !== "Unknown")
-        track.handedness = detection.handedness;
       nextTracks.push(track);
       hands.push(hand);
     }

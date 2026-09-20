@@ -89,18 +89,11 @@ test("one disappearing hand does not replace the other continuously tracked hand
   });
 });
 
-test("low confidence, non-finite and incomplete frames clear hands and require fresh identities", () => {
-  for (const invalid of [
-    "confidence",
-    "nonfinite",
-    "incomplete",
-    "flat",
-  ] as const) {
+test("malformed geometry clears a hand and requires a fresh identity", () => {
+  for (const invalid of ["nonfinite", "incomplete", "flat"] as const) {
     const tracker = new HandIdentityTracker();
     const first = tracker.update(frame(detected()), 0)[0];
     const bad = detected();
-    if (invalid === "confidence")
-      bad.category[0].score = gestureConfig.MIN_CONFIDENCE - 0.01;
     if (invalid === "nonfinite") bad.points[8].x = NaN;
     if (invalid === "incomplete") bad.points.pop();
     if (invalid === "flat") bad.points[17] = { ...bad.points[5] };
@@ -154,4 +147,86 @@ test("returned frame features remain unchanged after recognizer scratch buffers 
   for (let i = 1; i <= 5; i++)
     tracker.update(frame(detected(i * 0.01)), i * 50);
   assert.deepEqual(first, snapshot);
+});
+
+test("low handedness scores preserve valid geometry, confidence and stable identity", () => {
+  const tracker = new HandIdentityTracker();
+  const first = tracker.update(frame(detected()), 0)[0];
+  for (let step = 1; step <= 12; step++) {
+    const hand = tracker.update(
+      frame(
+        detected(
+          step * 0.005,
+          0,
+          step % 2 ? "Left" : "Right",
+          0.3 + step * 0.025,
+        ),
+      ),
+      step * 50,
+    )[0];
+    assert.equal(hand.id, first.id);
+    assert.equal(hand.handedness, "Right");
+    assert.equal(hand.trackingConfidence, 1);
+    assert.ok(
+      hand.confidence > 0.8,
+      "left/right certainty cannot lower pointing evidence",
+    );
+  }
+});
+
+test("a transient handedness classifier flip cannot drop a continuously visible hand", () => {
+  const tracker = new HandIdentityTracker();
+  const first = tracker.update(frame(detected()), 0)[0];
+  const flipped = tracker.update(frame(detected(0.005, 0, "Left")), 50)[0];
+  assert.equal(flipped.id, first.id);
+  assert.equal(flipped.handedness, "Right");
+  assert.equal(tracker.update(frame(detected(0.01)), 100)[0].id, first.id);
+});
+
+test("unknown poses and relaxed palms keep identity instead of causing a reconnection", () => {
+  const tracker = new HandIdentityTracker();
+  const first = tracker.update(frame(detected()), 0)[0];
+  const poses = ["V_SIGN", "OPEN_PALM", "THREE", "POINT"] as const;
+  poses.forEach((pose, i) => {
+    const fixture = handFixture(pose, {
+      relaxed: true,
+      flexion: 55,
+      softPinky: 65,
+    });
+    const result = tracker.update(
+      {
+        landmarks: [fixture.points],
+        worldLandmarks: [fixture.world],
+        handedness: [[{ categoryName: "Right", score: 0.53 }]],
+      },
+      (i + 1) * 50,
+    );
+    assert.equal(result.length, 1);
+    assert.equal(result[0].id, first.id);
+    assert.equal(result[0].trackingConfidence, 1);
+    if (pose === "V_SIGN" || pose === "THREE")
+      assert.equal(result[0].gesture, "NONE");
+  });
+});
+
+test("a malformed second hand does not drop the continuous first hand", () => {
+  const tracker = new HandIdentityTracker();
+  const first = tracker.update(
+    frame(detected(-0.1, 0, "Left"), detected(0.1)),
+    0,
+  );
+  const bad = detected(0.11);
+  bad.points[8].z = NaN;
+  const next = tracker.update(frame(detected(-0.09, 0, "Left"), bad), 50);
+  assert.equal(next.length, 1);
+  assert.equal(next[0].id, first[0].id);
+});
+
+test("an unavailable world estimate falls back to valid screen geometry", () => {
+  const tracker = new HandIdentityTracker();
+  const badWorld = detected();
+  badWorld.world[8].z = NaN;
+  const hand = tracker.update(frame(badWorld), 0)[0];
+  assert.equal(hand.gesture, "POINT");
+  assert.equal(hand.trackingConfidence, 1);
 });

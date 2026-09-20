@@ -16,6 +16,25 @@ export function handFixture(
     rotation = 0,
     mirror = false,
     foldedPinch = false,
+    compactPinch = false,
+    flexion = relaxed ? 35 : 0,
+    softPinky = flexion,
+    yaw = 0,
+    pitch = 0,
+    depthNoise = noise,
+  }: {
+    relaxed?: boolean;
+    noise?: number;
+    frame?: number;
+    rotation?: number;
+    mirror?: boolean;
+    foldedPinch?: boolean;
+    compactPinch?: boolean;
+    flexion?: number;
+    softPinky?: number;
+    yaw?: number;
+    pitch?: number;
+    depthNoise?: number;
   } = {},
 ) {
   const world: Landmark[] = Array.from({ length: 21 }, () => ({
@@ -47,9 +66,10 @@ export function handFixture(
       (gesture === "THREE" && finger < 3) ||
       (gesture === "V_SIGN" && finger < 2);
     // A relaxed palm has 35° PIP and 10° DIP flexion, without curling its tips.
+    const bend = finger === 3 ? softPinky : flexion;
     const bends = extended
-      ? relaxed
-        ? [0, 35, 45]
+      ? bend > 0
+        ? [0, bend, bend + 10]
         : [0, 0, 0]
       : [25, 110, 180];
     const fingerScale = [0.95, 1.08, 1, 0.78][finger];
@@ -71,21 +91,39 @@ export function handFixture(
     world[3] = { x: -0.073, y: -0.004, z: -0.026 };
     world[4] = { x: -0.067, y: -0.025, z: -0.03 };
   }
+  if (gesture === "PINCH" && compactPinch) {
+    world[6] = { x: -0.03, y: -0.025, z: -0.005 };
+    world[7] = { x: -0.04, y: -0.02, z: -0.02 };
+    world[8] = { x: -0.045, y: -0.005, z: -0.03 };
+    world[3] = { x: -0.067, y: 0.015, z: -0.02 };
+    world[4] = { x: -0.047, y: -0.005, z: -0.03 };
+  }
   if (gesture === "FIST") {
     // A fist's thumb commonly overlaps the folded index, also satisfying pinch distance.
     world[4] = { ...world[8], x: world[8].x - 0.006 };
   }
-  const transformed = world.map((p, i) => ({
-    x:
-      (mirror ? -1 : 1) *
-        (p.x * Math.cos(rotation) - p.y * Math.sin(rotation)) +
-      noise * Math.sin(i * 1.7 + frame),
-    y:
-      p.x * Math.sin(rotation) +
-      p.y * Math.cos(rotation) +
-      noise * Math.sin(i * 2.1 + frame * 1.3),
-    z: p.z + noise * Math.sin(i * 2.9 + frame * 0.7),
-  }));
+  const transformed = world.map((point, i) => {
+    // Rigid out-of-plane rotations preserve anatomy while foreshortening the
+    // camera view. Independent depth jitter models a noisier laptop sensor.
+    const yp = point.y * Math.cos(pitch) - point.z * Math.sin(pitch);
+    const zp = point.y * Math.sin(pitch) + point.z * Math.cos(pitch);
+    const p = {
+      x: point.x * Math.cos(yaw) + zp * Math.sin(yaw),
+      y: yp,
+      z: -point.x * Math.sin(yaw) + zp * Math.cos(yaw),
+    };
+    return {
+      x:
+        (mirror ? -1 : 1) *
+          (p.x * Math.cos(rotation) - p.y * Math.sin(rotation)) +
+        noise * Math.sin(i * 1.7 + frame),
+      y:
+        p.x * Math.sin(rotation) +
+        p.y * Math.cos(rotation) +
+        noise * Math.sin(i * 2.1 + frame * 1.3),
+      z: p.z + depthNoise * Math.sin(i * 2.9 + frame * 0.7),
+    };
+  });
   return {
     world: transformed,
     points: transformed.map((p) => ({

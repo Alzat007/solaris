@@ -64,6 +64,7 @@ export class GestureController {
     this.fist.reset();
     this.swipe.reset();
     this.special.reset();
+    particles.collapseCharge = 0;
   }
   private enterReentry(time: number) {
     this.stopMotion();
@@ -119,11 +120,14 @@ export class GestureController {
         readiness: "RECONNECTING",
         action: "NONE",
         handCount: 0,
+        confidence: 0,
+        trackingConfidence: 0,
         target: null,
         pinchPhase: "IDLE",
         pinchProgress: 0,
         fistProgress: 0,
         specialProgress: 0,
+        specialStage: "IDLE",
         needsRelease: false,
         locked: interaction.isLocked(),
         cooldownMs: Math.max(0, this.cooldownUntil - time),
@@ -148,9 +152,12 @@ export class GestureController {
     const confidence = second
       ? Math.min(first.confidence, second.confidence)
       : first.confidence;
-    const confidenceReady =
-      confidence >=
-      (second ? config.TWO_HAND_MIN_CONFIDENCE : config.MIN_CONFIDENCE);
+    // Uncertain finger poses pause their action; they are not lost camera hands.
+    const trackingConfidence = Math.min(
+      first.trackingConfidence ?? first.confidence,
+      second ? (second.trackingConfidence ?? second.confidence) : 1,
+    );
+    const confidenceReady = trackingConfidence >= config.MIN_CONFIDENCE;
     if (!confidenceReady) this.enterReentry(time);
     const pointer =
       first.gesture === "POINT" || first.gesture === "PINCH"
@@ -218,6 +225,8 @@ export class GestureController {
           ? null
           : currentTarget;
       const fingers = first.fingerState;
+      particles.collapseCharge =
+        overview(mode) && !locked ? specialProgress : 0;
       gestureFeedback.set({
         presence:
           time < this.triggeredUntil
@@ -233,10 +242,12 @@ export class GestureController {
         pinchProgress,
         fistProgress: this.fist.progress,
         specialProgress,
+        specialStage: this.special.stage,
         needsRelease:
           p0.needsRelease || !!p1?.needsRelease || this.fistNeedsRelease,
         handCount: hands.length,
         confidence,
+        trackingConfidence,
         handedness: first.handedness ?? firstId,
         pinchDistance: first.pinchDistance,
         palmX: first.center.x,
@@ -263,8 +274,6 @@ export class GestureController {
     // Priority 1: the optional two-open-palm collapse / rebirth effect.
     if (
       second &&
-      first.gesture === "OPEN_PALM" &&
-      second.gesture === "OPEN_PALM" &&
       (overview(mode) || mode === "COLLAPSE") &&
       time - this.pairedReleaseAt >= config.SELECT_COOLDOWN
     ) {
@@ -289,7 +298,10 @@ export class GestureController {
         report();
         return;
       }
-    } else this.special.reset();
+    } else {
+      this.special.reset();
+      particles.collapseCharge = 0;
+    }
 
     // Priority 2: a zoom owns both pinches; neither may later turn into a click.
     if (second && p1) {
@@ -405,7 +417,12 @@ export class GestureController {
           ? second
           : null;
     const canBack = !overview(mode) && mode !== "UNIVERSE_SCALE";
-    if (fistHand && canBack && !this.fistNeedsRelease) {
+    if (
+      fistHand &&
+      fistHand.confidence >= config.MIN_CONFIDENCE &&
+      canBack &&
+      !this.fistNeedsRelease
+    ) {
       const id = fistHand.id ?? fistHand.handedness ?? "fist";
       if (id !== this.fistId) {
         this.fist.reset();
@@ -427,7 +444,12 @@ export class GestureController {
 
     // Priority 6: only an open-hand flick in an already focused planet view.
     // POINT movement, pinches, fists and overview movement never switch worlds.
-    if (!second && focused(mode) && first.gesture === "OPEN_PALM") {
+    if (
+      !second &&
+      focused(mode) &&
+      first.gesture === "OPEN_PALM" &&
+      first.confidence >= config.MIN_CONFIDENCE
+    ) {
       const direction = this.swipe.update(first, time);
       if (direction && interaction.next(direction < 0 ? 1 : -1)) {
         action = "SWIPE";

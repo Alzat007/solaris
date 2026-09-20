@@ -1,6 +1,13 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { BufferGeometry, Float32BufferAttribute, Points, Color } from "three";
+import {
+  BufferGeometry,
+  Float32BufferAttribute,
+  Points,
+  Color,
+  MathUtils,
+  type PointsMaterial,
+} from "three";
 import { particles } from "../particles/ParticleEngine";
 export function StarField() {
   const ref = useRef<Points>(null);
@@ -26,10 +33,15 @@ export function StarField() {
     g.setAttribute("color", new Float32BufferAttribute(c, 3));
     return g;
   }, []);
-  useFrame((_, dt) => {
+  useFrame(({ clock }) => {
     if (ref.current) {
-      ref.current.rotation.y += dt * 0.0007;
-      ref.current.scale.setScalar(1 - particles.collapse * 0.9995);
+      ref.current.rotation.y =
+        clock.elapsedTime * 0.0007 + particles.collapse * 2.4;
+      ref.current.scale.setScalar(
+        Math.max(0.012, Math.pow(1 - particles.collapse, 1.35)),
+      );
+      (ref.current.material as PointsMaterial).opacity =
+        0.85 * (1 - MathUtils.smoothstep(particles.collapse, 0.35, 0.94));
     }
   });
   return (

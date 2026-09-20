@@ -36,13 +36,19 @@
         <button data-motion="swipe-left">向左拨动</button>
         <button data-motion="swipe-right">向右拨动</button>
         <button data-motion="join">双掌缓慢合拢</button>
+        <button data-motion="join-noisy">自然合拢含识别波动</button>
         <button data-motion="expand">双掌展开重生</button>
         <button data-motion="zoom-in">双捏合放大</button>
         <button data-motion="zoom-out">双捏合缩小</button>
         <button data-motion="reentry">捏着重新入镜</button>
         <button data-pose="NONE">移开手</button>
+        <button data-preview="true">模拟摄像头预览</button>
+        <button data-slow="true">慢放坍缩动画</button>
       </div>
-      <output id="lab-result"></output>
+      <output
+        id="lab-result"
+        style="display: block; height: 130px; overflow: auto"
+      ></output>
     </aside>
     <script type="module" src="./gesture-lab.ts"></script>
   </body>

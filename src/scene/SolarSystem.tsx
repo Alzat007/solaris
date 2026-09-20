@@ -2,6 +2,7 @@ import { useRef, Suspense } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Group } from "three";
 import { BigBang } from "../particles/BigBang";
+import { CollapseEffect } from "../particles/CollapseEffect";
 import { Sun } from "../planets/Sun";
 import { Mercury } from "../planets/Mercury";
 import { Venus } from "../planets/Venus";
@@ -39,6 +40,7 @@ export function SolarSystem() {
     <group ref={root}>
       <Sun />
       <BigBang />
+      <CollapseEffect />
       <OrbitSystem />
       <Mercury />
       <Venus />

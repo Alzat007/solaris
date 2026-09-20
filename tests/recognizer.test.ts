@@ -221,3 +221,161 @@ test("a long frame gap discards prior smoothing and velocity", () => {
     y: second.points[8].y,
   });
 });
+
+test("open palms tolerate progressive natural flexion and one softer pinky", () => {
+  for (const flexion of [20, 35, 50, 60]) {
+    for (const softPinky of [flexion, Math.min(70, flexion + 15)]) {
+      const recognizer = new GestureRecognizer();
+      for (let frame = 0; frame < 16; frame++) {
+        const fixture = handFixture("OPEN_PALM", {
+          flexion,
+          softPinky,
+          noise: 0.0004,
+          depthNoise: 0.0015,
+          frame,
+        });
+        const hand = recognizer.analyze(
+          fixture.points,
+          fixture.world,
+          frame * 50,
+        );
+        assert.equal(
+          hand.gesture,
+          "OPEN_PALM",
+          `flexion=${flexion}, pinky=${softPinky}, frame=${frame}`,
+        );
+        assert.ok(
+          hand.confidence >= gestureConfig.TWO_HAND_MIN_CONFIDENCE,
+          `relaxed palm confidence=${hand.confidence}`,
+        );
+      }
+    }
+  }
+});
+
+test("sideways and pitched palms retain open/point/pinch/fist geometry with depth noise", () => {
+  for (const pose of ["OPEN_PALM", "POINT", "PINCH", "FIST"] as const) {
+    for (const yaw of [-1, 0.8]) {
+      for (const pitch of [-0.65, 0.5]) {
+        const recognizer = new GestureRecognizer();
+        for (let frame = 0; frame < 12; frame++) {
+          const fixture = handFixture(pose, {
+            yaw,
+            pitch,
+            rotation: 0.35,
+            relaxed: true,
+            foldedPinch: true,
+            noise: 0.0004,
+            depthNoise: 0.0015,
+            frame,
+          });
+          const hand = recognizer.analyze(
+            fixture.points,
+            fixture.world,
+            frame * 50,
+          );
+          assert.equal(
+            hand.gesture,
+            pose,
+            `${pose}, yaw=${yaw}, pitch=${pitch}, frame=${frame}`,
+          );
+        }
+      }
+    }
+  }
+});
+
+test("compact thumb-side pinches work while the remaining fingers stay folded", () => {
+  for (const mirror of [false, true]) {
+    for (const yaw of [-0.8, 0, 0.8]) {
+      for (let frame = 0; frame < 12; frame++) {
+        const fixture = handFixture("PINCH", {
+          foldedPinch: true,
+          compactPinch: true,
+          mirror,
+          yaw,
+          pitch: 0.5,
+          noise: 0.0003,
+          depthNoise: 0.001,
+          frame,
+        });
+        const hand = new GestureRecognizer().analyze(
+          fixture.points,
+          fixture.world,
+          frame * 50,
+        );
+        assert.equal(
+          hand.gesture,
+          "PINCH",
+          `compact pinch mirror=${mirror}, yaw=${yaw}, frame=${frame}`,
+        );
+        assert.equal(hand.fingerState!.middle, false);
+        assert.equal(hand.fingerState!.ring, false);
+        assert.equal(hand.fingerState!.pinky, false);
+      }
+    }
+  }
+});
+
+test("relaxing V/THREE with noisy depth still cannot masquerade as an open palm", () => {
+  for (const pose of ["V_SIGN", "THREE"] as const) {
+    const recognizer = new GestureRecognizer();
+    for (let frame = 0; frame < 16; frame++) {
+      const fixture = handFixture(pose, {
+        flexion: 55,
+        yaw: 0.8,
+        pitch: -0.6,
+        noise: 0.0004,
+        depthNoise: 0.0015,
+        frame,
+      });
+      const hand = recognizer.analyze(
+        fixture.points,
+        fixture.world,
+        frame * 50,
+      );
+      assert.equal(hand.gesture, "NONE");
+    }
+  }
+});
+
+test("a uniformly cupped hand cannot become POINT from one finger crossing hysteresis", () => {
+  const recognizer = new GestureRecognizer();
+  for (let frame = 0; frame < 24; frame++) {
+    const fixture = handFixture("OPEN_PALM", {
+      flexion: 65 + (frame % 3) * 3,
+      noise: 0.0004,
+      depthNoise: 0.0015,
+      frame,
+    });
+    const hand = recognizer.analyze(fixture.points, fixture.world, frame * 50);
+    assert.notEqual(hand.gesture, "POINT");
+    assert.notEqual(hand.gesture, "PINCH");
+  }
+});
+
+test("a fist with lateral thumb/index overlap remains a fist across camera angles", () => {
+  for (const yaw of [-0.9, 0, 0.9]) {
+    for (let frame = 0; frame < 12; frame++) {
+      const fixture = handFixture("FIST", {
+        yaw,
+        pitch: 0.5,
+        noise: 0.0004,
+        depthNoise: 0.0015,
+        frame,
+      });
+      // Move the contacting index/thumb sideways together by up to 7 mm,
+      // below actual opposition, rather than using a perfectly centered fist.
+      for (const i of [4, 8]) {
+        fixture.world[i].x -= 0.007 * Math.cos(yaw);
+        fixture.world[i].z += 0.007 * Math.sin(yaw);
+      }
+      const hand = new GestureRecognizer().analyze(
+        fixture.points,
+        fixture.world,
+        frame * 50,
+      );
+      assert.equal(hand.gesture, "FIST");
+    }
+  }
+});

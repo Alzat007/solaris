@@ -45,7 +45,8 @@ export function PlanetBase({
     const angle =
       data.angle +
       clock.elapsedTime * data.orbitSpeed * 0.3 +
-      particles.rotation;
+      particles.rotation +
+      particles.collapse * (2.1 + planets.indexOf(data) * 0.12);
     target.set(
       Math.cos(angle) * data.distance,
       0,
@@ -77,8 +78,12 @@ export function PlanetBase({
         (particles.intro - 0.22 - planets.indexOf(data) * 0.035) * 2.2,
       ),
     );
-    target.multiplyScalar(1 - particles.collapse * 0.998);
-    root.current.position.lerp(target, 1 - Math.exp(-delta * (active ? 5 : 8)));
+    const collapseDelay = planets.indexOf(data) * 0.022;
+    const collapseProgress = Math.max(
+      0,
+      (particles.collapse - collapseDelay) / (1 - collapseDelay),
+    );
+    target.multiplyScalar(Math.max(0.002, Math.pow(1 - collapseProgress, 1.4)));
     const visual = active
       ? data.visualRadius +
         ((data.id === "saturn" ? 2.35 : 2.6) - data.visualRadius) * f
@@ -95,6 +100,7 @@ export function PlanetBase({
           )
         : 1;
     target.multiplyScalar(reassembly);
+    root.current.position.lerp(target, 1 - Math.exp(-delta * (active ? 5 : 8)));
     const desired = Math.max(
       0.0001,
       visual * birth * (1 - particles.collapse * 0.995) * reassembly,

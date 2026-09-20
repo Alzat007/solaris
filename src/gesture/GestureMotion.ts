@@ -39,24 +39,41 @@ export class SwipeTracker {
   }
 }
 
-/** Two open palms are a deliberate optional effect, never navigation/zoom. */
+/** A deliberate approach, then a brief stable close hold. All travel is
+ * relative to the observed starting span so palms need not overlap on camera. */
 export class SolarEffectGesture {
   progress = 0;
+  stage: "IDLE" | "READY" | "APPROACH" | "HOLD" | "PAUSED" = "IDLE";
   private mode = "";
-  private startTime = 0;
-  private startDistance = 0;
-  private lastDistance = 0;
   private lastTime = 0;
+  private lastValidTime = 0;
+  private span = 0;
+  private startDistance = 0;
   private minDistance = 0;
   private leftStart = 0;
   private rightStart = 0;
+  private activeTime = 0;
+  private closeTime = 0;
   private approaching = false;
   private fired = false;
+
   reset() {
     this.mode = "";
-    this.progress = 0;
-    this.approaching = false;
-    this.fired = false;
+    this.stage = "IDLE";
+    this.progress = this.activeTime = this.closeTime = 0;
+    this.approaching = this.fired = false;
+  }
+  private pause(time: number) {
+    if (
+      !this.mode ||
+      time - this.lastValidTime > config.SPECIAL_POSE_GRACE_TIME
+    ) {
+      this.reset();
+      return;
+    }
+    // Uncertain frames never add confirmation time or execute an action.
+    this.lastTime = time;
+    this.stage = "PAUSED";
   }
   update(
     first: HandFeatures,
@@ -64,13 +81,20 @@ export class SolarEffectGesture {
     mode: "overview" | "collapse",
     time: number,
   ): "COLLAPSE" | "REBIRTH" | null {
-    if (
-      first.gesture !== "OPEN_PALM" ||
-      second.gesture !== "OPEN_PALM" ||
+    const uncertain =
+      first.gesture === "NONE" ||
+      second.gesture === "NONE" ||
       Math.min(first.confidence, second.confidence) <
-        config.TWO_HAND_MIN_CONFIDENCE
-    ) {
+        config.TWO_HAND_MIN_CONFIDENCE;
+    const incompatible = [first, second].some(
+      (h) => h.gesture !== "OPEN_PALM" && h.gesture !== "NONE",
+    );
+    if (incompatible) {
       this.reset();
+      return null;
+    }
+    if (uncertain) {
+      this.pause(time);
       return null;
     }
     const left = first.center.x <= second.center.x ? first : second;
@@ -79,71 +103,94 @@ export class SolarEffectGesture {
       left.center.x - right.center.x,
       left.center.y - right.center.y,
     );
-    if (this.mode !== mode || time - this.lastTime > config.FRAME_GAP_RESET) {
+    if (
+      this.mode !== mode ||
+      time - this.lastValidTime > config.SPECIAL_POSE_GRACE_TIME
+    ) {
       this.seed(mode, distance, left.center.x, right.center.x, time);
       return null;
     }
-    const dt = Math.max(
-      config.MOTION_MIN_FRAME_SECONDS,
-      (time - this.lastTime) / 1000,
+    const elapsed = Math.max(
+      0,
+      Math.min(config.FRAME_GAP_RESET, time - this.lastTime),
     );
-    const speed = (distance - this.lastDistance) / dt;
-    this.lastDistance = distance;
-    this.lastTime = time;
+    const dt = Math.max(config.MOTION_MIN_FRAME_SECONDS, elapsed / 1000);
+    const step = distance - this.span;
+    const observationDt = Math.max(dt, (time - this.lastValidTime) / 1000);
+    // Reject impossible frame jumps, not a momentary noisy velocity sample.
+    if (
+      Math.abs(step) > config.SPECIAL_MAX_FRAME_TRAVEL &&
+      Math.abs(step) / observationDt > config.COLLAPSE_MAX_SPEED
+    ) {
+      this.seed(mode, distance, left.center.x, right.center.x, time);
+      return null;
+    }
+    this.lastTime = this.lastValidTime = time;
+    this.span +=
+      step * (1 - Math.exp(-dt / config.SPECIAL_DISTANCE_SMOOTHING_TIME));
     if (this.fired) return null;
     if (mode === "overview") {
-      // Approaching starts from a visibly separated pair, not a pair that
-      // simply appeared together. Sudden closures and reversals cancel.
       if (
-        this.startDistance <
-          config.COLLAPSE_CLOSE_DISTANCE + config.COLLAPSE_MIN_TRAVEL ||
-        Math.abs(speed) > config.COLLAPSE_MAX_SPEED ||
-        distance > this.minDistance + config.COLLAPSE_REVERSE_TOLERANCE
+        this.startDistance < config.COLLAPSE_START_DISTANCE ||
+        this.span > this.minDistance + config.COLLAPSE_REVERSE_TOLERANCE
       ) {
-        this.seed(mode, distance, left.center.x, right.center.x, time);
+        this.seed(mode, this.span, left.center.x, right.center.x, time);
         return null;
       }
-      this.minDistance = Math.min(this.minDistance, distance);
-      if (!this.approaching && speed < -config.COLLAPSE_APPROACH_MIN_SPEED) {
+      this.minDistance = Math.min(this.minDistance, this.span);
+      const travel = this.startDistance - this.span;
+      if (!this.approaching && travel >= config.COLLAPSE_APPROACH_DISTANCE)
         this.approaching = true;
-        this.startTime = time;
+      if (!this.approaching) {
+        this.stage = "READY";
+        return null;
       }
-      if (!this.approaching) return null;
-      const travel = this.startDistance - distance;
-      this.progress = Math.min(
-        1,
-        (time - this.startTime) / config.COLLAPSE_HOLD_TIME,
-        travel / config.COLLAPSE_MIN_TRAVEL,
+      this.activeTime += elapsed;
+      const closeDistance = Math.max(
+        config.COLLAPSE_CLOSE_DISTANCE,
+        this.startDistance * config.COLLAPSE_CLOSE_RATIO,
       );
+      const bilateral =
+        left.center.x - this.leftStart >= config.COLLAPSE_EACH_HAND_TRAVEL &&
+        this.rightStart - right.center.x >= config.COLLAPSE_EACH_HAND_TRAVEL;
+      const closed =
+        travel >= config.COLLAPSE_MIN_TRAVEL &&
+        this.span <= closeDistance &&
+        bilateral;
+      this.closeTime = closed ? this.closeTime + elapsed : 0;
+      this.stage = closed ? "HOLD" : "APPROACH";
+      this.progress =
+        Math.min(1, this.activeTime / config.COLLAPSE_HOLD_TIME) * 0.7 +
+        Math.min(1, this.closeTime / config.COLLAPSE_CLOSE_HOLD_TIME) * 0.3;
       if (
-        this.progress >= 1 &&
-        distance <= config.COLLAPSE_CLOSE_DISTANCE &&
-        left.center.x - this.leftStart > config.COLLAPSE_EACH_HAND_TRAVEL &&
-        this.rightStart - right.center.x > config.COLLAPSE_EACH_HAND_TRAVEL
+        this.activeTime >= config.COLLAPSE_HOLD_TIME &&
+        this.closeTime >= config.COLLAPSE_CLOSE_HOLD_TIME
       ) {
+        this.progress = 1;
         this.fired = true;
         return "COLLAPSE";
       }
     } else {
-      if (
-        this.startDistance >
-        config.COLLAPSE_CLOSE_DISTANCE + config.REBIRTH_START_DISTANCE_MARGIN
-      ) {
-        this.seed(mode, distance, left.center.x, right.center.x, time);
+      if (this.startDistance > config.REBIRTH_START_DISTANCE) {
+        this.seed(mode, this.span, left.center.x, right.center.x, time);
         return null;
       }
-      const spread = distance - this.startDistance;
+      const spread = this.span - this.startDistance;
+      this.activeTime += elapsed;
       this.progress = Math.max(
         0,
         Math.min(1, spread / config.REBIRTH_MIN_SPREAD),
       );
+      this.stage =
+        spread > config.COLLAPSE_APPROACH_DISTANCE ? "APPROACH" : "READY";
       if (
-        time - this.startTime >= config.REBIRTH_MIN_TIME &&
+        this.activeTime >= config.REBIRTH_MIN_TIME &&
         spread >= config.REBIRTH_MIN_SPREAD &&
-        distance >= config.REBIRTH_DISTANCE &&
-        this.leftStart - left.center.x > config.REBIRTH_EACH_HAND_SPREAD &&
-        right.center.x - this.rightStart > config.REBIRTH_EACH_HAND_SPREAD
+        this.span >= config.REBIRTH_DISTANCE &&
+        this.leftStart - left.center.x >= config.REBIRTH_EACH_HAND_SPREAD &&
+        right.center.x - this.rightStart >= config.REBIRTH_EACH_HAND_SPREAD
       ) {
+        this.progress = 1;
         this.fired = true;
         return "REBIRTH";
       }
@@ -158,12 +205,12 @@ export class SolarEffectGesture {
     time: number,
   ) {
     this.mode = mode;
-    this.startTime = this.lastTime = time;
-    this.startDistance = this.lastDistance = this.minDistance = distance;
+    this.lastTime = this.lastValidTime = time;
+    this.span = this.startDistance = this.minDistance = distance;
     this.leftStart = left;
     this.rightStart = right;
-    this.progress = 0;
-    this.approaching = false;
-    this.fired = false;
+    this.progress = this.activeTime = this.closeTime = 0;
+    this.approaching = this.fired = false;
+    this.stage = "READY";
   }
 }

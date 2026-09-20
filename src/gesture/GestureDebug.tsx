@@ -23,9 +23,10 @@ export function GestureDebug() {
       <DebugHands />
       <pre>
         {[
-          "SOLARIS / GESTURE SYSTEM V2",
+          "SOLARIS / GESTURE SYSTEM V2.1",
           `HAND: ${f.handedness} × ${f.handCount}`,
-          `Confidence: ${(f.confidence * 100).toFixed(0)}%`,
+          `Pose Confidence: ${(f.confidence * 100).toFixed(0)}%`,
+          `Hand Geometry: ${f.trackingConfidence >= 0.55 ? "VALID" : "WEAK"}`,
           `Current Gesture: ${s.gesture}`,
           `Action: ${f.action}`,
           `Pinch State: ${f.pinchPhase}`,
@@ -40,6 +41,7 @@ export function GestureDebug() {
           `Cooldown: ${Math.ceil(f.cooldownMs)} ms`,
           `Target: ${f.target ? `${f.target.kind}/${f.target.id}` : "—"}`,
           `Pinch / Fist / Special: ${f.pinchProgress.toFixed(2)} / ${f.fistProgress.toFixed(2)} / ${f.specialProgress.toFixed(2)}`,
+          `Special Stage: ${f.specialStage}`,
           `Last Action: ${f.lastAction}`,
           `FPS: ${s.fps} · Quality: ${s.quality}`,
         ].join("\n")}

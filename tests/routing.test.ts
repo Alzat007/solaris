@@ -389,3 +389,43 @@ test("a long frame gap is treated as reconnecting and cannot generate a swipe", 
     assert.deepEqual(calls, []);
     assert.equal(gestureFeedback.get().readiness, "RECONNECTING");
   }));
+
+test("uncertain palm pose pauses collapse while valid tracking stays ready", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm(true);
+    for (let i = 0; i < 12; i++) {
+      const hands = pair("OPEN_PALM", 0.6 - i * 0.016);
+      hands.forEach((h) => {
+        h.trackingConfidence = 1;
+      });
+      send(hands);
+    }
+    const before = gestureFeedback.get().specialProgress;
+    const weak = pair("OPEN_PALM", 0.42);
+    weak[0].gesture = "NONE";
+    weak[0].confidence = 0.4;
+    weak.forEach((h) => {
+      h.trackingConfidence = 1;
+    });
+    hold(weak, 100);
+    assert.equal(gestureFeedback.get().readiness, "READY");
+    assert.equal(gestureFeedback.get().specialStage, "PAUSED");
+    assert.equal(gestureFeedback.get().specialProgress, before);
+    assert.equal(calls.includes("collapse"), false);
+    hold(pair("OPEN_PALM", 0.32), 950);
+    assert.deepEqual(calls, ["collapse"]);
+  }));
+
+test("valid tracking never turns an uncertain pinch or fist into an action", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm();
+    gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
+    send([hand("POINT")]);
+    const weak = { ...hand("PINCH"), trackingConfidence: 1, confidence: 0.3 };
+    hold([weak], 500);
+    assert.equal(gestureFeedback.get().readiness, "READY");
+    assert.deepEqual(calls, []);
+    store.set({ mode: "PLANET_FOCUS", selected: "earth" });
+    hold([{ ...hand("FIST"), trackingConfidence: 1, confidence: 0.3 }], 800);
+    assert.deepEqual(calls, []);
+  }));

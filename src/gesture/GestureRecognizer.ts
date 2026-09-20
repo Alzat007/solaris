@@ -118,23 +118,39 @@ export class GestureRecognizer {
         distance(w[base + 3], w[0]) /
         Math.max(distance(w[base + 1], w[0]), 0.001);
       if (
-        (a > config.FINGER_EXTEND_ANGLE ||
+        ((a > config.FINGER_EXTEND_ANGLE ||
           reach > config.FINGER_EXTEND_REACH) &&
-        ratio > config.FINGER_EXTEND_WRIST_RATIO
+          ratio > config.FINGER_EXTEND_WRIST_RATIO) ||
+        (reach > config.FINGER_RELAXED_REACH &&
+          a > config.FINGER_RELAXED_ANGLE &&
+          ratio > config.FINGER_RELAXED_WRIST_RATIO)
       )
         this.extended[i] = true;
       else if (
-        a < config.FINGER_FOLD_ANGLE ||
+        (a < config.FINGER_FOLD_ANGLE && reach < config.FINGER_RELAXED_REACH) ||
         ratio < config.FINGER_FOLD_WRIST_RATIO
       )
         this.extended[i] = false;
-      scores[i] = clamp(
-        (a - config.FINGER_SCORE_MIN_ANGLE) / config.FINGER_SCORE_ANGLE_RANGE,
+      // PIP angle alone describes flexion, not confidence. A comfortably bent
+      // finger can retain most of its chain reach and remain well beyond the
+      // wrist. The two geometric measures must agree; a straight curled-back
+      // segment cannot inflate this score.
+      const reachScore = clamp(
+        (reach - config.FINGER_SCORE_REACH_START) /
+          config.FINGER_SCORE_REACH_RANGE,
       );
+      const radialScore = clamp(
+        (ratio - config.FINGER_SCORE_WRIST_START) /
+          config.FINGER_SCORE_WRIST_RANGE,
+      );
+      scores[i] = Math.sqrt(reachScore * radialScore);
     }
     const [index, middle, ring, pinky] = this.extended;
     const openness = (scores[0] + scores[1] + scores[2] + scores[3]) / 4;
-    const pinchDistance = distance(p[4], p[8]) / width;
+    // World-space ratios retain their meaning when a palm turns sideways;
+    // camera-space z is an estimate and must not set a separate contact scale.
+    const geometryWidth = Math.max(distance(w[5], w[17]), 0.001);
+    const pinchDistance = distance(w[4], w[8]) / geometryWidth;
     if (
       this.pinched
         ? pinchDistance > gestureConfig.PINCH_RELEASE_THRESHOLD
@@ -143,10 +159,10 @@ export class GestureRecognizer {
       this.pinched = !this.pinched;
     const tipToPalm =
       Math.hypot(
-        p[8].x - palmX * aspect,
-        p[8].y - palmY,
-        p[8].z - (p[0].z + p[9].z) / 2,
-      ) / width;
+        w[8].x - (w[0].x + w[5].x + w[9].x + w[13].x + w[17].x) / 5,
+        w[8].y - (w[0].y + w[5].y + w[9].y + w[13].y + w[17].y) / 5,
+        w[8].z - (w[0].z + w[5].z + w[9].z + w[13].z + w[17].z) / 5,
+      ) / geometryWidth;
     const thumbLength =
       distance(w[1], w[2]) + distance(w[2], w[3]) + distance(w[3], w[4]);
     const thumb =
@@ -155,9 +171,30 @@ export class GestureRecognizer {
         config.THUMB_EXTEND_REACH &&
       distance(w[4], w[0]) / Math.max(distance(w[3], w[0]), 0.001) >
         config.THUMB_EXTEND_WRIST_RATIO;
+    // In a fist the index rests over the palm. In a compact pinch it moves
+    // toward the thumb side, even when all other fingers remain folded.
+    // Measure opposition in the palm's own 3D coordinates, not screen x/y.
+    const thumbSide =
+      -(
+        (w[8].x - w[5].x) * (w[17].x - w[5].x) +
+        (w[8].y - w[5].y) * (w[17].y - w[5].y) +
+        (w[8].z - w[5].z) * (w[17].z - w[5].z)
+      ) /
+      (geometryWidth * geometryWidth);
+    const opposedPinch =
+      this.pinched &&
+      thumbSide > config.PINCH_OPPOSITION_MIN &&
+      distance(w[8], w[5]) / geometryWidth > config.PINCH_INDEX_REACH_MIN;
+    let openCount = 0;
+    for (let i = 0; i < 4; i++)
+      if (scores[i] >= config.OPEN_FINGER_STRONG_SCORE) openCount++;
+    const openEvidence = Math.min(...scores);
     let gesture: Gesture = "NONE";
     let confidence = 0.6;
-    if (
+    if (opposedPinch) {
+      gesture = "PINCH";
+      confidence = clamp(1 - pinchDistance);
+    } else if (
       !index &&
       !middle &&
       !ring &&
@@ -172,10 +209,23 @@ export class GestureRecognizer {
     ) {
       gesture = "PINCH";
       confidence = clamp(1 - pinchDistance);
-    } else if (index && middle && ring && pinky) {
+    } else if (
+      (index && middle && ring && pinky) ||
+      // One softer finger is common on a laptop camera. It must still have
+      // outward reach; V / THREE have truly folded fingers and fail this gate.
+      (openCount >= 3 && openEvidence >= config.OPEN_FINGER_MIN_SCORE)
+    ) {
       gesture = "OPEN_PALM";
       confidence = openness;
-    } else if (index && !middle && !ring && !pinky) {
+    } else if (
+      index &&
+      !middle &&
+      !ring &&
+      !pinky &&
+      scores[1] < config.POINT_FOLDED_MAX_SCORE &&
+      scores[2] < config.POINT_FOLDED_MAX_SCORE &&
+      scores[3] < config.POINT_FOLDED_MAX_SCORE
+    ) {
       gesture = "POINT";
       confidence = (scores[0] + 3 - scores[1] - scores[2] - scores[3]) / 4;
     }
@@ -206,6 +256,7 @@ export class GestureRecognizer {
       ),
       gesture,
       confidence: clamp(confidence),
+      trackingConfidence: 1,
       // MediaPipe supplies a fresh landmark array per detection. Keep its owned
       // snapshot; never expose the corrected scratch buffer reused next frame.
       landmarks: points,

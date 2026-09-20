@@ -163,7 +163,7 @@ export class InteractionController {
         sunInterior: 0,
         explosion: 0,
         burst: 0,
-        duration: 1.75,
+        duration: 2.4,
         ease: "power2.inOut",
       });
     audio.play("collapse");

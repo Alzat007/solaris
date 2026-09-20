@@ -1,11 +1,14 @@
 // Development-only anatomical replay. Never included in the production entry.
 import "../src/main";
+import { gsap } from "gsap";
+import { interaction } from "../src/interaction/InteractionController";
 import { handFixture } from "./fixtures/hands";
 import { GestureRecognizer } from "../src/gesture/GestureRecognizer";
 import { gestures } from "../src/gesture/GestureController";
 import { gestureFeedback } from "../src/gesture/gestureFeedback";
 import { store } from "../src/interaction/store";
 import { particles } from "../src/particles/ParticleEngine";
+import { handTracking } from "../src/gesture/HandTrackingManager";
 import type { HandFeatures } from "../src/gesture/GestureTypes";
 
 type Pose = Parameters<typeof handFixture>[0];
@@ -14,12 +17,44 @@ const recognizers = [new GestureRecognizer(), new GestureRecognizer()];
 let target = { x: 0.5, y: 0.5 };
 let motion = "";
 let started = 0;
+let previewVideo: HTMLVideoElement | null = null;
+const previewCanvas = document.createElement("canvas");
+previewCanvas.width = 640;
+previewCanvas.height = 480;
+async function togglePreview() {
+  if (previewVideo) {
+    (previewVideo.srcObject as MediaStream)
+      .getTracks()
+      .forEach((track) => track.stop());
+    previewVideo.pause();
+    previewVideo = null;
+    handTracking.video = null;
+    return;
+  }
+  previewVideo = document.createElement("video");
+  previewVideo.muted = true;
+  previewVideo.playsInline = true;
+  previewVideo.srcObject = previewCanvas.captureStream(20);
+  await previewVideo.play();
+  handTracking.video = previewVideo;
+}
 const clamp = (n: number) => Math.max(0, Math.min(1, n));
 document.getElementById("lab-buttons")!.addEventListener("click", (event) => {
   const button = (event.target as HTMLElement).closest<HTMLButtonElement>(
     "button",
   );
   if (!button) return;
+  if (button.dataset.preview) {
+    void togglePreview();
+    return;
+  }
+  if (button.dataset.slow) {
+    gsap.globalTimeline.timeScale(0.25);
+    pose = "NONE";
+    motion = "";
+    interaction.collapse();
+    return;
+  }
   pose = (button.dataset.pose ?? "NONE") as typeof pose;
   motion = button.dataset.motion ?? "";
   started = performance.now();
@@ -115,24 +150,58 @@ const timer = window.setInterval(() => {
       progress = clamp(
         (elapsed - (zoom ? 950 : 500)) / (motion === "expand" ? 450 : 1400),
       );
-    const distance =
-      motion === "join"
-        ? 0.6 - 0.42 * progress
-        : motion === "expand"
-          ? 0.18 + 0.5 * progress
-          : motion === "zoom-in"
-            ? 0.35 + 0.35 * progress
-            : 0.65 - 0.34 * progress;
+    const distance = motion.startsWith("join")
+      ? 0.6 -
+        (motion === "join-noisy" ? 0.27 : 0.42) * progress +
+        (motion === "join-noisy" ? Math.sin(elapsed / 65) * 0.008 : 0)
+      : motion === "expand"
+        ? 0.18 + 0.5 * progress
+        : motion === "zoom-in"
+          ? 0.35 + 0.35 * progress
+          : 0.65 - 0.34 * progress;
     const pairedPose = zoom && elapsed >= 500 ? "PINCH" : "OPEN_PALM";
     hands = [
       feature(pairedPose, 0.5 - distance / 2, 0.5, time, 0, true),
       feature(pairedPose, 0.5 + distance / 2, 0.5, time, 1, true),
     ];
   } else if (pose !== "NONE") hands = [feature(pose, target.x, target.y, time)];
+  // Emulate a brief uncertain pose with continuous, valid camera landmarks.
+  if (motion === "join-noisy" && elapsed > 1100 && elapsed < 1250) {
+    hands[0].gesture = "NONE";
+    hands[0].confidence = 0.4;
+    hands.forEach((hand) => {
+      hand.trackingConfidence = 1;
+    });
+  }
+  if (previewVideo) {
+    handTracking.frame = { hands, time };
+    const ctx = previewCanvas.getContext("2d")!;
+    ctx.fillStyle = "#15242c";
+    ctx.fillRect(0, 0, 640, 480);
+    ctx.fillStyle = "#77949b";
+    ctx.font = "22px sans-serif";
+    ctx.fillText("SYNTHETIC CAMERA / NO RECORDING", 25, 40);
+    for (const hand of hands)
+      for (const point of hand.landmarks) {
+        ctx.beginPath();
+        ctx.arc(point.x * 640, point.y * 480, 5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+  }
   gestures.update({ hands, time });
   const s = store.get(),
     f = gestureFeedback.get();
   document.getElementById("lab-result")!.textContent =
-    `识别 ${s.gesture} | 状态 ${s.mode} | 锁 ${s.transitioning} | 资料 ${s.infoVisible} | 已选 ${s.selected ?? "无"} | 目标 ${f.target?.id ?? "无"} | ${f.readiness} / ${f.pinchPhase} | 松开 ${f.needsRelease} | 动作 ${f.action} | 坍缩 ${particles.collapse.toFixed(2)} | 内部 ${particles.sunInterior.toFixed(2)} | 缩放 ${particles.targetScale.toFixed(2)} | 旋转 ${particles.targetRotation.toFixed(2)}`;
+    `识别 ${s.gesture} | 状态 ${s.mode} | 锁 ${s.transitioning} | 资料 ${s.infoVisible} | 已选 ${s.selected ?? "无"} | 目标 ${f.target?.id ?? "无"} | ${f.readiness} / ${f.pinchPhase} | 松开 ${f.needsRelease} | 动作 ${f.action} | 双掌 ${f.specialStage} ${(f.specialProgress * 100).toFixed(0)}% | 坍缩 ${particles.collapse.toFixed(2)} | 内部 ${particles.sunInterior.toFixed(2)} | 缩放 ${particles.targetScale.toFixed(2)} | 旋转 ${particles.targetRotation.toFixed(2)}`;
 }, 50);
-window.addEventListener("pagehide", () => clearInterval(timer), { once: true });
+window.addEventListener(
+  "pagehide",
+  () => {
+    clearInterval(timer);
+    if (previewVideo)
+      (previewVideo.srcObject as MediaStream)
+        .getTracks()
+        .forEach((track) => track.stop());
+  },
+  { once: true },
+);

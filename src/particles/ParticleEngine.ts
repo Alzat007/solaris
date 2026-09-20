@@ -36,6 +36,8 @@ export class ParticleEngine {
   influence = 0;
   burst = 0;
   collapse = 0;
+  /** Two-palm preparation, separate from the committed collapse animation. */
+  collapseCharge = 0;
   explosion = 0;
   intro = 0;
   assembly = 0;

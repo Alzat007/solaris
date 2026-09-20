@@ -10,6 +10,7 @@ import { PlanetInfo } from "./PlanetInfo";
 import { GestureCursor } from "../gesture/GestureCursor";
 import { GestureTutorial } from "../gesture/GestureTutorial";
 import { HandFeedback } from "./HandFeedback";
+import { CameraPreview } from "../gesture/CameraPreview";
 export function HUD() {
   const s = useSolaris();
   const insideSun = s.mode === "SUN_INTERIOR";
@@ -178,6 +179,7 @@ export function HUD() {
         </div>
       )}
       <HandFeedback />
+      <CameraPreview />
       {s.tracking === "unavailable" && (
         <div className="camera-notice" role="status">
           <span>手势追踪不可用 · 已开启鼠标模式</span>
@@ -207,22 +209,24 @@ export function HUD() {
               : "让光，再次诞生"}
           </p>
           <h2>{s.mode === "COLLAPSE" ? "奇点" : "重生"}</h2>
-          {s.mode === "COLLAPSE" && (
-            <button
-              data-gesture-id="solar-rebirth"
-              data-gesture-label="宇宙重生"
-              disabled={busy}
-              onClick={() => interaction.rebirth()}
-            >
-              {s.tracking === "online" ? "双掌从中心向两侧拉开" : "让宇宙重生"}{" "}
-              <span>
-                {s.tracking === "online"
-                  ? "释放能量，让星球重新展开"
-                  : "也可以按空格键"}
-              </span>
-            </button>
-          )}
         </div>
+      )}
+      {s.mode === "COLLAPSE" && (
+        <button
+          className="cosmic-action"
+          aria-label="双掌展开或点击，让宇宙重生"
+          data-gesture-id="solar-rebirth"
+          data-gesture-label="宇宙重生"
+          disabled={busy}
+          onClick={() => interaction.rebirth()}
+        >
+          {s.tracking === "online" ? "双掌从中心向两侧拉开" : "让宇宙重生"}{" "}
+          <span>
+            {s.tracking === "online"
+              ? "释放能量，让星球重新展开"
+              : "也可以按空格键"}
+          </span>
+        </button>
       )}
       {s.heldUniverse && <div className="held-universe">宇宙，尽在掌中</div>}
       {!insideSun && <PlanetInfo />}
@@ -301,6 +305,34 @@ export function HUD() {
             <span aria-hidden="true">✦</span>
             <span>{insideSun ? "太阳粒子漫游" : "太阳内部"}</span>
           </button>
+          {(s.mode === "SOLAR_SYSTEM" || s.mode === "COLLAPSE") && (
+            <button
+              className="cosmic-toggle"
+              data-gesture-id={
+                s.mode === "COLLAPSE" ? "nav-rebirth" : "nav-collapse"
+              }
+              data-gesture-label={
+                s.mode === "COLLAPSE" ? "宇宙重生" : "宇宙坍缩"
+              }
+              aria-label={s.mode === "COLLAPSE" ? "宇宙重生" : "宇宙坍缩"}
+              title={
+                s.mode === "COLLAPSE"
+                  ? "宇宙重生（空格键）"
+                  : "宇宙坍缩（空格键）"
+              }
+              disabled={busy}
+              onClick={() => {
+                if (s.mode === "COLLAPSE") interaction.rebirth();
+                else interaction.collapse();
+                startMouse();
+              }}
+            >
+              <span aria-hidden="true">
+                {s.mode === "COLLAPSE" ? "✧" : "⊙"}
+              </span>
+              <span>{s.mode === "COLLAPSE" ? "重生" : "坍缩"}</span>
+            </button>
+          )}
           <button
             className="help-toggle"
             data-gesture-id="show-help"
