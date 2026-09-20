@@ -8,6 +8,7 @@ export type Gesture =
   | "OPEN_PALM"
   | "POINT"
   | "PINCH"
+  | "FIVE_PINCH"
   | "FIST"
   | "V_SIGN"
   | "THREE"
@@ -36,6 +37,10 @@ export interface HandFeatures {
   openness: number;
   pinchDistance: number;
   pinchStrength: number;
+  /** RMS spread of all five fingertips, normalized by 3D palm width. */
+  gripAperture?: number;
+  /** Five-finger grip evidence, separate from ordinary thumb/index pinching. */
+  gripConfidence?: number;
   gesture: Gesture;
   /** Pose evidence, independent of whether the hand is continuously tracked. */
   confidence: number;

@@ -261,27 +261,83 @@ test("HUD pinch confirmation stays locked through transitions and requires relea
     hold([hand("PINCH")], 200);
     assert.deepEqual(calls, ["ui:back-from-sun"]);
   }));
-test("only two confirmed pinch holds zoom, using pinch midpoints instead of palm separation", () =>
-  scenario(({ warm, send, hold, calls }) => {
+const grip = (aperture = 0.04, gesture: Gesture = "FIVE_PINCH") => ({
+  ...hand(gesture),
+  gripAperture: aperture,
+  gripConfidence: 0.95,
+  pinchDistance: gesture === "FIVE_PINCH" ? 0.08 : 0.8,
+});
+test("two-hand pinches no longer zoom or select", () =>
+  scenario(({ warm, hold, calls }) => {
     warm(true);
-    hold(pair("OPEN_PALM", 0.6), 300);
+    hold(pair("PINCH", 0.4), 300);
+    hold(pair("PINCH", 0.8), 300);
+    assert.equal(particles.targetScale, 1);
     assert.deepEqual(calls, []);
-    send(pair("PINCH", 0.4));
-    send(pair("PINCH", 0.4));
+  }));
+test("one five-fingertip hold shrinks, spreading enlarges, and open release preserves scale", () =>
+  scenario(({ warm, hold, calls }) => {
+    warm();
+    hold([grip()], 100);
     assert.deepEqual(calls, []);
-    hold(pair("PINCH", 0.4), 150);
-    const moved = pair("PINCH", 0.4);
-    moved[0].pinchPoint!.x = 0.1;
-    moved[1].pinchPoint!.x = 0.9;
-    send(moved);
-    assert.equal(particles.targetScale, 1.75);
-    assert.equal(gestureFeedback.get().action, "TWO_HAND_ZOOM");
+    hold([grip()], 150);
+    assert.equal(particles.targetScale, 0.35);
+    assert.equal(gestureFeedback.get().action, "ONE_HAND_ZOOM");
+    hold([grip(0.8, "OPEN_PALM")], 700);
+    assert.ok(particles.targetScale > 1.73);
+    assert.equal(gestureFeedback.get().zoomActive, false);
+    const after = particles.targetScale;
+    hold([hand("OPEN_PALM")], 500);
+    assert.equal(particles.targetScale, after);
     assert.equal(
-      calls.some((c: string) => c.startsWith("select")),
-      false,
+      calls.every((c) => c === "zoom"),
+      true,
     );
   }));
-test("ending a zoom with a single held pinch cannot select a target", () =>
+test("zoom owns pointing targets, pinch-like geometry, movement and fist until explicit release", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm();
+    store.set({ mode: "PLANET_FOCUS", selected: "earth" });
+    gestureTargets.set({ kind: "body", id: "mars", label: "火星" });
+    hold([grip()], 300);
+    const spread = grip(0.5, "NONE");
+    spread.velocity.x = 4;
+    for (let i = 0; i < 8; i++)
+      send([{ ...spread, center: { x: 0.2 + 0.07 * i, y: 0.5 } }]);
+    hold([hand("PINCH")], 700);
+    hold([hand("FIST")], 700);
+    assert.equal(
+      calls.every((c) => c === "zoom"),
+      true,
+    );
+    assert.equal(gestureFeedback.get().needsRelease, true);
+    send([hand("OPEN_PALM")]);
+    hold([hand("FIST")], 700);
+    assert.equal(calls.filter((c) => c === "back").length, 1);
+  }));
+test("lost-hand zoom keeps scale and requires reopening after reacquisition", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm();
+    hold([grip()], 300);
+    hold([grip(0.4, "NONE")], 200);
+    const scale = particles.targetScale;
+    const count = calls.length;
+    send([]);
+    hold([grip()], 700);
+    assert.equal(particles.targetScale, scale);
+    assert.equal(calls.length, count);
+    send([hand("OPEN_PALM")]);
+    hold([grip()], 300);
+    assert.equal(particles.targetScale, 0.35);
+  }));
+test("uncertain five-finger geometry cannot initiate zoom", () =>
+  scenario(({ warm, hold, calls }) => {
+    warm();
+    hold([{ ...grip(), gripConfidence: 0.3 }], 500);
+    assert.deepEqual(calls, []);
+    assert.equal(particles.targetScale, 1);
+  }));
+test("reducing two held pinches to one cannot select a target", () =>
   scenario(({ warm, send, hold, calls }) => {
     warm(true);
     hold(pair("PINCH", 0.4), 250);
@@ -295,7 +351,7 @@ test("ending a zoom with a single held pinch cannot select a target", () =>
     hold([hand("PINCH")], 200);
     assert.equal(calls.filter((c) => c.startsWith("select")).length, 1);
   }));
-test("zooming small and releasing close palms does not collapse", () =>
+test("releasing two close pinches as palms does not collapse", () =>
   scenario(({ warm, send, hold, calls }) => {
     warm(true);
     hold(pair("PINCH", 0.6), 200);

@@ -35,6 +35,7 @@ export function GestureHint() {
                 hand ? "捏住空白 · 拖" : touch ? "单指拖动" : "拖动空白",
                 "旋转视角",
               ],
+              ...(hand ? [["五指聚拢 · 开合", "缩放宇宙"]] : []),
             ];
   return (
     <div className="gesture-hints">

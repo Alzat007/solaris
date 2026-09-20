@@ -20,7 +20,7 @@ export type GestureAction =
   | "POINT"
   | "PINCH_SELECT"
   | "PINCH_DRAG"
-  | "TWO_HAND_ZOOM"
+  | "ONE_HAND_ZOOM"
   | "FIST_BACK"
   | "SWIPE"
   | "COLLAPSE"
@@ -33,6 +33,10 @@ export interface GestureFeedbackState {
   pinchProgress: number;
   needsRelease: boolean;
   fistProgress: number;
+  zoomProgress: number;
+  zoomAperture: number;
+  zoomScale: number;
+  zoomActive: boolean;
   specialProgress: number;
   specialStage: "IDLE" | "READY" | "APPROACH" | "HOLD" | "PAUSED";
   handCount: number;
@@ -60,6 +64,10 @@ const initial: GestureFeedbackState = {
   pinchProgress: 0,
   needsRelease: false,
   fistProgress: 0,
+  zoomProgress: 0,
+  zoomAperture: 0,
+  zoomScale: 1,
+  zoomActive: false,
   specialProgress: 0,
   specialStage: "IDLE",
   handCount: 0,

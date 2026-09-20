@@ -379,3 +379,201 @@ test("a fist with lateral thumb/index overlap remains a fist across camera angle
     }
   }
 });
+
+test("all five fingertips gathered outside the palm classify as FIVE_PINCH", () => {
+  for (const mirror of [false, true])
+    for (const yaw of [-0.9, 0, 0.9]) {
+      const recognizer = new GestureRecognizer();
+      for (let frame = 0; frame < 14; frame++) {
+        const fixture = handFixture("FIVE_PINCH", {
+          mirror,
+          yaw,
+          pitch: 0.5,
+          rotation: -0.4,
+          noise: 0.0004,
+          depthNoise: 0.0015,
+          frame,
+        });
+        const hand = recognizer.analyze(
+          fixture.points,
+          fixture.world,
+          frame * 50,
+        );
+        assert.equal(hand.gesture, "FIVE_PINCH");
+        assert.ok(hand.gripAperture! < 0.1);
+        assert.ok(hand.gripConfidence! >= 0.75);
+      }
+    }
+});
+
+test("five-tip aperture is invariant under camera distance, translation and 3D rotation", () => {
+  const baseline = new GestureRecognizer();
+  const original = handFixture("FIVE_PINCH", { gripSpread: 0.45 });
+  const expected = baseline.analyze(
+    original.points,
+    original.world,
+    0,
+  ).gripAperture!;
+  for (const scale of [0.45, 0.8, 1.7])
+    for (const yaw of [-1.1, 0.85]) {
+      const fixture = handFixture("FIVE_PINCH", {
+        gripSpread: 0.45,
+        yaw,
+        pitch: -0.6,
+        rotation: 0.7,
+        mirror: true,
+      });
+      fixture.world.forEach((p) => {
+        p.x = p.x * scale + 0.18;
+        p.y = p.y * scale - 0.13;
+        p.z = p.z * scale + 0.2;
+      });
+      fixture.points.forEach((p) => {
+        p.x = (p.x - 0.5) * scale + 0.62;
+        p.y = (p.y - 0.4) * scale + 0.36;
+        p.z *= scale;
+      });
+      const hand = new GestureRecognizer().analyze(
+        fixture.points,
+        fixture.world,
+        0,
+      );
+      assert.ok(Math.abs(hand.gripAperture! - expected) < 1e-12);
+      assert.ok(hand.gripConfidence! >= 0.6);
+    }
+});
+
+test("slow five-finger opening and closing keep continuous evidence through every intermediate aperture", () => {
+  for (const relaxed of [false, true]) {
+    const recognizer = new GestureRecognizer();
+    const sequence = [
+      ...Array.from({ length: 51 }, (_, i) => i / 50),
+      ...Array.from({ length: 51 }, (_, i) => 1 - i / 50),
+    ];
+    let previous = -Infinity;
+    sequence.forEach((spread, frame) => {
+      const fixture = handFixture("FIVE_PINCH", {
+        gripSpread: spread,
+        relaxed,
+        yaw: 0.8,
+        pitch: 0.45,
+        rotation: -0.3,
+        noise: 0.00025,
+        depthNoise: 0.001,
+        frame,
+      });
+      const hand = recognizer.analyze(
+        fixture.points,
+        fixture.world,
+        frame * 50,
+      );
+      assert.ok(
+        hand.gripConfidence! >= 0.6,
+        `spread=${spread}, frame=${frame}, gesture=${hand.gesture}, confidence=${hand.gripConfidence}`,
+      );
+      assert.notEqual(hand.gesture, "PINCH");
+      assert.notEqual(hand.gesture, "FIST");
+      if (frame <= 50) assert.ok(hand.gripAperture! >= previous - 0.02);
+      else assert.ok(hand.gripAperture! <= previous + 0.02);
+      previous = hand.gripAperture!;
+    });
+  }
+});
+
+test("ordinary fist, pointing, two-finger pinch, V and THREE do not claim five-finger zoom", () => {
+  for (const pose of ["FIST", "POINT", "PINCH", "V_SIGN", "THREE"] as const) {
+    for (const foldedPinch of [false, true]) {
+      const recognizer = new GestureRecognizer();
+      for (let frame = 0; frame < 12; frame++) {
+        const fixture = handFixture(pose, {
+          relaxed: true,
+          foldedPinch,
+          yaw: 0.8,
+          pitch: -0.5,
+          noise: 0.0004,
+          depthNoise: 0.0015,
+          frame,
+        });
+        const hand = recognizer.analyze(
+          fixture.points,
+          fixture.world,
+          frame * 50,
+        );
+        assert.notEqual(hand.gesture, "FIVE_PINCH");
+        assert.equal(hand.gripConfidence, 0, pose);
+      }
+    }
+  }
+});
+
+test("five fingertips gathered inside the palm are not the outward five-finger grip", () => {
+  const fixture = handFixture("FIST");
+  for (const i of [4, 8, 12, 16, 20]) {
+    fixture.world[i] = { x: (0.001 * i) / 4, y: 0.025, z: -0.026 };
+  }
+  const hand = new GestureRecognizer().analyze(
+    fixture.points,
+    fixture.world,
+    0,
+  );
+  assert.ok(hand.gripAperture! < 0.1);
+  assert.notEqual(hand.gesture, "FIVE_PINCH");
+  assert.equal(hand.gripConfidence, 0);
+});
+
+test("one fingertip remaining outside the cluster prevents closed-five recognition", () => {
+  const fixture = handFixture("FIVE_PINCH");
+  const open = handFixture("OPEN_PALM");
+  fixture.world[20] = { ...open.world[20] };
+  const hand = new GestureRecognizer().analyze(
+    fixture.points,
+    fixture.world,
+    0,
+  );
+  assert.notEqual(hand.gesture, "FIVE_PINCH");
+});
+
+test("five-finger grip has an aspect-correct screen fallback when world landmarks are absent", () => {
+  for (const spread of [0, 0.4, 1]) {
+    const fixture = handFixture("FIVE_PINCH", {
+      gripSpread: spread,
+      yaw: 0.6,
+      pitch: -0.4,
+    });
+    const world = new GestureRecognizer().analyze(
+      fixture.points,
+      fixture.world,
+      0,
+    );
+    const screen = new GestureRecognizer().analyze(
+      fixture.points,
+      undefined,
+      0,
+    );
+    assert.equal(screen.gesture, world.gesture);
+    assert.ok(Math.abs(screen.gripAperture! - world.gripAperture!) < 1e-12);
+    assert.ok(Math.abs(screen.gripConfidence! - world.gripConfidence!) < 1e-12);
+  }
+});
+
+test("a slightly uneven five-tip bunch retains grip evidence without exact fingertip overlap", () => {
+  for (let frame = 0; frame < 16; frame++) {
+    const fixture = handFixture("FIVE_PINCH", {
+      noise: 0.0005,
+      depthNoise: 0.0015,
+      frame,
+    });
+    for (const i of [4, 8, 12, 16, 20]) {
+      fixture.world[i].y += 0.006;
+      fixture.world[i].z -= 0.008;
+      fixture.world[i].x += Math.sin(i) * 0.004;
+    }
+    const hand = new GestureRecognizer().analyze(
+      fixture.points,
+      fixture.world,
+      0,
+    );
+    assert.equal(hand.gesture, "FIVE_PINCH");
+    assert.ok(hand.gripConfidence! >= 0.75);
+  }
+});

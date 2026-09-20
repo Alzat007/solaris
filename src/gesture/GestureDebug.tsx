@@ -42,6 +42,8 @@ export function GestureDebug() {
           `Target: ${f.target ? `${f.target.kind}/${f.target.id}` : "—"}`,
           `Pinch / Fist / Special: ${f.pinchProgress.toFixed(2)} / ${f.fistProgress.toFixed(2)} / ${f.specialProgress.toFixed(2)}`,
           `Special Stage: ${f.specialStage}`,
+          `Five-Finger Zoom: ${f.zoomActive ? "ACTIVE" : "IDLE"} · Hold ${(f.zoomProgress * 100).toFixed(0)}%`,
+          `Zoom Aperture: ${(f.zoomAperture * 100).toFixed(0)}% · Scale ${f.zoomScale.toFixed(2)}×`,
           `Last Action: ${f.lastAction}`,
           `FPS: ${s.fps} · Quality: ${s.quality}`,
         ].join("\n")}

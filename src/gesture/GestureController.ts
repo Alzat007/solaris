@@ -11,6 +11,7 @@ import {
 import { gestureTargets } from "./gestureTargets";
 import { HoldStateMachine, PinchStateMachine } from "./GestureStateMachine";
 import { SolarEffectGesture, SwipeTracker } from "./GestureMotion";
+import { SingleHandZoom } from "./SingleHandZoom";
 import type { HandFeatures, HandFrame } from "./GestureTypes";
 
 const overview = (mode: string) =>
@@ -38,8 +39,7 @@ export class GestureController {
   private pinchOriginY = 0;
   private dragLastX = 0;
   private dragLastTime = 0;
-  private zoomDistance = 0;
-  private zoomScale = 1;
+  private zoom = new SingleHandZoom();
   private fistId = "";
   private fistNeedsRelease = false;
   private pairedReleaseAt = -Infinity;
@@ -57,8 +57,7 @@ export class GestureController {
   }
   private stopMotion() {
     rotation.end();
-    if (this.zoomDistance) interaction.endScale();
-    this.zoomDistance = 0;
+    if (this.zoom.cancel()) interaction.endScale();
     this.captured = null;
     this.pinchContext = null;
     this.fist.reset();
@@ -126,6 +125,10 @@ export class GestureController {
         pinchPhase: "IDLE",
         pinchProgress: 0,
         fistProgress: 0,
+        zoomProgress: 0,
+        zoomAperture: 0,
+        zoomScale: particles.targetScale,
+        zoomActive: false,
         specialProgress: 0,
         specialStage: "IDLE",
         needsRelease: false,
@@ -219,9 +222,12 @@ export class GestureController {
         p0.phase === "PINCH_START" ||
         p1?.phase === "PINCH_START" ||
         this.fist.progress > 0 ||
+        this.zoom.progress > 0 ||
         specialProgress > 0;
       const target =
-        this.pinchContext === "drag" || this.zoomDistance
+        this.pinchContext === "drag" ||
+        this.zoom.owned ||
+        action === "ONE_HAND_ZOOM"
           ? null
           : currentTarget;
       const fingers = first.fingerState;
@@ -241,10 +247,17 @@ export class GestureController {
         pinchPhase: p0.phase,
         pinchProgress,
         fistProgress: this.fist.progress,
+        zoomProgress: this.zoom.progress,
+        zoomAperture: this.zoom.aperture,
+        zoomScale: particles.targetScale,
+        zoomActive: this.zoom.active,
         specialProgress,
         specialStage: this.special.stage,
         needsRelease:
-          p0.needsRelease || !!p1?.needsRelease || this.fistNeedsRelease,
+          p0.needsRelease ||
+          !!p1?.needsRelease ||
+          this.fistNeedsRelease ||
+          (!second && this.zoom.needsRelease),
         handCount: hands.length,
         confidence,
         trackingConfidence,
@@ -263,6 +276,7 @@ export class GestureController {
     };
     if (!enabled) {
       this.stopMotion();
+      if (first.gesture === "FIVE_PINCH") this.zoom.cancel(true);
       rotation.stop();
       if (locked || !ready) this.pointTarget = null;
       if (first.gesture === "FIST" || second?.gesture === "FIST")
@@ -303,44 +317,48 @@ export class GestureController {
       particles.collapseCharge = 0;
     }
 
-    // Priority 2: a zoom owns both pinches; neither may later turn into a click.
-    if (second && p1) {
-      this.pinchContext = "consumed";
-      this.captured = null;
-      this.swipe.reset();
-      if (
-        p0.phase === "PINCH_HOLD" &&
-        p1.phase === "PINCH_HOLD" &&
-        (overview(mode) || focused(mode) || mode === "UNIVERSE_SCALE")
-      ) {
-        const a = first.pinchPoint ?? first.pointer,
-          b = second.pinchPoint ?? second.pointer;
-        const distance = Math.hypot(a.x - b.x, a.y - b.y);
-        if (!this.zoomDistance) {
-          this.zoomDistance = Math.max(distance, config.ZOOM_MIN_DISTANCE);
-          this.zoomScale = particles.targetScale;
-          rotation.stop();
-        }
-        interaction.scale((this.zoomScale * distance) / this.zoomDistance);
-        particles.zoomIntensity = 1;
-        action = "TWO_HAND_ZOOM";
+    // Priority 2: all five fingertips own one complete open/close zoom cycle.
+    // Nothing in that cycle may become a click, drag, return or planet swipe.
+    if (
+      !second &&
+      (overview(mode) || focused(mode) || mode === "UNIVERSE_SCALE")
+    ) {
+      const zoom = this.zoom.update(first, time);
+      if (zoom.owned) {
+        this.pinchContext = "consumed";
+        this.captured = this.pointTarget = null;
+        p0.reset(true);
         this.fist.reset();
+        this.swipe.reset();
+        rotation.stop();
+        if (zoom.scale !== undefined) interaction.scale(zoom.scale);
+        if (zoom.ended) interaction.endScale();
+        if (zoom.started) {
+          gestureFeedback.set({ lastAction: "ONE_HAND_ZOOM", actionAt: time });
+          particles.gesturePulse = 1;
+        }
+        action = this.zoom.needsRelease ? "NONE" : "ONE_HAND_ZOOM";
         report();
         return;
       }
-      if (this.zoomDistance) {
-        interaction.endScale();
-        this.zoomDistance = 0;
-        this.pairedReleaseAt = time;
-      }
+    } else if (this.zoom.cancel()) interaction.endScale();
+
+    // Two-hand pinches no longer zoom. Consume them so neither hand inherits a
+    // click after the other disappears; open palms still own cosmic effects.
+    if (second && p1) {
+      this.pinchContext = "consumed";
+      this.captured = this.pointTarget = null;
+      this.swipe.reset();
       if (
-        p0.phase === "PINCH_START" ||
-        p1.phase === "PINCH_START" ||
-        p0.phase === "PINCH_HOLD" ||
-        p1.phase === "PINCH_HOLD"
+        first.gesture === "PINCH" ||
+        second.gesture === "PINCH" ||
+        first.gesture === "FIVE_PINCH" ||
+        second.gesture === "FIVE_PINCH"
       ) {
+        this.pairedReleaseAt = time;
+        p0.reset(true);
+        p1.reset(true);
         this.fist.reset();
-        action = "TWO_HAND_ZOOM";
         report();
         return;
       }
@@ -460,6 +478,7 @@ export class GestureController {
   }
   reset() {
     this.stopMotion();
+    this.zoom.cancel(false);
     rotation.stop();
     this.pinches.clear();
     this.visible = false;

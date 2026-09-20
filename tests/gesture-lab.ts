@@ -92,6 +92,7 @@ function feature(
   time: number,
   index = 0,
   alignPalm = false,
+  gripSpread = 0,
 ): HandFeatures {
   const { points, world } = handFixture(pose, {
     relaxed: true,
@@ -99,6 +100,7 @@ function feature(
     frame: time / 50,
     mirror: index === 1,
     foldedPinch: pose === "PINCH",
+    gripSpread,
   });
   const sourceX = alignPalm
     ? [0, 5, 9, 13, 17].reduce((sum, i) => sum + points[i].x / 5, 0)
@@ -143,13 +145,32 @@ const timer = window.setInterval(() => {
         true,
       ),
     ];
+  } else if (motion.startsWith("five-zoom")) {
+    const spread =
+      elapsed < 1000
+        ? 0
+        : motion === "five-zoom-in"
+          ? clamp((elapsed - 1000) / 1200)
+          : elapsed < 1850
+            ? clamp((elapsed - 1000) / 750)
+            : 1 - clamp((elapsed - 1850) / 1000);
+    hands = [
+      feature(
+        elapsed < 500 ? "OPEN_PALM" : "FIVE_PINCH",
+        0.5,
+        0.5,
+        time,
+        0,
+        true,
+        spread,
+      ),
+    ];
   } else if (motion === "reentry") {
     if (elapsed >= 350) hands = [feature("PINCH", target.x, target.y, time)];
   } else if (motion) {
-    const zoom = motion.startsWith("zoom"),
-      progress = clamp(
-        (elapsed - (zoom ? 950 : 500)) / (motion === "expand" ? 450 : 1400),
-      );
+    const progress = clamp(
+      (elapsed - 500) / (motion === "expand" ? 450 : 1400),
+    );
     const distance = motion.startsWith("join")
       ? 0.6 -
         (motion === "join-noisy" ? 0.27 : 0.42) * progress +
@@ -159,7 +180,7 @@ const timer = window.setInterval(() => {
         : motion === "zoom-in"
           ? 0.35 + 0.35 * progress
           : 0.65 - 0.34 * progress;
-    const pairedPose = zoom && elapsed >= 500 ? "PINCH" : "OPEN_PALM";
+    const pairedPose = "OPEN_PALM";
     hands = [
       feature(pairedPose, 0.5 - distance / 2, 0.5, time, 0, true),
       feature(pairedPose, 0.5 + distance / 2, 0.5, time, 1, true),
@@ -192,7 +213,7 @@ const timer = window.setInterval(() => {
   const s = store.get(),
     f = gestureFeedback.get();
   document.getElementById("lab-result")!.textContent =
-    `识别 ${s.gesture} | 状态 ${s.mode} | 锁 ${s.transitioning} | 资料 ${s.infoVisible} | 已选 ${s.selected ?? "无"} | 目标 ${f.target?.id ?? "无"} | ${f.readiness} / ${f.pinchPhase} | 松开 ${f.needsRelease} | 动作 ${f.action} | 双掌 ${f.specialStage} ${(f.specialProgress * 100).toFixed(0)}% | 坍缩 ${particles.collapse.toFixed(2)} | 内部 ${particles.sunInterior.toFixed(2)} | 缩放 ${particles.targetScale.toFixed(2)} | 旋转 ${particles.targetRotation.toFixed(2)}`;
+    `识别 ${s.gesture} | 状态 ${s.mode} | 锁 ${s.transitioning} | 资料 ${s.infoVisible} | 已选 ${s.selected ?? "无"} | 目标 ${f.target?.id ?? "无"} | ${f.readiness} / ${f.pinchPhase} | 松开 ${f.needsRelease} | 动作 ${f.action} | 五指 ${f.zoomActive ? "开合中" : "待机"} ${(f.zoomProgress * 100).toFixed(0)}% 开度${f.zoomAperture.toFixed(2)} | 双掌 ${f.specialStage} ${(f.specialProgress * 100).toFixed(0)}% | 坍缩 ${particles.collapse.toFixed(2)} | 内部 ${particles.sunInterior.toFixed(2)} | 缩放 ${particles.targetScale.toFixed(2)} | 旋转 ${particles.targetRotation.toFixed(2)}`;
 }, 50);
 window.addEventListener(
   "pagehide",

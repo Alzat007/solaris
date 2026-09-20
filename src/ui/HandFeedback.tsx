@@ -11,8 +11,13 @@ export function HandFeedback() {
     f.action === "COLLAPSE" ||
     f.action === "REBIRTH" ||
     f.specialStage !== "IDLE";
+  const zooming = f.action === "ONE_HAND_ZOOM" || f.zoomActive;
+  const zoomPercent = Math.round(
+    Math.max(0, Math.min(1, f.zoomActive ? f.zoomAperture : f.zoomProgress)) *
+      100,
+  );
   const progressVisible =
-    special && percent > 0 && !f.locked && !s.transitioning;
+    special && !zooming && percent > 0 && !f.locked && !s.transitioning;
   const label = (() => {
     if (f.presence === "NO_HAND" || f.handCount === 0)
       return "请让整只手留在镜头内";
@@ -22,9 +27,12 @@ export function HandFeedback() {
       if (s.mode === "BIG_BANG") return "宇宙正在重生";
       return "正在穿行";
     }
+    if (s.gesture === "FIVE_PINCH" && f.needsRelease && !f.zoomActive)
+      return "先张开五指，再聚拢";
+    if (f.zoomActive) return `开合缩放 · ${f.zoomScale.toFixed(2)}×`;
+    if (f.action === "ONE_HAND_ZOOM") return `五指聚拢 · 稍停 ${zoomPercent}%`;
     if (f.action === "FIST_BACK") return "握住 · 返回";
     if (f.action === "PINCH_DRAG") return "已抓住 · 拖动旋转";
-    if (f.action === "TWO_HAND_ZOOM") return "双手捏住 · 缩放";
     if (s.mode === "COLLAPSE")
       return f.handCount >= 2
         ? "双掌向两侧拉开 · 宇宙重生"
@@ -53,6 +61,7 @@ export function HandFeedback() {
       data-state={f.presence}
       data-action={f.action}
       data-special-stage={f.specialStage}
+      data-zoom-active={f.zoomActive}
       role="status"
       aria-live="polite"
     >
@@ -62,7 +71,20 @@ export function HandFeedback() {
       </div>
       <small>
         {f.handCount > 0 ? `已识别 ${f.handCount} 只手` : "尚未识别到手"}
+        {zooming && " · 张开变大，聚拢变小"}
       </small>
+      {zooming && !f.locked && !s.transitioning && (
+        <div
+          className="hand-special-progress hand-zoom-progress"
+          role={f.zoomActive ? "meter" : "progressbar"}
+          aria-label={f.zoomActive ? "五指张开程度" : "五指缩放启动进度"}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={zoomPercent}
+        >
+          <i style={{ transform: `scaleX(${zoomPercent / 100})` }} />
+        </div>
+      )}
       {progressVisible && (
         <div
           className="hand-special-progress"

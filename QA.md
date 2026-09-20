@@ -71,3 +71,14 @@ This establishes the current interaction contract; the V2.1 section below record
 - No console warnings or errors were captured in the final desktop replay. Built-in webcam accuracy under the user's lighting, occlusion and distance remains a hands-on validation item; synthetic tests cannot establish that result.
 - Final TypeScript and GitHub Pages production build passed. Static export verification passed for 4 entry assets and 7 runtime assets using `/solaris/`. The replay harness and its synthetic-camera/slow-motion controls are development-only and are not included in the production entry.
 - README and implementation documentation now describe V2.1, including all 98 current configuration parameters (64 controller/motion and 34 recognizer/identity parameters).
+
+## Single-hand five-fingertip zoom · 2026-09-20
+
+This supersedes the earlier two-hand pinch zoom entry; selection/drag, Fist Back and two-open-palm collapse/rebirth keep their existing mappings.
+
+- `npm test`: 123 tests passed, 0 failed. Added recognition coverage distinguishes five fingertips gathering beyond the palm from an ordinary fist or two-finger pinch, checks aperture invariance under translation/scale/rotation, and follows a continuous natural open/close sequence through intermediate poses. Controller and clutch tests cover the 180 ms start, opening/closing scale, continuous 450 ms fully-open exit, confidence interruptions, lost hands, explicit release, and ownership against click/swipe/return.
+- Desktop browser replay through the actual recognizer/controller/rendering pipeline: five fingertips gathering initiated zoom at 0.35×; opening reached 1.75× and a stationary full-open palm ended the zoom in SOLAR_SYSTEM. Closing again reached 0.35× with ONE_HAND_ZOOM feedback, a changing aperture ring and a visible scale label. Removing the hand returned to SOLAR_SYSTEM and preserved 0.35×.
+- The same five-fingertip close sequence in Earth focus entered UNIVERSE_SCALE while retaining Earth's information. Removing the hand restored PLANET_FOCUS, selected=earth and the current scale. No console warnings or errors were captured during this replay.
+- The Chinese operation guide now explains five-fingertip gathering, opening/closing and how to finish; the old two-hand pinch zoom instructions are removed. At 390 × 844 the guide measured x=19.5, y=40, width=351, height=694, with clientHeight=692 and scrollHeight=903. Document scrollWidth remained 390; temporary viewport override was reset.
+- All browser hand input was synthetic anatomical landmark replay. Physical built-in-webcam precision under the user's lighting and hand pose has not been measured in this pass.
+- Final TypeScript/production build and `/solaris/` static export verification passed (4 entry assets, 7 runtime assets). The documentation's 113 parameter entries (71 controller/motion + 42 recognizer/identity) were checked against the source keys and values.

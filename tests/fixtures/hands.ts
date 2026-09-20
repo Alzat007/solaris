@@ -7,7 +7,7 @@ import type { Gesture, Landmark } from "../../src/gesture/GestureTypes";
 export function handFixture(
   gesture: Extract<
     Gesture,
-    "OPEN_PALM" | "POINT" | "PINCH" | "FIST" | "V_SIGN" | "THREE"
+    "OPEN_PALM" | "POINT" | "PINCH" | "FIST" | "V_SIGN" | "THREE" | "FIVE_PINCH"
   >,
   {
     relaxed = false,
@@ -22,6 +22,7 @@ export function handFixture(
     yaw = 0,
     pitch = 0,
     depthNoise = noise,
+    gripSpread = 0,
   }: {
     relaxed?: boolean;
     noise?: number;
@@ -35,6 +36,7 @@ export function handFixture(
     yaw?: number;
     pitch?: number;
     depthNoise?: number;
+    gripSpread?: number;
   } = {},
 ) {
   const world: Landmark[] = Array.from({ length: 21 }, () => ({
@@ -61,6 +63,7 @@ export function handFixture(
     world[start] = base;
     const extended =
       gesture === "OPEN_PALM" ||
+      gesture === "FIVE_PINCH" ||
       (gesture === "PINCH" && (!foldedPinch || finger === 0)) ||
       (gesture === "POINT" && finger === 0) ||
       (gesture === "THREE" && finger < 3) ||
@@ -101,6 +104,62 @@ export function handFixture(
   if (gesture === "FIST") {
     // A fist's thumb commonly overlaps the folded index, also satisfying pinch distance.
     world[4] = { ...world[8], x: world[8].x - 0.006 };
+  }
+  if (gesture === "FIVE_PINCH") {
+    const spread = Math.max(0, Math.min(1, gripSpread));
+    const center = { x: -0.001, y: -0.038, z: -0.022 };
+    // Curl all five independent chains toward a shared point, then reopen to
+    // their original tips. Preserve each chain's total length in the closed
+    // pose instead of collapsing the fingertip directly onto its own knuckle.
+    for (let finger = 0; finger < 5; finger++) {
+      const baseIndex = finger === 0 ? 1 : 1 + finger * 4;
+      const base = world[baseIndex];
+      const tip = {
+        x: center.x + Math.cos(finger * 1.8) * 0.0025,
+        y: center.y + Math.sin(finger * 1.8) * 0.0025,
+        z: center.z + Math.sin(finger * 2.1) * 0.0015,
+      };
+      const chainLength = [0, 1, 2].reduce((sum, joint) => {
+        const a = world[baseIndex + joint],
+          b = world[baseIndex + joint + 1];
+        return sum + Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+      }, 0);
+      const pointAt = (t: number, amplitude: number) => ({
+        x: base.x + (tip.x - base.x) * t,
+        y: base.y + (tip.y - base.y) * t,
+        z: base.z + (tip.z - base.z) * t + Math.sin(t * Math.PI) * amplitude,
+      });
+      let lo = 0,
+        hi = 0.08;
+      for (let i = 0; i < 24; i++) {
+        const amplitude = (lo + hi) / 2;
+        const chain = [
+          base,
+          pointAt(0.46, amplitude),
+          pointAt(0.75, amplitude),
+          tip,
+        ];
+        let length = 0;
+        for (let j = 0; j < 3; j++)
+          length += Math.hypot(
+            chain[j].x - chain[j + 1].x,
+            chain[j].y - chain[j + 1].y,
+            chain[j].z - chain[j + 1].z,
+          );
+        if (length > chainLength) hi = amplitude;
+        else lo = amplitude;
+      }
+      [0.46, 0.75, 1].forEach((t, joint) => {
+        const index = baseIndex + joint + 1,
+          open = world[index];
+        const closed = pointAt(t, (lo + hi) / 2);
+        world[index] = {
+          x: closed.x + (open.x - closed.x) * spread,
+          y: closed.y + (open.y - closed.y) * spread,
+          z: closed.z + (open.z - closed.z) * spread,
+        };
+      });
+    }
   }
   const transformed = world.map((point, i) => {
     // Rigid out-of-plane rotations preserve anatomy while foreshortening the
