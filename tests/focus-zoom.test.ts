@@ -65,7 +65,7 @@ function setup(t: TestContext, fixtureOptions: Geometry = {}) {
       yaw: 0.5,
       pitch: 0.3,
       ...(pose === "POINT"
-        ? { indexPipAngle: 165, otherFingerFlexion: 55 }
+        ? { indexPipAngle: 165, otherFingerFlexion: 55, thumbOpening: 0 }
         : {}),
       ...fixtureOptions,
       ...geometry,
@@ -120,14 +120,14 @@ function setup(t: TestContext, fixtureOptions: Geometry = {}) {
     hold("POINT", 400);
     gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
     hold("POINT", config.TARGET_LOCK_TIME + 50);
-    assert.equal(gestureFeedback.get().indexPhase, "TARGET_LOCKED");
-    send("POINT", { indexPipAngle: 105 });
+    assert.equal(gestureFeedback.get().selectionPhase, "TARGET_LOCKED");
+    send("POINT", { thumbOpening: 0.4 });
     assert.equal(
       store.get().selected,
       null,
-      "a moderate bend cannot enter Earth",
+      "a partly opened thumb cannot enter Earth",
     );
-    send("POINT", { indexPipAngle: 75 });
+    hold("POINT", 150, { thumbOpening: 1 });
     assert.equal(store.get().selected, "earth");
     assert.equal(store.get().mode, "PLANET_TRANSITION");
     assert.equal(interaction.isLocked(), true);
@@ -196,7 +196,7 @@ function armDial(s: ReturnType<typeof setup>, options: Sample = {}) {
 test("a held V spanning the planet-entry animation starts a fresh 250ms baseline after unlock", (t) => {
   const s = setup(t);
   s.selectEarth();
-  s.hold("POINT", config.INDEX_RELEASE_HOLD + 50);
+  s.hold("POINT", config.THUMB_RELEASE_HOLD + 50);
   for (let frame = 0; frame < 20; frame++) {
     s.send("V_GESTURE", { visualRoll: frame > 10 ? 25 : 0 });
     assert.equal(particles.targetScale, 1);
@@ -274,26 +274,26 @@ test("releasing V stops immediately, preserves facts, returns to focus, and perm
   assert.equal(particles.targetScale, stoppedScale);
 });
 
-test("a bent index held across entry cannot select another planet until explicit release and a new lock", (t) => {
+test("an open thumb held across entry cannot select another planet until explicit release and a new lock", (t) => {
   const s = setup(t);
   s.selectEarth();
-  s.hold("POINT", 800, { indexPipAngle: 75 });
+  s.hold("POINT", 800, { thumbOpening: 1 });
   s.finishAndRevealFacts();
   gestureTargets.set({ kind: "body", id: "mars", label: "火星" });
-  s.hold("POINT", 800, { indexPipAngle: 75 });
+  s.hold("POINT", 800, { thumbOpening: 1 });
   assert.equal(store.get().selected, "earth");
   assert.equal(store.get().mode, "PLANET_FOCUS");
   assert.equal(gestureFeedback.get().zoomMode, "IDLE");
   assert.equal(particles.targetScale, 1);
-  s.hold("POINT", config.INDEX_RELEASE_HOLD + config.TARGET_LOCK_TIME + 150);
-  assert.equal(gestureFeedback.get().indexPhase, "TARGET_LOCKED");
-  s.send("POINT", { indexPipAngle: 105 });
+  s.hold("POINT", config.THUMB_RELEASE_HOLD + config.TARGET_LOCK_TIME + 150);
+  assert.equal(gestureFeedback.get().selectionPhase, "TARGET_LOCKED");
+  s.send("POINT", { thumbOpening: 0.4 });
   assert.equal(
     store.get().selected,
     "earth",
-    "a moderate bend cannot select Mars",
+    "a partly opened thumb cannot select Mars",
   );
-  s.send("POINT", { indexPipAngle: 75 });
+  s.hold("POINT", 150, { thumbOpening: 1 });
   assert.equal(store.get().selected, "mars");
   assert.equal(store.get().mode, "PLANET_TRANSITION");
 });

@@ -144,7 +144,7 @@ export class GestureRecognizer {
               va,
         }
       : { x: 0, y: 0 };
-    // Selection measures the actual PIP hinge, not the fingertip or the
+    // Diagnostics measure the actual PIP hinge, not the fingertip or the
     // existing full-finger curl score. World geometry is preferred; corrected
     // screen geometry is a fallback only when world landmarks are absent.
     const indexProximalLength = distance(w[5], w[6]);
@@ -166,9 +166,8 @@ export class GestureRecognizer {
             this.indexAngularVelocity) *
           angularAlpha;
       } else this.indexAngularVelocity = 0;
-      if (indexAngle < gestureConfig.INDEX_PRESS_THRESHOLD_DEG)
-        this.indexState = "BENT";
-      else if (indexAngle > gestureConfig.INDEX_RELEASE_THRESHOLD_DEG)
+      if (indexAngle < config.INDEX_BENT_ANGLE_DEG) this.indexState = "BENT";
+      else if (indexAngle > config.INDEX_EXTENDED_ANGLE_DEG)
         this.indexState = "EXTENDED";
       this.previousIndexAngle = indexAngle;
     } else {
@@ -224,7 +223,34 @@ export class GestureRecognizer {
     const openness = (scores[0] + scores[1] + scores[2] + scores[3]) / 4;
     // World-space ratios retain their meaning when a palm turns sideways;
     // camera-space z is an estimate and must not set a separate contact scale.
-    const geometryWidth = Math.max(distance(w[5], w[17]), 0.001);
+    const rawPalmWidth = distance(w[5], w[17]);
+    const geometryWidth = Math.max(rawPalmWidth, 0.001);
+    const thumbBones = [
+      distance(w[1], w[2]),
+      distance(w[2], w[3]),
+      distance(w[3], w[4]),
+    ];
+    const thumbLength = thumbBones[0] + thumbBones[1] + thumbBones[2];
+    const thumbGeometryValid =
+      Number.isFinite(rawPalmWidth) &&
+      rawPalmWidth > config.THUMB_GEOMETRY_MIN_PALM_WIDTH &&
+      thumbBones.every(
+        (length) =>
+          Number.isFinite(length) &&
+          length > config.THUMB_GEOMETRY_MIN_BONE_LENGTH,
+      );
+    // The palm's 3D pinky-to-index axis defines "outward" for either hand.
+    // Index-tip flexion, screen mirroring and wrist roll cannot open a thumb.
+    // A tucked tip may project inward: retain the negative spread for hysteresis.
+    const thumbSpread = thumbGeometryValid
+      ? ((w[4].x - w[5].x) * (w[5].x - w[17].x) +
+          (w[4].y - w[5].y) * (w[5].y - w[17].y) +
+          (w[4].z - w[5].z) * (w[5].z - w[17].z)) /
+        (rawPalmWidth * rawPalmWidth)
+      : 0;
+    const thumbReach = thumbGeometryValid
+      ? clamp(distance(w[1], w[4]) / thumbLength)
+      : 0;
     const pinchDistance = distance(w[4], w[8]) / geometryWidth;
     if (
       this.pinched
@@ -238,8 +264,6 @@ export class GestureRecognizer {
         w[8].y - (w[0].y + w[5].y + w[9].y + w[13].y + w[17].y) / 5,
         w[8].z - (w[0].z + w[5].z + w[9].z + w[13].z + w[17].z) / 5,
       ) / geometryWidth;
-    const thumbLength =
-      distance(w[1], w[2]) + distance(w[2], w[3]) + distance(w[3], w[4]);
     const thumb =
       angle(w[2], w[3], w[4]) > config.THUMB_EXTEND_ANGLE &&
       distance(w[1], w[4]) / Math.max(thumbLength, 0.001) >
@@ -481,6 +505,9 @@ export class GestureRecognizer {
       indexAngularVelocity: this.indexAngularVelocity,
       indexState: this.indexState,
       pointConfidence: gesture === "POINT" ? pointConfidence : 0,
+      thumbSpread,
+      thumbGeometryValid,
+      thumbReach,
       pinchPoint,
       velocity,
       fingerState: { thumb, index, middle, ring, pinky },

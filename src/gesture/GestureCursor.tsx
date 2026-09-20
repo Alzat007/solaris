@@ -36,7 +36,7 @@ export function GestureCursor() {
   if (!visible) return null;
   const zooming = f.zoomMode !== "IDLE";
   const fist = !zooming && f.action === "FIST_BACK";
-  const indexSelecting =
+  const thumbSelecting =
     !zooming &&
     !fist &&
     !f.locked &&
@@ -46,14 +46,14 @@ export function GestureCursor() {
       "POINT_HOVER",
       "TARGET_LOCKING",
       "TARGET_LOCKED",
-      "INDEX_PRESSING",
-      "INDEX_TRIGGERED",
-    ].includes(f.indexPhase);
+      "THUMB_OPENING",
+      "THUMB_TRIGGERED",
+    ].includes(f.selectionPhase);
   const progress = zooming
     ? f.zoomActive
       ? 0
       : f.zoomProgress
-    : indexSelecting
+    : thumbSelecting
       ? f.targetLockProgress
       : fist
         ? f.fistProgress
@@ -74,18 +74,20 @@ export function GestureCursor() {
               : f.specialProgress > 0
                 ? `凝聚 ${Math.round(f.specialProgress * 100)}%`
                 : "双掌合拢"
-          : f.indexNeedsRelease
-            ? "伸直食指"
-            : f.indexPhase === "INDEX_PRESSING"
-              ? "弯到底 · 确认"
-              : f.lockedTarget
-                ? `${f.lockedTarget.label} · 食指弯到底`
-                : f.target?.label;
+          : f.selectionPhase === "THUMB_TRIGGERED"
+            ? "已确认"
+            : f.thumbNeedsRelease
+              ? "收回大拇指"
+              : f.selectionPhase === "THUMB_OPENING"
+                ? "张开拇指 · 确认"
+                : f.lockedTarget
+                  ? `${f.lockedTarget.label} · 张开大拇指`
+                  : f.target?.label;
   const style = {
     "--pinch-progress": zooming
       ? 0
-      : indexSelecting
-        ? f.indexPressProgress
+      : thumbSelecting
+        ? f.thumbOpenProgress
         : f.pinchProgress,
     "--gesture-progress": Math.max(0, Math.min(1, progress)),
   } as CSSProperties;
@@ -97,7 +99,7 @@ export function GestureCursor() {
         data-state={f.presence}
         data-readiness={f.readiness}
         data-pinch={f.pinchPhase}
-        data-index-phase={f.indexPhase}
+        data-selection-phase={f.selectionPhase}
         data-special-stage={f.specialStage}
         data-zoom-active={f.zoomActive}
         style={style}

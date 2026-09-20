@@ -8,7 +8,7 @@ import { HandIcon, OrbitIcon, SoundIcon } from "./Icons";
 import { GestureHint } from "./GestureHint";
 import { PlanetInfo } from "./PlanetInfo";
 import { GestureCursor } from "../gesture/GestureCursor";
-import { IndexTargetFeedback } from "../gesture/IndexTargetFeedback";
+import { ThumbTargetFeedback } from "../gesture/ThumbTargetFeedback";
 import { GestureTutorial } from "../gesture/GestureTutorial";
 import { VZoomDial } from "../gesture/VZoomDial";
 import { HandFeedback } from "./HandFeedback";
@@ -56,7 +56,7 @@ export function HUD() {
       className={`hud ${s.mode === "INTRO" ? "intro-hud" : ""}${s.tracking === "online" ? " hand-active" : ""}${insideSun ? " sun-interior-hud" : ""}`}
     >
       <GestureCursor />
-      <IndexTargetFeedback />
+      <ThumbTargetFeedback />
       <VZoomDial />
       <GestureTutorial />
       <header className="topbar">
@@ -160,7 +160,7 @@ export function HUD() {
             <br />
             <span>尽在掌中</span>
           </h1>
-          <p className="welcome-caption">指 · 弯 · 拖 · 转 · 拨 · 握</p>
+          <p className="welcome-caption">指 · 张拇指 · 拖 · 转 · 拨 · 握</p>
           <button
             className="enter-button"
             disabled={s.mode === "INTRO" || s.tracking === "loading"}
@@ -254,7 +254,7 @@ export function HUD() {
           </div>
           <div className="quiet-status">
             {s.tracking === "online"
-              ? "指 · 弯 · 拖 · 转 · 拨 · 握"
+              ? "指 · 张拇指 · 拖 · 转 · 拨 · 握"
               : "漫游无垠宇宙"}
           </div>
           <GestureHint />
@@ -364,14 +364,14 @@ export function HUD() {
             ×
           </button>
           <p className="eyebrow">宇宙探索指南</p>
-          <h2>指、弯、拖、转、拨、握。</h2>
+          <h2>指向、张拇指、探索。</h2>
           <div className="help-columns">
             <div>
               <h3>核心互动</h3>
               <p>
-                指向 → 完全弯曲食指
+                指向锁定 → 张开大拇指
                 <span>
-                  伸直食指瞄准星球，等圆环填满后，把食指完全弯曲即可进入。只弯食指，不必整手握拳；再伸直食指，准备下一次选择。进入后资料自动浮现。
+                  先收拢拇指，用食指指向星球；等圆环填满后，食指保持指向，张开大拇指进入。收回大拇指后可继续选择；进入后资料自动浮现。
                 </span>
               </p>
               <p>
@@ -412,7 +412,7 @@ export function HUD() {
             </div>
           </div>
           <p className="help-note">
-            选择时稳住手掌，把食指弯到底，不要求整手握拳；捏合仅用于抓住空白拖动。左右手都可以旋转缩放，手腕回到起始角度会暂停；动画结束后继续探索。若有画面却一直没有手部骨架，可点击「切换兼容识别」。摄像头画面仅在本机处理。
+            选择时保持食指指向，不要弯曲食指；如果大拇指一开始已张开，先收回再操作。捏合仅用于抓住空白拖动。左右手都可以旋转缩放，手腕回到起始角度会暂停；动画结束后继续探索。若有画面却一直没有手部骨架，可点击「切换兼容识别」。摄像头画面仅在本机处理。
           </p>
         </section>
       )}

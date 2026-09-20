@@ -52,13 +52,13 @@ export function HandFeedback() {
     if (f.specialStage === "READY") return "双掌张开 · 向中心靠近";
     if (f.action === "COLLAPSE") return `双掌合拢 · ${percent}%`;
     if (f.action === "REBIRTH") return "双掌拉开 · 重生";
-    if (f.indexNeedsRelease || f.indexPhase === "WAIT_RELEASE")
-      return "伸直食指，准备下一次选择";
-    if (f.indexPhase === "INDEX_TRIGGERED") return "已确认";
-    if (f.indexPhase === "INDEX_PRESSING") return "食指弯到底 · 正在确认";
-    if (f.indexPhase === "TARGET_LOCKED")
-      return `${f.lockedTarget?.label || "已就绪"} · 食指弯到底${f.lockedTarget?.kind === "body" ? "进入" : "确认"}`;
-    if (f.indexPhase === "TARGET_LOCKING")
+    if (f.selectionPhase === "THUMB_TRIGGERED") return "已确认";
+    if (f.thumbNeedsRelease || f.selectionPhase === "WAIT_RELEASE")
+      return "收回大拇指，准备下次选择";
+    if (f.selectionPhase === "THUMB_OPENING") return "张开大拇指 · 正在确认";
+    if (f.selectionPhase === "TARGET_LOCKED")
+      return `${f.lockedTarget?.label || "已就绪"} · 张开大拇指${f.lockedTarget?.kind === "body" ? "进入" : "确认"}`;
+    if (f.selectionPhase === "TARGET_LOCKING")
       return `${f.hoverTarget?.label || "已指向"} · 保持片刻`;
     if (f.needsRelease) return "松开手指，再抓住空白拖动";
     if (f.pinchPhase === "PINCH_START") return "捏住空白 · 准备拖动";

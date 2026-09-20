@@ -1158,8 +1158,8 @@ footer {
     0 0 0 4px #7edffb0c,
     0 0 20px #6ce0ff50;
 }
-.gesture-cursor[data-index-phase="TARGET_LOCKED"] .gesture-cursor-ring,
-.gesture-cursor[data-index-phase="INDEX_PRESSING"] .gesture-cursor-ring {
+.gesture-cursor[data-selection-phase="TARGET_LOCKED"] .gesture-cursor-ring,
+.gesture-cursor[data-selection-phase="THUMB_OPENING"] .gesture-cursor-ring {
   border-color: #defaff;
   box-shadow:
     0 0 0 3px #91e7ff12,
@@ -1245,7 +1245,7 @@ footer {
 .index-target-ring {
   position: absolute;
   inset: 0;
-  transform: scale(calc(1 - var(--index-press-progress, 0) * 0.11));
+  transform: scale(calc(1 - var(--thumb-open-progress, 0) * 0.11));
   transition: transform 65ms linear;
 }
 .index-target-ring > svg {

@@ -62,7 +62,8 @@ document.getElementById("lab-buttons")!.addEventListener("click", (event) => {
   started = performance.now();
   focusUnlockedAt = null;
   if (motion === "focus-v") interaction.selectBody("earth");
-  if (!motion.startsWith("index-")) recognizers.forEach((r) => r.reset());
+  if (!motion.startsWith("index-") && !motion.startsWith("thumb-"))
+    recognizers.forEach((r) => r.reset());
   if (button.dataset.target) {
     pose = "POINT";
     const which = button.dataset.target;
@@ -107,6 +108,7 @@ function feature(
   alignPalm = false,
   rollDegrees = 0,
   indexAngle = 165,
+  thumbOpening = 0,
 ): HandFeatures {
   const fixtureOptions = {
     relaxed: true,
@@ -116,6 +118,7 @@ function feature(
     foldedPinch: pose === "PINCH",
     rotation: ((rollDegrees * Math.PI) / 180) * (index === 1 ? 1 : -1),
     indexPipAngle: pose === "POINT" ? indexAngle : undefined,
+    thumbOpening: pose === "POINT" ? thumbOpening : undefined,
     otherFingerFlexion: pose === "POINT" ? 55 : undefined,
   };
   const { points, world } = handFixture(pose, fixtureOptions);
@@ -145,7 +148,17 @@ const timer = window.setInterval(() => {
   const time = performance.now(),
     elapsed = time - started;
   let hands: HandFeatures[] = [];
-  if (motion.startsWith("index-")) {
+  if (motion.startsWith("thumb-")) {
+    const opening =
+      motion === "thumb-close"
+        ? 0
+        : motion === "thumb-already-open"
+          ? 1
+          : clamp(elapsed / 350);
+    hands = [
+      feature("POINT", target.x, target.y, time, 0, false, 0, 165, opening),
+    ];
+  } else if (motion.startsWith("index-")) {
     const angle =
       motion === "index-release"
         ? 165
@@ -268,7 +281,7 @@ const timer = window.setInterval(() => {
   const s = store.get(),
     f = gestureFeedback.get();
   document.getElementById("lab-result")!.textContent =
-    `识别 ${s.gesture} | 状态 ${s.mode} | 锁 ${s.transitioning} | 资料 ${s.infoVisible} | 已选 ${s.selected ?? "无"} | 目标 ${f.target?.id ?? "无"} | ${f.readiness} / ${f.pinchPhase} | 松开 ${f.needsRelease} | 动作 ${f.action} | 食指 ${f.indexAngle?.toFixed(0) ?? "—"}° ${f.indexPhase} 锁${(f.targetLockProgress * 100).toFixed(0)}% 对象${f.lockedTarget?.id ?? "无"} | 旋钮 ${f.zoomMode} ${(f.zoomProgress * 100).toFixed(0)}% Δ${f.zoomDelta.toFixed(1)}° 速度${f.zoomSpeed.toFixed(3)} | 双掌 ${f.specialStage} ${(f.specialProgress * 100).toFixed(0)}% | 坍缩 ${particles.collapse.toFixed(2)} | 内部 ${particles.sunInterior.toFixed(2)} | 缩放 ${particles.targetScale.toFixed(2)} | 旋转 ${particles.targetRotation.toFixed(2)}`;
+    `识别 ${s.gesture} | 状态 ${s.mode} | 锁 ${s.transitioning} | 资料 ${s.infoVisible} | 已选 ${s.selected ?? "无"} | 目标 ${f.target?.id ?? "无"} | ${f.readiness} / ${f.pinchPhase} | 松开 ${f.needsRelease} | 动作 ${f.action} | 拇指 ${f.thumbSpread?.toFixed(2) ?? "—"} ${f.selectionPhase} 锁${(f.targetLockProgress * 100).toFixed(0)}% 对象${f.lockedTarget?.id ?? "无"} | 旋钮 ${f.zoomMode} ${(f.zoomProgress * 100).toFixed(0)}% Δ${f.zoomDelta.toFixed(1)}° 速度${f.zoomSpeed.toFixed(3)} | 双掌 ${f.specialStage} ${(f.specialProgress * 100).toFixed(0)}% | 坍缩 ${particles.collapse.toFixed(2)} | 内部 ${particles.sunInterior.toFixed(2)} | 缩放 ${particles.targetScale.toFixed(2)} | 旋转 ${particles.targetRotation.toFixed(2)}`;
 }, 50);
 window.addEventListener(
   "pagehide",

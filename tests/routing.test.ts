@@ -24,6 +24,9 @@ const hand = (gesture: Gesture, x = 0.3, id = "left"): HandFeatures => ({
   trackingConfidence: 1,
   indexAngle: gesture === "FIST" ? 75 : gesture === "PINCH" ? 95 : 165,
   indexAngleValid: true,
+  thumbSpread: gesture === "OPEN_PALM" || gesture === "V_GESTURE" ? 0.9 : 0,
+  thumbReach: 0.95,
+  thumbGeometryValid: true,
   indexAngularVelocity: 0,
   indexState: gesture === "FIST" || gesture === "PINCH" ? "BENT" : "EXTENDED",
   pointConfidence: gesture === "POINT" ? 0.95 : 0,
@@ -118,7 +121,7 @@ function scenario(
     for (let n = 0; n <= duration; n += 50) send(hands);
   };
   const warm = (two = false) =>
-    hold(two ? pair("OPEN_PALM", 0.6) : [hand("OPEN_PALM")], 300);
+    hold(two ? pair("OPEN_PALM", 0.6) : [hand("POINT")], 300);
   try {
     run({ send, hold, warm, calls, controller });
   } finally {
@@ -129,49 +132,47 @@ function scenario(
   }
 }
 
-const pressed = (angle = 75, gesture: Gesture = "NONE"): HandFeatures => ({
+const opening = (spread = 0.9, gesture: Gesture = "POINT"): HandFeatures => ({
   ...hand(gesture),
-  indexAngle: angle,
-  indexAngularVelocity: -180,
-  indexState: angle < 85 ? "BENT" : "EXTENDED",
+  thumbSpread: spread,
 });
-test("pointing without bending only locks and never selects, rotates or zooms", () =>
+test("pointing without opening the thumb only locks and never selects, rotates or zooms", () =>
   scenario(({ warm, hold, calls }) => {
     warm();
     gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
     hold([hand("POINT")], 1200);
-    assert.equal(gestureFeedback.get().indexPhase, "TARGET_LOCKED");
+    assert.equal(gestureFeedback.get().selectionPhase, "TARGET_LOCKED");
     assert.deepEqual(calls, []);
     assert.equal(particles.targetRotation, 0);
     assert.equal(particles.targetScale, 1);
   }));
 for (const target of ["earth", "sun"] as const)
-  test(`stable aim and one full index curl selects ${target} exactly once`, () =>
+  test(`stable aim and one deliberate thumb opening selects ${target} exactly once`, () =>
     scenario(({ warm, send, hold, calls }) => {
       warm();
       gestureTargets.set({ kind: "body", id: target, label: target });
       hold([hand("POINT")], 300);
-      assert.equal(gestureFeedback.get().indexPhase, "TARGET_LOCKED");
-      send([pressed(135)]);
-      send([pressed()]);
-      hold([pressed()], 1000);
+      assert.equal(gestureFeedback.get().selectionPhase, "TARGET_LOCKED");
+      send([opening(0.4)]);
+      hold([opening()], 100);
+      hold([opening()], 1000);
       assert.deepEqual(calls, [`select:${target}`]);
       hold([hand("POINT")], 400);
-      send([pressed(135)]);
-      send([pressed()]);
+      send([opening(0.4)]);
+      hold([opening()], 100);
       assert.deepEqual(calls, [`select:${target}`, `select:${target}`]);
     }));
-test("fast scans and early bends cannot lock or select", () =>
+test("fast scans and early thumb openings cannot lock or select", () =>
   scenario(({ warm, send, hold, calls }) => {
     warm();
     gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
     hold([{ ...hand("POINT"), pointerVelocity: { x: 1.2, y: 0 } }], 700);
     assert.equal(gestureFeedback.get().targetLockProgress, 0);
     send([hand("POINT")]);
-    send([pressed()]);
+    hold([opening()], 100);
     assert.deepEqual(calls, []);
   }));
-test("target changes reset the lock clock and bending off-target still selects the original lock", () =>
+test("target changes reset the lock clock and opening the thumb off-target still selects the original lock", () =>
   scenario(({ warm, send, hold, calls }) => {
     warm();
     gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
@@ -182,9 +183,9 @@ test("target changes reset the lock clock and bending off-target still selects t
     gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
     hold([hand("POINT")], 300);
     gestureTargets.set({ kind: "body", id: "mars", label: "火星" });
-    send([pressed(135)]);
+    send([opening(0.4)]);
     gestureTargets.set(null);
-    send([{ ...pressed(), pointer: { x: 0.9, y: 0.9 } }]);
+    hold([{ ...opening(), pointer: { x: 0.9, y: 0.9 } }], 100);
     assert.deepEqual(calls, ["select:earth"]);
   }));
 test("PINCH never selects a body or HUD, with or without prior pointing", () =>
@@ -228,69 +229,66 @@ test("a held pinch newly entering the camera cannot click after re-entry or rele
     hold([hand("PINCH")], 600);
     assert.deepEqual(calls, []);
   }));
-test("hand loss discards index lock; bent re-entry cannot inherit selection", () =>
+test("hand loss discards target lock; open-thumb re-entry cannot inherit selection", () =>
   scenario(({ warm, send, hold, calls }) => {
     warm();
     gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
     hold([hand("POINT")], 300);
     send([]);
     gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
-    hold([pressed()], 800);
+    hold([opening()], 800);
     assert.deepEqual(calls, []);
-    assert.equal(gestureFeedback.get().indexNeedsRelease, true);
+    assert.equal(gestureFeedback.get().thumbNeedsRelease, true);
     hold([hand("POINT")], 450);
-    send([pressed(135)]);
-    send([pressed()]);
+    send([opening(0.4)]);
+    hold([opening()], 100);
     assert.deepEqual(calls, ["select:earth"]);
   }));
-test("transitions cancel index lock and consume bent hands until explicit release", () =>
+test("transitions cancel target lock and consume open-thumb hands until explicit release", () =>
   scenario(({ warm, send, hold, calls }) => {
     warm();
     gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
     hold([hand("POINT")], 300);
     store.set({ transitioning: true });
-    hold([pressed()], 300);
+    hold([opening()], 300);
     hold([hand("FIST")], 650);
     hold(pair("OPEN_PALM", 0.18), 1100);
     assert.deepEqual(calls, []);
-    hold([pressed()], 350);
+    hold([opening()], 350);
     store.set({ transitioning: false });
-    hold([pressed()], 500);
+    hold([opening()], 500);
     assert.deepEqual(calls, []);
     hold([hand("POINT")], 450);
-    send([pressed(135)]);
-    send([pressed()]);
+    send([opening(0.4)]);
+    hold([opening()], 100);
     assert.deepEqual(calls, ["select:earth"]);
   }));
 for (const mode of ["SUN_INTERIOR", "COLLAPSE"] as const)
-  test(`index trigger confirms a HUD target in ${mode} without selecting a body`, () =>
+  test(`thumb opening confirms a HUD target in ${mode} without selecting a body`, () =>
     scenario(({ warm, send, hold, calls }) => {
       warm();
       store.set({ mode });
       gestureTargets.set({ kind: "ui", id: "show-help", label: "操作指南" });
       hold([hand("POINT")], 300);
-      send([pressed(135)]);
-      send([pressed()]);
+      send([opening(0.4)]);
+      hold([opening()], 100);
       assert.deepEqual(calls, ["ui:show-help"]);
       gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
       hold([hand("POINT")], 800);
-      send([pressed(135)]);
-      send([pressed()]);
+      send([opening(0.4)]);
+      hold([opening()], 100);
       assert.deepEqual(calls, ["ui:show-help"]);
     }));
-test("locked index press outranks a fist-like closing frame and held press never returns", () =>
+test("a fist after a locked aim cannot select and only returns after the lock expires", () =>
   scenario(({ warm, send, hold, calls }) => {
     warm();
     store.set({ mode: "PLANET_FOCUS", selected: "earth" });
     gestureTargets.set({ kind: "body", id: "mars", label: "火星" });
     hold([hand("POINT")], 300);
-    send([pressed(135)]);
-    send([pressed(75, "FIST")]);
+    hold([opening(0.9, "FIST")], 300);
+    assert.deepEqual(calls, []);
     hold([hand("FIST")], 1600);
-    assert.deepEqual(calls, ["select:mars"]);
-    hold([hand("OPEN_PALM")], 200);
-    hold([hand("FIST")], 700);
-    assert.deepEqual(calls, ["select:mars", "back"]);
+    assert.deepEqual(calls, ["back"]);
   }));
 const vHand = (degrees = 0, x = 0.3, id = "left") => ({
   ...hand("V_GESTURE", x, id),
@@ -372,8 +370,8 @@ test("V candidate and active dial suppress target selection, drag and fast swipe
     assert.ok(calls.every((call) => call === "zoom"));
     gestureTargets.set({ kind: "body", id: "mars", label: "火星" });
     hold([hand("POINT")], 450);
-    send([pressed(135)]);
-    send([pressed()]);
+    send([opening(0.4)]);
+    hold([opening()], 100);
     assert.equal(
       calls.filter((call: string) => call === "select:mars").length,
       1,
@@ -455,11 +453,11 @@ test("target lock delays V capture until its fixed grace expires", () =>
     hold([hand("POINT")], 300);
     hold([vHand(30)], 300);
     assert.equal(gestureFeedback.get().zoomMode, "IDLE");
-    assert.equal(gestureFeedback.get().indexPhase, "TARGET_LOCKED");
+    assert.equal(gestureFeedback.get().selectionPhase, "TARGET_LOCKED");
     assert.deepEqual(calls, []);
     hold([vHand(30)], 500);
     assert.equal(gestureFeedback.get().zoomMode, "ZOOM_DIAL_ACTIVE");
-    send([pressed()]);
+    hold([opening()], 100);
     assert.ok(calls.every((call) => call === "zoom"));
   }));
 test("uncertain V confidence or a side-on palm cannot arm or produce a swipe", () =>
@@ -510,8 +508,8 @@ test("reducing two held pinches to one cannot select a target", () =>
       false,
     );
     hold([hand("POINT")], 450);
-    send([pressed(135)]);
-    send([pressed()]);
+    send([opening(0.4)]);
+    hold([opening()], 100);
     assert.equal(calls.filter((c) => c.startsWith("select")).length, 1);
   }));
 test("releasing two close pinches as palms does not collapse", () =>
@@ -590,11 +588,11 @@ test("low point confidence interrupts target locking and needs a fresh stable ai
     gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
     hold([hand("POINT")], 150);
     send([{ ...hand("POINT"), pointConfidence: 0.3 }]);
-    send([pressed()]);
+    hold([opening()], 100);
     assert.deepEqual(calls, []);
     hold([hand("POINT")], 350);
-    send([pressed(135)]);
-    send([pressed()]);
+    send([opening(0.4)]);
+    hold([opening()], 100);
     assert.deepEqual(calls, ["select:earth"]);
   }));
 test("a long frame gap is treated as reconnecting and cannot generate a swipe", () =>

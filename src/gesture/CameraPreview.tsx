@@ -65,6 +65,9 @@ export function CameraPreview() {
         ctx.lineWidth = 2;
         ctx.lineJoin = "round";
         for (const bone of bones) {
+          const thumbBone = !victory && bone[1] === 1;
+          ctx.strokeStyle = thumbBone || victory ? "#c1f5ff" : "#9de5ee";
+          ctx.lineWidth = thumbBone ? 2.8 : 2;
           ctx.beginPath();
           bone.forEach((index, step) => {
             const p = hand.landmarks[index];
@@ -79,9 +82,10 @@ export function CameraPreview() {
           const p = hand.landmarks[index];
           const fingertip = index > 0 && index % 4 === 0;
           const victoryTip = victory && (index === 8 || index === 12);
-          const indexTip = !victory && index === 8;
+          const selectionTip = !victory && (index === 4 || index === 8);
+          const thumbJoint = !victory && index >= 1 && index <= 4;
           ctx.fillStyle =
-            victoryTip || indexTip
+            victoryTip || selectionTip || thumbJoint
               ? "#b4f5ff"
               : fingertip
                 ? "#eafaff"
@@ -90,13 +94,20 @@ export function CameraPreview() {
           ctx.arc(
             (1 - p.x) * c.width,
             p.y * c.height,
-            fingertip ? (victoryTip || indexTip ? 5.5 : 4.5) : 1.8,
+            fingertip
+              ? victoryTip || selectionTip
+                ? 5.5
+                : 4.5
+              : thumbJoint
+                ? 3
+                : 1.8,
             0,
             Math.PI * 2,
           );
           ctx.fill();
           if (fingertip) {
-            ctx.strokeStyle = victoryTip || indexTip ? "#e8ffff" : "#80d7ea";
+            ctx.strokeStyle =
+              victoryTip || selectionTip ? "#e8ffff" : "#80d7ea";
             ctx.lineWidth = 1.4;
             ctx.stroke();
           }
@@ -130,7 +141,7 @@ export function CameraPreview() {
         title={
           !expanded
             ? "点击展开手部骨架，检查整只手是否在画面内"
-            : "亮点突出食指，方便对照食指完全弯曲的动作；识别 ✌ 时同时突出食指和中指。画面仅在本机处理"
+            : "亮点与亮线突出大拇指和食指：食指保持指向，拇指先收后张；识别 ✌ 时突出食指和中指。画面仅在本机处理"
         }
       >
         <span>

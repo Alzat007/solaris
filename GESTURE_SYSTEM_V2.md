@@ -1,22 +1,22 @@
-# SOLARIS Index Trigger Selection System
+# SOLARIS Thumb Open Selection System
 
-网站：[SOLARIS · 掌中星系](https://alzat007.github.io/solaris/)。核心手势语言：**指向、完全弯曲食指、拖动、拨动、握拳、✌ 旋腕**。
+网站：[SOLARIS · 掌中星系](https://alzat007.github.io/solaris/)。核心手势语言：**指向、张开大拇指、拖动、拨动、握拳、✌ 旋腕**。
 
-本版将正式选择改为「稳定指向 → 锁定目标 → 完全弯曲食指确认」，统一进入行星、太阳或操作 HUD。双指 Pinch 仅保留总览空白处拖动，不再选择。保留现有 ✌ 旋腕缩放、握拳返回、行星切换、双掌彩蛋、摄像头预览及原有场景视觉。
+本版将正式选择改为「收拢拇指并稳定指向 → 锁定目标 → 张开大拇指确认」，统一进入行星、太阳或操作 HUD。双指 Pinch 仅保留总览空白处拖动，不再选择。保留现有 ✌ 旋腕缩放、握拳返回、行星切换、双掌彩蛋、摄像头预览及原有场景视觉。
 
 ## 1. 修改的文件与职责
 
-以下列出当前手势系统与相关视觉模块，便于继续维护。食指选择由 `IndexTriggerSelection.ts` 管理；旋腕缩放继续由 `VRotationZoom.ts` 与 `VZoomDial.tsx` 分别处理行为和反馈。
+以下列出当前手势系统与相关视觉模块，便于继续维护。拇指张开选择由 `ThumbOpenSelection.ts` 管理；旋腕缩放继续由 `VRotationZoom.ts` 与 `VZoomDial.tsx` 分别处理行为和反馈。
 
 | 文件                                                                                                                                                                     | 职责                                                                                                     |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
 | `src/gesture/HandTrackingManager.ts`                                                                                                                                     | 相机权限与释放、本站 MediaPipe 加载、20Hz 推理；丢帧或冻结视频向状态机报告空手。                         |
 | `src/gesture/HandIdentityTracker.ts`                                                                                                                                     | 利用左右手标签与二维位置预测维持身份；处理检测重排、交叉和丢失；弱左右手标签不清空手，坏关键点按手处理。 |
-| `src/gesture/GestureRecognizer.ts`、`GestureTypes.ts`、`recognizerConfig.ts`                                                                                             | 严格 PIP 角度／角速度、自然 Point 证据、动态指针平滑、V 与掌轴；保留捏合与五指诊断，跟踪有效性独立。     |
+| `src/gesture/GestureRecognizer.ts`、`GestureTypes.ts`、`recognizerConfig.ts`                                                                                             | 拇指展开几何、PIP 诊断、自然 Point 证据、动态指针平滑、V 与掌轴；保留捏合与五指诊断，跟踪有效性独立。    |
 | `src/gesture/GestureStateMachine.ts`                                                                                                                                     | 每只手的空白 Pinch 拖动生命周期及握拳持续确认；不负责选择。                                              |
 | `src/gesture/GestureController.ts`                                                                                                                                       | 重入锁、场景锁、动作冷却、优先级、目标捕获以及互斥选择／拖动／缩放。                                     |
-| `src/gesture/IndexTriggerSelection.ts`                                                                                                                                   | 七态选择流程、稳定目标锁、固定离靶宽限、完全弯曲阈值与速度检查、单次触发和释放保护。                     |
-| `src/gesture/IndexTargetFeedback.tsx`                                                                                                                                    | 天体／HUD 投影位置上的细环、锁定进度、弯曲收缩与确认脉冲。                                               |
+| `src/gesture/ThumbOpenSelection.ts`                                                                                                                                      | 七态选择流程、稳定目标锁、固定离靶宽限、拇指收拢／展开与保持时间检查、单次触发和释放保护。               |
+| `src/gesture/ThumbTargetFeedback.tsx`                                                                                                                                    | 天体／HUD 投影位置上的细环、锁定进度、张开确认时的收缩与触发脉冲。                                       |
 | `src/gesture/VRotationZoom.ts`、`dialScale.ts`                                                                                                                           | V 保持确认、固定旋转基准、角度解缠绕、死区与速度积分、漏检冻结和释放收尾。                               |
 | `src/gesture/GestureMotion.ts`                                                                                                                                           | 窗口拨动；相对掌间距、近距保持和短暂弱姿势暂停组成的坍缩／重生确认。                                     |
 | `src/gesture/gestureConfig.ts`                                                                                                                                           | 集中维护行为阈值、识别频率和输入响应参数。                                                               |
@@ -31,13 +31,13 @@
 | `src/ui/HUD.tsx`、`HandFeedback.tsx`、`GestureHint.tsx`、`PlanetInfo.tsx`、`DebugHands.tsx`、`chinese.ts`、`styles.css`                                                  | 中文教学、识别手数、双掌阶段与百分比、资料卡；底部坍缩／重生备用按钮。                                   |
 | `src/app/App.tsx`                                                                                                                                                        | 按 URL 参数加载 Gesture Debug。                                                                          |
 | `tests/recognizer.test.ts`、`hand-identity.test.ts`、`pinch-state.test.ts`、`routing.test.ts`、`collapse-motion.test.ts`、`v-rotation-zoom.test.ts`、`fixtures/hands.ts` | 自然手型／旋转与噪声样本、稳定身份、Pinch 生命周期、双掌阶段、旋腕缩放启停／速度／边界及互斥路由。       |
-| `tests/index-trigger-selection.test.ts`、`index-selection-integration.test.ts`                                                                                           | 七态、离靶选原目标、抖动／慢放松负例、释放与场景锁，以及识别器到控制器的合成关键点联调回归。             |
+| `tests/thumb-open-selection.test.ts`、`thumb-selection-integration.test.ts`                                                                                              | 七态、离靶选原目标、开闭边界／旧弯指负例、释放与场景锁，以及识别器到控制器的合成关键点联调回归。         |
 | `tests/interaction.test.ts`、`picking.test.ts`、`scene-controls.test.ts`、`fallback.test.ts`、`gesture-lab.ts`、`gesture-lab.html`                                       | 场景状态、命中、输入互斥与合成关键点回放。                                                               |
 | `README.md`、`GESTURE_SYSTEM_V2.md`                                                                                                                                      | 运行说明、操作语言、阈值和调试说明。                                                                     |
 
-`tests/focus-zoom.test.ts` 是选星、镜头动画与聚焦后缩放的集成回归入口；`tests/v-rotation-zoom.test.ts` 独立检查候选确认、固定基准、静止／平移不缩放、左右同方向、±π 跨越、速度封顶、边界、漏检宽限和时间跳变。`tests/routing.test.ts` 检查旋钮、食指锁定、空白拖动的互斥与场景锁。`tests/index-trigger-selection.test.ts` 覆盖快速扫过不锁定、只指向不触发、锁后弯曲离靶仍选原目标、保持只触发一次、明确释放、手丢失及左右手一致。`tests/index-selection-integration.test.ts` 将合成关键点经识别器送入控制器，检查进入后的镜头锁、与 V／Fist 的隔离和 HUD 选择。
+`tests/focus-zoom.test.ts` 是选星、镜头动画与聚焦后缩放的集成回归入口；`tests/v-rotation-zoom.test.ts` 独立检查候选确认、固定基准、静止／平移不缩放、左右同方向、±π 跨越、速度封顶、边界、漏检宽限和时间跳变。`tests/routing.test.ts` 检查旋钮、目标锁定、空白拖动的互斥与场景锁。`tests/thumb-open-selection.test.ts` 覆盖快速扫过不锁定、只指向不触发、锁后张开拇指离靶仍选原目标、保持只触发一次、明确释放、手丢失及左右手一致。`tests/thumb-selection-integration.test.ts` 将合成关键点经识别器送入控制器，检查进入后的镜头锁、与 V／Fist 的隔离和 HUD 选择。
 
-识别回归包含自然半弯其余手指的 Point、严格 5–6–7 PIP 角度、只移动指尖不改变关节角、角速度／迟滞与动态光标滤波，也包含自然微弯的 V、自由拇指、镜像与转腕、侧转可测性、指尖移动不改变掌部轴线及普通双指捏合反例。旧五指聚拢样本仍用于几何诊断与回归；`FIVE_PINCH` 不再驱动正式缩放。这些合成样本验证计算和动作衔接，不代表真人摄像头识别准确率。
+识别回归包含掌轴归一化的拇指展开量、伸展率、镜像／旋转／缩放／平移不变性与退化几何，也包含自然半弯其余手指的 Point、仅用于诊断的严格 5–6–7 PIP 角度与角速度，以及动态光标滤波。V 回归包含自然微弯、自由拇指、镜像与转腕、侧转可测性、指尖移动不改变掌部轴线及普通双指捏合反例。旧五指聚拢样本仍用于几何诊断与回归；`FIVE_PINCH` 不再驱动正式缩放。这些合成样本验证计算和动作衔接，不代表真人摄像头识别准确率。
 
 识别层只产生特征；确认和互斥交给状态机。推理与渲染分离，识别器复用临时关键点／数值缓冲，渲染循环继续插值光标与场景参数。
 
@@ -45,39 +45,52 @@
 
 | 旧行为                                  | 当前行为                                                                           |
 | --------------------------------------- | ---------------------------------------------------------------------------------- |
-| 双指 `PINCH_SELECT`／捏合进入           | 正式入口改为 `INDEX_PRESS`；Pinch 只用于总览空白处拖动，不选择天体或 HUD。         |
+| 双指 `PINCH_SELECT`／捏合进入           | 正式入口改为 `THUMB_OPEN`；Pinch 只用于总览空白处拖动，不选择天体或 HUD。          |
+| `INDEX_PRESS`／弯曲食指进入             | 删除选择作用；食指保持指向，锁定后张开大拇指确认。                                 |
 | 三指查看／收起资料                      | 不再是命令；进入行星的镜头动画完成后 400ms 自动显示资料。                          |
 | ✌ V 手势返回                           | 返回改为握拳持续 600ms；✌ 现在只用于保持确认后的旋腕缩放。                        |
-| 双手快速张开进入太阳内部                | 删除导航作用；太阳通过 Point Lock + Index Press 进入。                             |
+| 双手快速张开进入太阳内部                | 删除导航作用；太阳通过 Point Lock + Thumb Open 进入。                              |
 | 双掌间距直接缩放、双手捏合中点缩放      | 移除；双掌保留坍缩／重生，正式缩放使用 ✌ 旋腕。                                   |
 | 五指撮合启动与连续开合缩放              | 移除 `ONE_HAND_ZOOM` 动作与对应行为参数，改为 `V_ZOOM`；五指几何字段保留用于诊断。 |
 | 张掌、握拳或手指移动触发多种导航        | Point 仅瞄准；Fist 仅返回；张掌拨动仅切换聚焦行星。                                |
 | 旧通用 `GestureStabilizer` 与旧保持时长 | 移除，采用独立状态机和统一配置。                                                   |
 
-识别器输出 `V_GESTURE`，`V_SIGN` 仅为旧样本／调试兼容名。三指仍无命令。普通双指捏合只保留空白拖动作用，不与 `INDEX_PRESS` 共同触发选择；握拳时拇指碰到食指也不选择。
+识别器输出 `V_GESTURE`，`V_SIGN` 仅为旧样本／调试兼容名。三指仍无命令。普通双指捏合只保留空白拖动作用，不与 `THUMB_OPEN` 共同触发选择；握拳时拇指碰到食指也不选择。
 
 ## 3. 新状态与场景规则
 
-### 食指选择：几何与七态流程
+### 拇指张开选择：几何与七态流程
 
-食指关节角严格使用 **MCP（5）— PIP（6）— DIP（7）**，以 PIP 为顶点，使用向量 `MCP - PIP` 与 `DIP - PIP` 的夹角；不使用 `TIP（8）` 代替 DIP。优先使用世界关键点，缺少世界关键点时用宽高比校正后的图像三维关键点。骨段退化或无效则置 `indexAngleValid=false`、清空角速度历史，不能确认。
+食指只负责保持 `POINT` 并瞄准目标，选择不读取食指弯曲角或角速度。几何优先使用世界关键点；缺少世界关键点时回退到按视频宽高比校正的图像三维关键点。设 `P[i]` 为该坐标系中的关键点：
 
-`indexAngle` 单位为度，`indexAngularVelocity` 为近期角度变化的平滑速度，弯曲为负；平滑时间常数 **0.075 秒**。几何 `indexState` 在 `<85°` 时进入 `BENT`，`>145°` 时进入 `EXTENDED`，中间区间保留原值；未初始化或无效时为 `BETWEEN`。几何状态仅描述手指，不能代替选择状态机的目标锁和释放保护。
+```text
+palmAxis = P[5] - P[17]
+palmWidth = length(palmAxis)
+thumbSpread = dot(P[4] - P[5], palmAxis) / palmWidth²
+thumbReach = distance(P[1], P[4]) /
+  (distance(P[1], P[2]) + distance(P[2], P[3]) + distance(P[3], P[4]))
+```
 
-Point 允许其他三指自然半弯、拇指自由放置。食指伸展证据至少 **0.62**，其他三指的最高伸展证据不超过 **0.8**，食指领先它们至少 **0.16**；V、张掌、真实捏合和完整握拳保留各自识别。锁定还要求 `pointConfidence >= 0.6`、角度 `>145°`、有效几何，以及 `hypot(pointerVelocity.x, pointerVelocity.y) <= 0.35`。这里用平滑食指光标的归一化速度，不用掌心速度冒充瞄准稳定性。
+`thumbSpread` 表示拇指尖沿 **小指 MCP（17）→ 食指 MCP（5）** 掌轴、相对食指 MCP 的向外展开距离，以掌宽归一化；`thumbSpread` 可以为负；`thumbReach` 为拇指 CMC 至指尖直线距离占三段骨长之和的比例，限制在 0–1。整体平移、正常缩放、左右手镜像及刚体转腕不会改变这些量的含义。掌宽或拇指骨段退化、非有限关键点会令 `thumbGeometryValid=false`，不能选择。
 
-`POINT_IDLE → POINT_HOVER → TARGET_LOCKING → TARGET_LOCKED → INDEX_PRESSING → INDEX_TRIGGERED → WAIT_RELEASE`
+收拢要求 `thumbSpread <= 0.25`；张开要求 `thumbSpread >= 0.55` 且 `thumbReach >= 0.65`，并保持可靠 Point。开、闭门槛之间保留迟滞，食指持续指向、其余三指可自然半弯。Point 伸展证据仍要求食指至少 **0.62**、其余三指最高不超过 **0.8**、食指优势至少 **0.16**；动作层 `pointConfidence >= 0.6`，锁定期间光标速度 `hypot(pointerVelocity.x, pointerVelocity.y) <= 0.35`。
 
-- `POINT_HOVER`：首次稳定命中目标至少可观察一帧，开始本次计时。
-- `TARGET_LOCKING`：同一个 `kind + id` 连续稳定保持 **250ms**；空白、换目标、快扫或 Point 条件不满足都会清空候选计时。
-- `TARGET_LOCKED`：保存 `lockedTarget`。同目标稳定伸直可一直等待，155–165° 等仍属伸直范围的角度微抖不会单独启动超时。离靶、移动过快或不再满足伸直 Point（包括开始弯指）时，第一次记录 **450ms** 宽限；随后换 hover、弯曲或重新指回都不续期。
-- `INDEX_PRESSING`：锁内食指进入 **145° 及以下** 的弯曲区间，显示按压进度。宽限内交互对象固定为原目标，光标可继续平滑移动。
-- `INDEX_TRIGGERED`：第一次从 `>=85°` 降到 `<85°`，当前角度实际下降且 `indexAngularVelocity < -25°/s` 时，只返回一次锁定目标。首次越过阈值即要求释放；如果速度不足不触发，随后在临界角度抖动也不能补发。触发状态保留一帧，控制器立即执行选择并锁住镜头动画。
-- `WAIT_RELEASE`：下一次更新清除锁定目标，不再独占其他手势。只有角度 `>145°` **连续 100ms** 才解除食指选择保护；中途回落重新计时。锁定后的按压另行保护握拳返回，避免一次弯曲保持几十帧后接着返回；普通手部重入的食指选择保护不会一直阻止握拳返回。
+`POINT_IDLE → POINT_HOVER → TARGET_LOCKING → TARGET_LOCKED → THUMB_OPENING → THUMB_TRIGGERED → WAIT_RELEASE`
 
-锁内可接受几何暂时变为 `NONE`／`FIST` 的食指完全弯曲动作，因为 Point 时另外三指本就自然半弯；选择只要求食指弯到底，不要求整手握拳；此时只执行已锁定的选择，不执行 Fist Back。未锁定的完整握拳不进入食指按压，仍可在允许返回的场景中保持 **600ms** 返回。V、张掌、Pinch、五指撮合和三指不会完成食指确认；已锁定／按压期间禁止启动 V、拖动、Swipe 和 Fist。场景锁始终优先。
+- `POINT_HOVER`：收拢拇指的可靠 Point 首次稳定命中目标，开始计时。拇指一开始已张开的 Point 不能锁定，先进入收回提示。
+- `TARGET_LOCKING`：同一个 `kind + id` 连续稳定 **250ms**；空白、换目标、快扫或 Point 条件不满足清空候选计时。
+- `TARGET_LOCKED`：保存 `lockedTarget`。收拢拇指并稳定指着原目标可一直等待。首次离靶、移动过快、不再满足 Point 或拇指离开收拢区间时，启动固定 **450ms** 宽限；重新指回或反复开闭不会续期。
+- `THUMB_OPENING`：锁内 Point 的拇指不再收拢；达到张开量和伸展率门槛后，累计 **80ms** 连续确认并显示进度。中途回到非张开条件会清空此项计时。宽限内始终使用原锁定目标。
+- `THUMB_TRIGGERED`：连续张开确认完成，只返回一次锁定目标，并要求收回拇指。控制器成功执行后发布 `THUMB_OPEN` 动作，触发帧短暂保留目标与脉冲；进入天体时由场景状态机锁住镜头动画。
+- `WAIT_RELEASE`：清除锁定目标；`thumbSpread <= 0.25` 连续 **100ms** 才解除下一次选择保护，中途张开重新计时。持续张开不会重复进入。
 
-手丢失、坏角度、超过 **180ms** 的帧间隔或时钟回退立即取消目标锁并要求释放，不补算缺失时间。动画禁用帧只观察伸直释放，不累计锁定或触发；因此可在进入动画中松手，解锁后重新稳定指向。新身份的 `cancel(true)` 清除旧的释放计时，`cancel(false)` 保留现有释放保护；`reset()` 才清全状态。手重新入镜仍先等待 **250ms**。
+选择只接受收拢后锁定、再张开的可靠 Point。食指弯曲、普通 Pinch、完整 Fist、V、张掌、五指撮合或三指都不能完成这条选择；不使用食指角度或下降速度触发。未锁定的完整握拳仍可在允许返回的场景保持 **600ms** 返回。目标锁和拇指确认拥有输入时，不新启动 V、拖动、Swipe 或 Fist；场景锁始终优先。
+
+手丢失、坏拇指几何、超过 **180ms** 的帧间隔或时钟回退立即取消目标锁并要求收回，不补算缺失时间。动画禁用帧只观察收回释放，不累计目标锁或张开确认。`cancel(true)` 为新身份清除旧释放计时，`cancel(false)` 保留已有释放保护；`reset()` 清全状态。重新入镜仍先等待 **250ms**。
+
+`indexAngle`、`indexAngularVelocity` 和 `indexState` 仅保留诊断：PIP 角取 **MCP（5）— PIP（6）— DIP（7）**，角速度平滑常数 **0.075 秒**；`recognizerConfig` 中 `<85°` 标为 `BENT`、`>145°` 标为 `EXTENDED`，其他区间保留前态或初始 `BETWEEN`。这些字段不参与拇指选择，食指角度失效也不等同于拇指几何失效。
+
+反馈字段为 `selectionPhase`、`thumbOpenProgress`、`thumbNeedsRelease`、`thumbSpread`、`thumbReach`、`thumbGeometryValid`；悬停／锁定目标继续通过 `hoverTarget`、`lockedTarget` 和 `targetLockProgress` 传递。
 
 ### Point 光标和目标范围
 
@@ -139,33 +152,33 @@ scale = clamp(currentScale + speed × dt, 0.35, 1.75)
 
 GPU 创建失败或推理抛错会尝试一次 CPU；没有手部检出本身不会触发自动切换。所有资源归一个连接会话所有，停止后晚返回的流或模型只关闭自身，不会覆盖新连接。`tests/camera-lifecycle.test.ts` 覆盖这些异步竞态、回退、空检测、过滤前后手数与冻结画面。Debug 分别显示原始手数、有效手数、运行阶段、推理后端和耗时，定位问题时先判断检测链路，再调整姿势分类。
 
-| 状态                | 用户看到的含义                                                     |
-| ------------------- | ------------------------------------------------------------------ |
-| `NO_HAND`           | 未检测到手，不显示手势光标。                                       |
-| `HAND_VISIBLE`      | 已检测到手，出现轻光圈。                                           |
-| `TARGET_HOVER`      | 命中天体或可操作 HUD，显示高亮与目标名称。                         |
-| `GESTURE_ARMED`     | 目标锁定、食指弯到底、握拳、V 或彩蛋正在确认；显示收缩／进度反馈。 |
-| `GESTURE_TRIGGERED` | 动作已触发，短暂脉冲反馈。                                         |
-| `RECONNECTING`      | 手重新出现后的 250ms 只允许位置跟踪；禁止动作。                    |
-| `READY`             | 重入等待结束且关键点几何有效；具体动作仍须通过姿势门槛。           |
+| 状态                | 用户看到的含义                                                   |
+| ------------------- | ---------------------------------------------------------------- |
+| `NO_HAND`           | 未检测到手，不显示手势光标。                                     |
+| `HAND_VISIBLE`      | 已检测到手，出现轻光圈。                                         |
+| `TARGET_HOVER`      | 命中天体或可操作 HUD，显示高亮与目标名称。                       |
+| `GESTURE_ARMED`     | 目标锁定、拇指张开、握拳、V 或彩蛋正在确认；显示收缩／进度反馈。 |
+| `GESTURE_TRIGGERED` | 动作已触发，短暂脉冲反馈。                                       |
+| `RECONNECTING`      | 手重新出现后的 250ms 只允许位置跟踪；禁止动作。                  |
+| `READY`             | 重入等待结束且关键点几何有效；具体动作仍须通过姿势门槛。         |
 
-`readiness` 与可见反馈独立：看见手或命中目标不意味着动作已解锁。动作通道还区分 `NONE`、`POINT`、`INDEX_PRESS`、`PINCH_DRAG`、`V_ZOOM`、`FIST_BACK`、`SWIPE`、`COLLAPSE`、`REBIRTH`。
+`readiness` 与可见反馈独立：看见手或命中目标不意味着动作已解锁。动作通道还区分 `NONE`、`POINT`、`THUMB_OPEN`、`PINCH_DRAG`、`V_ZOOM`、`FIST_BACK`、`SWIPE`、`COLLAPSE`、`REBIRTH`。
 
 ### App State
 
 沿用已有内部场景名，避免更改场景模型。Debug 同时显示语义场景和内部状态。
 
-| 语义状态       | 内部状态／阶段                                                                 | 允许的核心操作                                                              |
-| -------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
-| `OVERVIEW`     | `SOLAR_SYSTEM`、兼容 `POINTER`                                                 | Point、Index Press Select、空白 Pinch Drag、✌ 旋腕缩放、双掌坍缩。         |
-| `PLANET_FOCUS` | `PLANET_FOCUS`、`INFO`                                                         | Point、选择、张掌左右拨动、Fist Back、✌ 旋腕缩放；资料自动显示。           |
-| 缩放进行中     | `UNIVERSE_SCALE`                                                               | V 旋钮独占；结束后回到缩放前的总览／行星状态。                              |
-| 太阳飞入阶段   | `SUN_FOCUS`                                                                    | 作为进入太阳的动画阶段，全程锁定，不接受新的食指选择或 V。                  |
-| `SUN_INTERIOR` | `SUN_INTERIOR`                                                                 | 可用 HUD 的食指确认、Fist Back；不选择天体，禁用 V。                        |
-| `COLLAPSE`     | `COLLAPSE`                                                                     | 坍缩动画期间锁定；核心形成后允许可用 HUD 的食指确认、双掌重生或 Fist Back。 |
-| `TRANSITION`   | `INTRO`、`PLANET_TRANSITION`、`SUN_FOCUS`、`TRANSITION`、`BIG_BANG` 及坍缩动画 | 禁止新的手势操作；等待动画完成。                                            |
+| 语义状态       | 内部状态／阶段                                                                 | 允许的核心操作                                                                  |
+| -------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| `OVERVIEW`     | `SOLAR_SYSTEM`、兼容 `POINTER`                                                 | Point、Thumb Open Select、空白 Pinch Drag、✌ 旋腕缩放、双掌坍缩。              |
+| `PLANET_FOCUS` | `PLANET_FOCUS`、`INFO`                                                         | Point、选择、张掌左右拨动、Fist Back、✌ 旋腕缩放；资料自动显示。               |
+| 缩放进行中     | `UNIVERSE_SCALE`                                                               | V 旋钮独占；结束后回到缩放前的总览／行星状态。                                  |
+| 太阳飞入阶段   | `SUN_FOCUS`                                                                    | 作为进入太阳的动画阶段，全程锁定，不接受新的拇指张开选择或 V。                  |
+| `SUN_INTERIOR` | `SUN_INTERIOR`                                                                 | 可用 HUD 的拇指张开确认、Fist Back；不选择天体，禁用 V。                        |
+| `COLLAPSE`     | `COLLAPSE`                                                                     | 坍缩动画期间锁定；核心形成后允许可用 HUD 的拇指张开确认、双掌重生或 Fist Back。 |
+| `TRANSITION`   | `INTRO`、`PLANET_TRANSITION`、`SUN_FOCUS`、`TRANSITION`、`BIG_BANG` 及坍缩动画 | 禁止新的手势操作；等待动画完成。                                                |
 
-所有已解锁的场景都可以通过 Point Lock + Index Press 点击当前可用的 HUD 按钮，包括太阳内部和坍缩完成后的状态；天体选择仍限制在总览与行星聚焦场景。
+所有已解锁的场景都可以通过 Point Lock + Thumb Open 点击当前可用的 HUD 按钮，包括太阳内部和坍缩完成后的状态；天体选择仍限制在总览与行星聚焦场景。
 
 冷却与场景锁共同生效：冷却结束也不会提前打断镜头动画。普通拖动遇到手丢失、无效几何或身份集合变化会结束并重新经过就绪门槛。已拥有的 V 旋钮对所属手的短暂漏检保留上述 150ms 宽限；所属手仍在时，第二只手加入或检测排序改变不重新校准。超时或所属身份被替换后重新就绪。低姿势分数不会单独清空有效手身份，具体动作仍须通过各自证据门槛。
 
@@ -181,9 +194,9 @@ GPU 创建失败或推理抛错会尝试一次 CPU；没有手部检出本身不
 
 ## 4. 当前全部配置阈值
 
-以下逐项列出两份配置文件的全部 **143 个字段（81 + 62）**。`ms` 是毫秒，`s` 是秒；屏幕坐标为镜像后的 0–1 归一化坐标，二维距离不是像素。掌宽比优先使用世界关键点的三维距离除以三维掌宽；缺少有效世界关键点时使用宽高比校正后的图像关键点。指数响应采用 `1 - exp(-dt × response)`，时间常数采用 `1 - exp(-dt / time)`，两者调节方向相反。
+以下逐项列出两份配置文件的当前参数。`ms` 是毫秒，`s` 是秒；屏幕坐标为镜像后的 0–1 归一化坐标，二维距离不是像素。掌宽比优先使用世界关键点的三维距离除以三维掌宽；缺少有效世界关键点时使用宽高比校正后的图像关键点。指数响应采用 `1 - exp(-dt × response)`，时间常数采用 `1 - exp(-dt / time)`，两者调节方向相反。
 
-### `src/gesture/gestureConfig.ts`（81 项）
+### `src/gesture/gestureConfig.ts`
 
 | 参数                              | 当前值 | 单位           | 用途                                                                                                    |
 | --------------------------------- | -----: | -------------- | ------------------------------------------------------------------------------------------------------- |
@@ -205,13 +218,14 @@ GPU 创建失败或推理抛错会尝试一次 CPU；没有手部检出本身不
 | `SWIPE_WINDOW`                    |    280 | ms             | 拨动轨迹的最长检测窗口。                                                                                |
 | `SWIPE_MIN_TIME`                  |     80 | ms             | 拨动最短观察时间，过滤单帧跳点。                                                                        |
 | `SWIPE_AXIS_RATIO`                |      2 | 倍             | 水平行程至少是垂直行程的此倍数。                                                                        |
-| `TARGET_LOCK_TIME`                |    250 | ms             | 同目标稳定 Point 连续保持多久才能锁定；候选改变、空白或快扫重新计时。                                   |
-| `TARGET_LOCK_GRACE`               |    450 | ms             | 已锁目标首次偏离／不稳定／弯曲后的固定保护窗口；恢复 hover 或继续弯指不续期。                           |
-| `INDEX_PRESS_THRESHOLD_DEG`       |     85 | °              | 锁内首次从此值及以上降到严格小于此值，并满足下降速度，才确认一次。                                      |
-| `INDEX_RELEASE_THRESHOLD_DEG`     |    145 | °              | 食指严格大于此角度才算伸直释放；与按压阈值之间保留迟滞。                                                |
-| `INDEX_RELEASE_HOLD`              |    100 | ms             | 伸直释放必须连续保持的时间；中途回落清零。                                                              |
-| `INDEX_PRESS_MIN_VELOCITY`        |     25 | °/s            | 弯曲辅助速度门槛：平滑角速度须小于负此值，且当前角度实际下降。                                          |
-| `INDEX_POINT_MIN_CONFIDENCE`      |    0.6 | 0–1            | 开始／维持稳定目标锁所需的 Point 证据门槛。                                                             |
+| `TARGET_LOCK_TIME`                |    250 | ms             | 收拢拇指并稳定 Point 命中同目标的连续锁定时间；候选改变、空白或快扫重新计时。                           |
+| `TARGET_LOCK_GRACE`               |    450 | ms             | 已锁目标首次偏离／不稳定／张开后的固定保护窗口；重新命中或继续开闭不续期。                              |
+| `THUMB_OPEN_THRESHOLD`            |   0.55 | 掌宽比         | 拇指尖沿掌轴相对食指 MCP 的向外展开量下限；还须满足 Point、伸展率及保持时间。                           |
+| `THUMB_CLOSED_THRESHOLD`          |   0.25 | 掌宽比         | 拇指展开量不大于此值才算收拢，用于锁前准备和确认后的释放。                                              |
+| `THUMB_MIN_REACH`                 |   0.65 | 长度比         | 张开确认要求的 CMC 至拇指尖直线距离／三段拇指骨长下限。                                                 |
+| `THUMB_OPEN_HOLD`                 |     80 | ms             | 达到张开条件后连续保持的确认时间；中断会清空张开计时。                                                  |
+| `THUMB_RELEASE_HOLD`              |    100 | ms             | 收拢拇指连续保持多久才解除下一次选择的释放保护。                                                        |
+| `POINT_MIN_CONFIDENCE`            |    0.6 | 0–1            | 开始／维持可靠 Point 与拇指选择所需的指向证据门槛。                                                     |
 | `POINT_STABILITY_THRESHOLD`       |   0.35 | 归一化距离/s   | 平滑食指光标速度上限；超过后不累计目标锁。                                                              |
 | `POINT_TARGET_RADIUS_MULTIPLIER`  |    1.3 | 倍             | 手势专用的天体投影命中半径倍率，另与最小半径和像素余量取最大值。                                        |
 | `TARGET_MIN_RADIUS_PX`            |     22 | CSS px         | 天体在屏幕上的最小命中半径，便于瞄准较小的远处星球。                                                    |
@@ -236,9 +250,9 @@ GPU 创建失败或推理抛错会尝试一次 CPU；没有手部检出本身不
 | `V_ZOOM_MAX_ANGLE_DEG`            |     40 | °              | 平滑角差达到此绝对值时达到最大速率，更大角度仍封顶。                                                    |
 | `V_ZOOM_MAX_SPEED`                |   0.65 | 倍/s           | 旋钮目标比例每秒变化的绝对速度上限。                                                                    |
 | `V_ZOOM_SMOOTHING`                |   0.08 | s              | 角度差的指数平滑时间常数，越大越稳但越迟缓。                                                            |
+| `V_ZOOM_RELEASE_SETTLE_MAX`       |   0.01 | 倍             | 停速／退出时目标与当前渲染比例允许保留的最大收尾差距。                                                  |
 | `V_ZOOM_MIN`                      |   0.35 | 倍             | V 旋钮最小比例，引用同一 ZOOM_MIN 常量。                                                                |
 | `V_ZOOM_MAX`                      |   1.75 | 倍             | V 旋钮最大比例，引用同一 ZOOM_MAX 常量。                                                                |
-| `V_ZOOM_RELEASE_SETTLE_MAX`       |   0.01 | 倍             | 停速／退出时目标与当前渲染比例允许保留的最大收尾差距。                                                  |
 | `COLLAPSE_HOLD_TIME`              |   1000 | ms             | 开始有效靠近后累计的可靠观察时间下限；短暂停顿不累计，触发还须满足近距保持。                            |
 | `COLLAPSE_MIN_TRAVEL`             |    0.1 | 归一化距离     | 从初始掌间距至少减少的距离；同时要求双手各自向内移动。                                                  |
 | `COLLAPSE_CLOSE_DISTANCE`         |   0.32 | 归一化距离     | 近距保持的绝对间距上限；与初始间距乘相对比例取较大值，避免必须碰掌。                                    |
@@ -269,7 +283,7 @@ GPU 创建失败或推理抛错会尝试一次 CPU；没有手部检出本身不
 | `CAMERA_PRESENCE_CONFIDENCE`      |   0.65 | 0–1            | 传给 MediaPipe 的手存在最低置信度。                                                                     |
 | `CAMERA_TRACKING_CONFIDENCE`      |   0.65 | 0–1            | 传给 MediaPipe 的手跟踪最低置信度。                                                                     |
 
-### `src/gesture/recognizerConfig.ts`（62 项）
+### `src/gesture/recognizerConfig.ts`
 
 其中 `FIVE_PINCH_*` 与 `GRIP_*` 仍是几何诊断参数，以下保留其计算含义以便维护；它们不再启动或调整正式缩放。
 
@@ -296,8 +310,12 @@ GPU 创建失败或推理抛错会尝试一次 CPU；没有手部检出本身不
 | `POINTER_FAST_SMOOTHING_TIME`           |   0.045 | s                      | 快速移动时食指位置的平滑时间常数。                                                                                                               |
 | `POINTER_SLOW_SPEED_SCREEN`             |    0.12 | 归一化距离/s           | 原始指尖速度低于此值时采用慢速平滑。                                                                                                             |
 | `POINTER_FAST_SPEED_SCREEN`             |     0.8 | 归一化距离/s           | 原始指尖速度达到此值时采用快速平滑，两端之间线性过渡。                                                                                           |
-| `INDEX_ANGLE_MIN_BONE_LENGTH`           | 0.00001 | 关键点长度             | PIP 相邻两段骨长的有效下限；世界点为米，图像回退为校正坐标单位。                                                                                 |
-| `INDEX_ANGULAR_VELOCITY_SMOOTHING_TIME` |   0.075 | s                      | PIP 角速度的平滑时间常数，弯曲速度为负。                                                                                                         |
+| `INDEX_ANGLE_MIN_BONE_LENGTH`           | 0.00001 | 关键点长度             | 诊断用 PIP 相邻两段骨长的有效下限；世界点为米，图像回退为校正坐标单位。                                                                          |
+| `INDEX_ANGULAR_VELOCITY_SMOOTHING_TIME` |   0.075 | s                      | 诊断用 PIP 角速度平滑时间常数，弯曲速度为负；不参与选择。                                                                                        |
+| `INDEX_BENT_ANGLE_DEG`                  |      85 | °                      | PIP 角严格小于此值时标为 BENT；仅诊断，不是选择门槛。                                                                                            |
+| `INDEX_EXTENDED_ANGLE_DEG`              |     145 | °                      | PIP 角严格大于此值时标为 EXTENDED；仅诊断，不负责选择释放。                                                                                      |
+| `THUMB_GEOMETRY_MIN_BONE_LENGTH`        | 0.00001 | 关键点长度             | 拇指各骨段长度的有效下限；世界点为米，图像回退为校正坐标单位。                                                                                   |
+| `THUMB_GEOMETRY_MIN_PALM_WIDTH`         |   0.001 | 关键点长度             | 计算拇指展开量的原始 3D 掌宽下限；世界点为米，图像回退为校正坐标单位。                                                                           |
 | `V_EXTENDED_MIN_SCORE`                  |    0.48 | 0–1                    | 食指与中指各自所需的最低伸展证据，允许自然微弯。                                                                                                 |
 | `V_FOLDED_MAX_SCORE`                    |    0.42 | 0–1                    | 无名指与小指各自允许的最高伸展证据；拇指不参与 V 条件。                                                                                          |
 | `PALM_ROLL_MIN_SCREEN`                  |   0.015 | 按图像高度归一化的距离 | 镜像、宽高比校正后的 MCP 轴屏幕投影长度下限。                                                                                                    |
@@ -346,61 +364,61 @@ GPU 创建失败或推理抛错会尝试一次 CPU；没有手部检出本身不
 
 **场景动画锁始终最高。** 重入就绪、有效几何和冷却同样先决定能否开始新动作。已有操作的互斥规则先于新的候选手势：
 
-- V 已拥有时，`V_DETECTED`、`ARMED`、`ACTIVE`、150ms 宽限与 `RELEASE` 消费帧都独占，不能转成食指选择、双掌彩蛋、拖动、返回或拨动。
-- 食指已处于 `TARGET_LOCKED`、`INDEX_PRESSING` 或触发帧时，锁住原目标，不能新启动 V、Pinch Drag、Fist 或 Swipe。高优先级场景锁／有效双掌特效可取消选择。
-- `WAIT_RELEASE` 不独占其他动作，但食指选择及 Fist Back 继续等待明确释放，避免选择后的弯曲变成返回。
+- V 已拥有时，`V_DETECTED`、`ARMED`、`ACTIVE`、150ms 宽限与 `RELEASE` 消费帧都独占，不能转成拇指张开选择、双掌彩蛋、拖动、返回或拨动。
+- 目标选择已处于 `TARGET_LOCKED`、`THUMB_OPENING` 或触发帧时，锁住原目标，不能新启动 V、Pinch Drag、Fist 或 Swipe。高优先级场景锁／有效双掌特效可取消选择。
+- `WAIT_RELEASE` 不独占其他动作，但下一次拇指选择须等待收回释放。成功选择后，Fist Back 也暂时受释放保护，收回拇指完成后才能再确认返回；初始入镜的选择释放等待不会单独禁用普通握拳返回。
 
-没有已拥有的 V 或食指锁时，每帧按下列顺序仲裁：
+没有已拥有的 V 或目标锁时，每帧按下列顺序仲裁：
 
-| 优先级 | 动作                               | 限制                                                                 |
-| -----: | ---------------------------------- | -------------------------------------------------------------------- |
-|      0 | Scene / Animation Lock             | 锁定期间不启动动作，`SUN_FOCUS` 当前全程处于此锁。                   |
-|      1 | 双掌特殊效果 `COLLAPSE`／`REBIRTH` | 仅总览合拢／坍缩后展开；满足双手姿势、行程与时间。                   |
-|      2 | `V_ZOOM`                           | 可靠 V 连续 250ms；候选即独占，不能越过已有食指锁。                  |
-|      3 | `INDEX_PRESS` Select               | 单手稳定 Point 锁定目标后完全弯曲食指一次；天体与可用 HUD 共用流程。 |
-|      4 | 单手 `PINCH_DRAG`                  | 仅总览空白处开始的捏合，保持并移动达到门槛；目标上的捏合被消费。     |
-|      5 | `FIST_BACK`                        | 允许返回的场景中完整握拳保持 600ms，且没有待释放的食指按压。         |
-|      6 | `SWIPE`                            | 仅行星聚焦、单手张掌；同时满足方向、速度、行程与窗口。               |
-|      7 | `POINT` Hover                      | 只瞄准／累计稳定目标锁，不弯食指就不选择。                           |
+| 优先级 | 动作                               | 限制                                                                      |
+| -----: | ---------------------------------- | ------------------------------------------------------------------------- |
+|      0 | Scene / Animation Lock             | 锁定期间不启动动作，`SUN_FOCUS` 当前全程处于此锁。                        |
+|      1 | 双掌特殊效果 `COLLAPSE`／`REBIRTH` | 仅总览合拢／坍缩后展开；满足双手姿势、行程与时间。                        |
+|      2 | `V_ZOOM`                           | 可靠 V 连续 250ms；候选即独占，不能越过已有目标锁。                       |
+|      3 | `THUMB_OPEN` Select                | 收拢拇指并稳定 Point 锁定目标，再张开拇指保持 80ms；天体与 HUD 共用流程。 |
+|      4 | 单手 `PINCH_DRAG`                  | 仅总览空白处开始的捏合，保持并移动达到门槛；目标上的捏合被消费。          |
+|      5 | `FIST_BACK`                        | 允许返回的场景中完整握拳保持 600ms，且成功拇指选择的释放保护已解除。      |
+|      6 | `SWIPE`                            | 仅行星聚焦、单手张掌；同时满足方向、速度、行程与窗口。                    |
+|      7 | `POINT` Hover                      | 只瞄准／累计稳定目标锁，不张开拇指就不选择。                              |
 
-双手捏合不缩放也不选择；五指聚拢不启动缩放。V 已拥有时第二只手出现不会触发重入或抢走动作，所属手短暂失踪立即停速并按独立宽限等待。食指锁不继承 V 的丢手宽限：真实丢手立即清除锁定目标并要求伸直释放。
+双手捏合不缩放也不选择；五指聚拢不启动缩放。V 已拥有时第二只手出现不会触发重入或抢走动作，所属手短暂失踪立即停速并按独立宽限等待。目标锁不继承 V 的丢手宽限：真实丢手立即清除锁定目标并要求收回拇指释放。
 
 ## 6. 开启 Debug 与重看教程
 
 线上：[打开 Gesture Debug](https://alzat007.github.io/solaris/?debugGesture=true)。本地：`http://localhost:5173/?debugGesture=true`。已有查询参数时追加 `&debugGesture=true`。普通地址默认隐藏调试面板，旧的 `debug=true` 仍兼容。
 
-面板包含摄像头阶段、原始／有效手数、推理后端与耗时、左右手、姿势证据、`Hand Geometry`、`Current Gesture`、仲裁后的 `Action`、Pinch 拖动阶段／距离、掌心位置、五指状态、就绪／场景锁／冷却、双掌阶段与 FPS。食指选择增加 `Index Phase`、`Index Angle`、`Index Angular Velocity`、`Index State`、`Point Confidence`、`Hover Target`、`Locked Target`、`Target Lock`、`Index Press` 和 `Index Release Required`；分别显示严格 PIP 角度、下降速度、几何状态、目标锁进度与按压释放保护。旋钮字段包括 `Zoom Mode`、`Base Palm Angle`、`Current Palm Angle`、`Delta`、`Zoom Direction`、`Zoom Speed`、`Dead Zone`、`V Gesture Confidence`、当前比例及保持百分比。旋钮的起始／当前掌角在反馈对象内用弧度保存，Debug 转为度；旋钮角差为平滑后的度数，缩放速度为比例／秒。食指 PIP 角始终为度，食指角速度为度／秒。各类证据分数不是经过真人统计的识别准确率。
+面板包含摄像头阶段、原始／有效手数、推理后端与耗时、左右手、姿势证据、`Hand Geometry`、`Current Gesture`、仲裁后的 `Action`、Pinch 拖动阶段／距离、掌心位置、五指状态、就绪／场景锁／冷却、双掌阶段与 FPS。拇指张开选择显示 `Selection Phase`、`Thumb Spread`、`Thumb Reach`、`Thumb Geometry Valid`、`Point Confidence`、`Hover Target`、`Locked Target`、`Target Lock`、`Thumb Opening` 和 `Thumb Release Required`，分别呈现拇指展开量、伸展率、几何有效性、目标锁／张开进度与收回释放保护。`Index Angle (diagnostic)`、`Index Angular Velocity (diagnostic)` 和 `Index State (diagnostic)` 只保留食指诊断，不驱动选择。旋钮字段包括 `Zoom Mode`、`Base Palm Angle`、`Current Palm Angle`、`Delta`、`Zoom Direction`、`Zoom Speed`、`Dead Zone`、`V Gesture Confidence`、当前比例及保持百分比。旋钮的起始／当前掌角在反馈对象内用弧度保存，Debug 转为度；旋钮角差为平滑后的度数，缩放速度为比例／秒。食指 PIP 角始终为度，食指角速度为度／秒。各类证据分数不是经过真人统计的识别准确率。
 
-正常页面开启摄像头后也会显示小型 **镜像预览**，叠加手部骨架，指尖单独高亮，识别为 `V_GESTURE` 时重点标记食指和中指。预览只读取本机已运行的视频，可手动收起，打开帮助或资料卡时自动收起，不录像、不上传。收起后可以点击「查看手部骨架」重新展开。用预览确认手掌完整入镜、有足够光照，旋腕时能看到掌面。
+正常页面开启摄像头后也会显示小型 **镜像预览**，叠加手部骨架，重点高亮拇指骨链（1–4）与食指尖（8）；识别为 `V_GESTURE` 时改为重点标记食指和中指尖（8、12）。预览只读取本机已运行的视频，可手动收起，打开帮助或资料卡时自动收起，不录像、不上传。收起后可以点击「查看手部骨架」重新展开。用预览确认手掌完整入镜、有足够光照，旋腕时能看到掌面。
 
 `VZoomDial.tsx` 在掌心附近显示保持进度、刻度圆环、缩小／放大方向和当前百分比。首次使用提示「↶ ✌ ↷ · 旋转手腕缩放」，当已激活旋钮且转动使比例实际变化后才保存 `solarisVZoomTutorialCompleted=true`；仅比出 V 或进入就绪状态不会完成教程。退出后旋钮淡出。
 
 选择教程与旋钮教程独立持久化。需要重新体验时，在该站点浏览器控制台执行以下操作后刷新：
 
 ```js
-localStorage.removeItem("solarisIndexCurlTutorialCompleted");
+localStorage.removeItem("solarisThumbOpenTutorialCompleted");
 localStorage.removeItem("solarisVZoomTutorialCompleted");
 location.reload();
 ```
 
-选择教程首次检测到手并就绪后显示「指向星球」，锁定后显示「完全弯曲食指进入／确认」；如果尚未释放则提示「重新伸直食指」。只有控制器成功执行一次 `INDEX_PRESS`，才保存 `solarisIndexCurlTutorialCompleted=true`，鼠标点击、仅悬停或仅锁定不会完成。旧的基础教程键和旧食指选择教程键不再控制这条教程，已体验旧版的用户也会看到完全弯曲动作提示。V 旋钮、场景动画、太阳内部或其他已拥有动作期间暂时隐藏选择教程，避免叠加提示。
+选择教程首次检测到手并就绪后显示「收拢拇指，食指指向星球」，锁定后显示「张开大拇指进入／确认」；如果尚未释放则提示「先收回大拇指」，并说明食指保持指向、不要弯曲。只有控制器成功执行一次 `THUMB_OPEN`，才保存 `solarisThumbOpenTutorialCompleted=true`，鼠标点击、仅悬停或仅锁定不会完成。旧的基础教程键与食指弯曲教程键不再控制这条教程，已体验旧版的用户也会看到收拢、指向并张开拇指的新动作提示。V 旋钮、场景动画、太阳内部或其他已拥有动作期间暂时隐藏选择教程，避免叠加提示。
 
-目标反馈按「细环 Hover → 填充锁定环 → 就绪双环与名称 → 弯曲收缩 → 短暂确认脉冲」表达。正式 UI 使用「完全弯曲食指进入／确认」等自然提示，七态与其他工程字段仅在 Debug 中显示。
+目标反馈按「细环 Hover → 填充锁定环 → 就绪双环与名称 → 张开确认时收缩 → 短暂确认脉冲」表达。正式 UI 使用「张开大拇指进入／确认」等自然提示，七态与其他工程字段仅在 Debug 中显示。
 
 ## 7. 最值得后续手动调整的参数
 
 按体验问题调参，每次只改一组，使用同一台摄像头和相同光照比较：
 
-1. **完全弯曲食指难触发或放松时误触**：先查看严格 PIP 的 `Index Angle` 与 `Index Angular Velocity`，最值得先调的五个行为参数是 `INDEX_PRESS_THRESHOLD_DEG`、`INDEX_RELEASE_THRESHOLD_DEG`、`TARGET_LOCK_TIME`、`TARGET_LOCK_GRACE`、`INDEX_PRESS_MIN_VELOCITY`。始终保留按压／释放迟滞、首次下降跨越与明确释放，不能只扩大按压角度来提高命中。
+1. **张开拇指难触发或自然放置时误触**：先查看 `Thumb Spread`、`Thumb Reach` 与 `Thumb Geometry Valid`，确认收回和张开时几何量确实跨越门槛。行为参数是 `THUMB_CLOSED_THRESHOLD`、`THUMB_OPEN_THRESHOLD`、`THUMB_MIN_REACH`、`THUMB_OPEN_HOLD` 与 `THUMB_RELEASE_HOLD`；始终保留先收拢锁定、开闭迟滞、连续张开确认与明确收回，不通过食指角度或角速度调节选择。
 2. **光标抖动或跟手迟缓**：调 `CURSOR_DEAD_ZONE`、`POINTER_SLOW_SMOOTHING_TIME`、`POINTER_FAST_SMOOTHING_TIME` 与两个 `POINTER_*_SPEED_SCREEN` 端点，再看 `CURSOR_RENDER_RESPONSE`。慢速瞄准与快速移动分开检查；`CURSOR_SMOOTHING_TIME` 现在用于掌心和捏合中点，不是食指动态平滑开关。
-3. **小星球难锁定或弯曲时超时**：联合检查 `POINT_TARGET_RADIUS_MULTIPLIER`、`TARGET_MIN_RADIUS_PX`、`TARGET_MARGIN_PX`、`POINT_STABILITY_THRESHOLD`、`TARGET_LOCK_TIME` 与 `TARGET_LOCK_GRACE`。扩大命中区可能增加邻近目标重叠；锁定后应保持 `Locked Target` 不变，即使 `Hover Target` 离开。固定 450ms 宽限只从首次偏离／不稳定／弯曲开始，不从锁定那一刻倒计时。
+3. **小星球难锁定或张开时超时**：联合检查 `POINT_TARGET_RADIUS_MULTIPLIER`、`TARGET_MIN_RADIUS_PX`、`TARGET_MARGIN_PX`、`POINT_STABILITY_THRESHOLD`、`TARGET_LOCK_TIME` 与 `TARGET_LOCK_GRACE`。扩大命中区可能增加邻近目标重叠；锁定后应保持 `Locked Target` 不变，即使 `Hover Target` 离开。固定 450ms 宽限只从首次偏离／不稳定／张开开始，不从锁定那一刻倒计时。
 4. **空白拖动难开始或太敏感**：先看只用于拖动的 `PINCH_START_THRESHOLD`、`PINCH_RELEASE_THRESHOLD`、`PINCH_HOLD_TIME`，再调 `DRAG_START_DISTANCE`、`DRAG_ROTATION_GAIN`、`DRAG_MAX_SPEED`；松手后转动太久则增加 `ROTATION_DAMPING`。Pinch 参数不再影响选择。
-5. **选择后难以继续或误返回**：检查 `Index Release Required`，食指须大于 `INDEX_RELEASE_THRESHOLD_DEG` 连续 `INDEX_RELEASE_HOLD`。持续弯曲应既不重复选择也不进入返回；无锁定上下文的完整握拳才使用 `FIST_HOLD_TIME`，保留至少 600ms 与中途取消。
+5. **选择后难以继续或误返回**：检查 `Thumb Release Required`，拇指展开量须不大于 `THUMB_CLOSED_THRESHOLD` 并连续保持 `THUMB_RELEASE_HOLD`。持续张开不应重复选择；成功选择后的返回保护也须先解除。普通完整握拳仍使用 `FIST_HOLD_TIME`，保留至少 600ms 与中途取消，不把食指弯曲当成选择或即时返回。
 6. **拨动切换太难或太容易**：联合调整 `SWIPE_VELOCITY`、`SWIPE_DISTANCE`、`SWIPE_WINDOW` 和 `SWIPE_COOLDOWN`，保留「仅行星聚焦且张掌」的场景条件。
 7. **手重入立即操作／身份不稳**：先看镜像预览、`Hand Geometry` 与 `Readiness`。有效骨架下的姿势弱只应影响动作，不应反复进入重连；左右手标签低分也不等于手丢失。确认真实遮挡后再调 `HAND_REENTRY_DELAY` 和身份匹配参数，不通过降低模型门槛掩盖坏几何。
 8. **旋钮难启动或停得不稳**：先看 `Current Gesture`、`V Gesture Confidence` 与 `Zoom Mode`，确认食指／中指伸出、另外两指收起，掌部有可测投影。行为层调 `V_GESTURE_HOLD_TIME`、`V_GESTURE_MIN_CONFIDENCE`、`V_GESTURE_RELEASE_GRACE`；候选期必须连续可靠，宽限只用于已就绪／激活阶段。速度体验调 `V_ZOOM_DEADZONE_DEG`、`V_ZOOM_MAX_ANGLE_DEG`、`V_ZOOM_MAX_SPEED` 和 `V_ZOOM_SMOOTHING`；保留原始角回到死区立即停速。`V_ZOOM_RELEASE_SETTLE_MAX` 限制停速后的渲染收尾。缩放范围和原渲染阻尼分别由共享 `ZOOM_MIN/MAX` 与 `ZOOM_RESPONSE` 控制；鼠标滚轮单独调 `WHEEL_ZOOM_SENSITIVITY`。
 9. **彩蛋动作费力或意外触发**：先看 `Special Stage`，`APPROACH` 长时间不到 `HOLD` 时检查 `COLLAPSE_CLOSE_RATIO`、`COLLAPSE_CLOSE_DISTANCE` 与双手行程；频繁 `PAUSED` 先改善可见性，再考虑 `SPECIAL_POSE_GRACE_TIME`。需要更多确认时间则调 `COLLAPSE_HOLD_TIME`／`COLLAPSE_CLOSE_HOLD_TIME`。`COLLAPSE_MAX_SPEED` 只和异常单帧行程联合排除跳变，不能当作一般慢动作灵敏度旋钮。
-10. **自然 Point 难被认出**：检查 `Point Confidence` 与各指伸展证据，再调 `POINT_INDEX_MIN_SCORE`、`POINT_OTHER_MAX_SCORE`、`POINT_DOMINANCE_MIN_SCORE`、`POINT_DOMINANCE_SCORE_RANGE` 和动作层 `INDEX_POINT_MIN_CONFIDENCE`。不要要求其余手指全部卷紧；每次同时复核 V、张掌、真实 Pinch 和完整 Fist 的反例。
+10. **自然 Point 难被认出**：检查 `Point Confidence` 与各指伸展证据，再调 `POINT_INDEX_MIN_SCORE`、`POINT_OTHER_MAX_SCORE`、`POINT_DOMINANCE_MIN_SCORE`、`POINT_DOMINANCE_SCORE_RANGE` 和动作层 `POINT_MIN_CONFIDENCE`。不要要求其余手指全部卷紧；每次同时复核 V、张掌、真实 Pinch 和完整 Fist 的反例。
 11. **V 手型或旋转方向不可靠**：先用镜像预览区分手指分类与掌面可测性。V 分类调 `V_EXTENDED_MIN_SCORE`、`V_FOLDED_MAX_SCORE`，同时复核双指捏合、握拳和张掌反例。转腕可测性调 `PALM_ROLL_MIN_SCREEN`、`PALM_ROLL_MIN_PROJECTION`、`PALM_ROLL_MIN_FACING`；不要通过改变左右手符号修正方向，先核查镜像 MCP 公式、宽高比与基准解缠绕。每次同时检查左右两手、±π 跨越、平移和指尖抖动。保留的 `FIVE_PINCH_*`／`GRIP_*` 不再是缩放调参入口。
 
 现成方案、许可证与可采用思路见 [GESTURE_RESEARCH.md](GESTURE_RESEARCH.md)。旋腕缩放继续基于现有 MediaPipe Hand Landmarker 的 21 关键点与本项目状态机，没有直接接入研究仓库的代码或训练模型。

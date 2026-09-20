@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { GestureRecognizer } from "../src/gesture/GestureRecognizer";
 import { handFixture } from "./fixtures/hands";
 import { gestureConfig } from "../src/gesture/gestureConfig";
+import { recognizerConfig } from "../src/gesture/recognizerConfig";
 const classified = (pose: string) =>
   pose === "V_SIGN" ? "V_GESTURE" : pose === "THREE" ? "NONE" : pose;
 
@@ -1029,7 +1030,7 @@ test("index-dominant pointing accepts naturally half-bent fingers and a free thu
           const context = `mirror=${mirror}, half-bend=${otherFingerFlexion}, thumb=${thumbPose}, frame=${frame}`;
           assert.equal(hand.gesture, "POINT", context);
           assert.ok(
-            hand.pointConfidence! >= gestureConfig.INDEX_POINT_MIN_CONFIDENCE,
+            hand.pointConfidence! >= gestureConfig.POINT_MIN_CONFIDENCE,
             context,
           );
           assert.equal(hand.indexAngleValid, true);
@@ -1057,8 +1058,8 @@ test("index PIP measurement is a true MCP-PIP-DIP joint angle under rotation, mi
         assert.ok(Math.abs(hand.indexAngle! - indexPipAngle) < 1e-8);
         assert.notEqual(
           hand.gesture,
-          "INDEX_PRESS",
-          "only a locked selection controller may emit an action",
+          "THUMB_OPEN",
+          "PIP geometry cannot emit a thumb selection action",
         );
       }
     }
@@ -1079,7 +1080,7 @@ test("the PIP angle ignores fingertip-only motion and prefers world geometry ove
   assert.ok(Math.abs(hand.indexAngle! - 160) < 1e-8);
 });
 
-test("index state uses separate press/release thresholds and retains its state in the middle band", () => {
+test("diagnostic index state uses bent/extended thresholds independently of selection", () => {
   const recognizer = new GestureRecognizer();
   const samples = [
     [130, "BETWEEN"],
@@ -1087,12 +1088,12 @@ test("index state uses separate press/release thresholds and retains its state i
     [144, "EXTENDED"],
     [105, "EXTENDED"],
     [90, "EXTENDED"],
-    [86, "EXTENDED"],
-    [84, "BENT"],
-    [86, "BENT"],
+    [recognizerConfig.INDEX_BENT_ANGLE_DEG + 1, "EXTENDED"],
+    [recognizerConfig.INDEX_BENT_ANGLE_DEG - 1, "BENT"],
+    [recognizerConfig.INDEX_BENT_ANGLE_DEG + 1, "BENT"],
     [105, "BENT"],
     [144, "BENT"],
-    [146, "EXTENDED"],
+    [recognizerConfig.INDEX_EXTENDED_ANGLE_DEG + 1, "EXTENDED"],
   ] as const;
   samples.forEach(([indexPipAngle, expected], frame) => {
     const fixture = handFixture("POINT", {
@@ -1117,11 +1118,12 @@ test("a full 160-to-75-degree index curl provides negative angular velocity with
   assert.equal(send(160).indexAngularVelocity, 0);
   for (const angle of [145, 130, 105, 90, 75]) {
     const hand = send(angle);
-    assert.ok(
-      hand.indexAngularVelocity! < -gestureConfig.INDEX_PRESS_MIN_VELOCITY,
-    );
+    assert.ok(hand.indexAngularVelocity! < 0);
     assert.notEqual(hand.gesture, "FIST");
-    assert.equal(hand.indexState, angle >= 85 ? "EXTENDED" : "BENT");
+    assert.equal(
+      hand.indexState,
+      angle >= recognizerConfig.INDEX_BENT_ANGLE_DEG ? "EXTENDED" : "BENT",
+    );
   }
   let held = send(75);
   for (let frame = 0; frame < 14; frame++) held = send(75);
@@ -1223,6 +1225,227 @@ test("widened Point recognition never claims V, open palm, real pinch, or a full
       );
       assert.equal(hand.gesture, pose);
       assert.equal(hand.pointConfidence, 0);
+    }
+  }
+});
+
+test("a pointing hand remains POINT throughout natural thumb opening and closing on either hand", () => {
+  for (const mirror of [false, true]) {
+    const recognizer = new GestureRecognizer();
+    let previousSpread = -Infinity;
+    for (let frame = 0; frame <= 40; frame++) {
+      const thumbOpening = frame <= 20 ? frame / 20 : (40 - frame) / 20;
+      const fixture = handFixture("POINT", {
+        thumbOpening,
+        indexPipAngle: 165,
+        otherFingerFlexion: 55,
+        mirror,
+        yaw: 0.8,
+        pitch: -0.5,
+        rotation: 0.35,
+        noise: 0.0003,
+        depthNoise: 0.001,
+        frame,
+      });
+      const hand = recognizer.analyze(
+        fixture.points,
+        fixture.world,
+        frame * 50,
+      );
+      assert.equal(
+        hand.gesture,
+        "POINT",
+        `mirror=${mirror}, opening=${thumbOpening}`,
+      );
+      assert.ok(hand.pointConfidence! >= gestureConfig.POINT_MIN_CONFIDENCE);
+      assert.equal(hand.thumbGeometryValid, true);
+      if (frame <= 20) assert.ok(hand.thumbSpread! >= previousSpread - 0.06);
+      else assert.ok(hand.thumbSpread! <= previousSpread + 0.06);
+      if (thumbOpening === 0)
+        assert.ok(hand.thumbSpread! < gestureConfig.THUMB_CLOSED_THRESHOLD);
+      if (thumbOpening === 1) {
+        assert.ok(hand.thumbSpread! > gestureConfig.THUMB_OPEN_THRESHOLD);
+        assert.ok(hand.thumbReach! > gestureConfig.THUMB_MIN_REACH);
+      }
+      previousSpread = hand.thumbSpread!;
+    }
+  }
+});
+
+test("thumbOpening preserves each anatomical bone length rather than interpolating a detached tip", () => {
+  for (let step = 0; step <= 20; step++) {
+    const { world } = handFixture("POINT", { thumbOpening: step / 20 });
+    for (const [joint, expected] of [
+      [1, 0.033],
+      [2, 0.026],
+      [3, 0.022],
+    ]) {
+      const a = world[joint],
+        b = world[joint + 1];
+      const length = Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+      assert.ok(Math.abs(length - expected) < 1e-12);
+    }
+  }
+});
+
+test("thumb spread and reach are invariant under left-right reflection, wrist rotation, 3D tilt, scale and translation", () => {
+  for (const thumbOpening of [0, 0.5, 0.7, 1]) {
+    const base = handFixture("POINT", { thumbOpening });
+    const original = new GestureRecognizer().analyze(
+      base.points,
+      base.world,
+      0,
+    );
+    for (const mirror of [false, true]) {
+      for (const rotation of [-1.7, 0.4, 2.8]) {
+        const fixture = handFixture("POINT", {
+          thumbOpening,
+          mirror,
+          rotation,
+          yaw: 0.7,
+          pitch: -0.55,
+        });
+        for (const scale of [0.55, 1, 1.8]) {
+          const world = fixture.world.map((p) => ({
+            x: p.x * scale + 0.3,
+            y: p.y * scale - 0.2,
+            z: p.z * scale + 0.1,
+          }));
+          const hand = new GestureRecognizer().analyze(
+            fixture.points,
+            world,
+            0,
+          );
+          assert.equal(hand.thumbGeometryValid, true);
+          assert.ok(
+            Math.abs(hand.thumbSpread! - original.thumbSpread!) < 1e-12,
+          );
+          assert.ok(Math.abs(hand.thumbReach! - original.thumbReach!) < 1e-12);
+        }
+      }
+    }
+  }
+});
+
+test("thumb geometry uses world landmarks and has an aspect-correct screen fallback", () => {
+  const fixture = handFixture("POINT", {
+    thumbOpening: 0.7,
+    yaw: 0.65,
+    pitch: -0.4,
+  });
+  const expected = new GestureRecognizer().analyze(
+    fixture.points,
+    fixture.world,
+    0,
+  );
+  for (const aspect of [9 / 16, 4 / 3, 16 / 9]) {
+    const points = fixture.world.map((p) => ({
+      x: 0.5 + (p.x * 3) / aspect,
+      y: 0.4 + p.y * 3,
+      z: (p.z * 3) / aspect,
+    }));
+    const fallback = new GestureRecognizer().analyze(
+      points,
+      undefined,
+      0,
+      aspect,
+    );
+    assert.equal(fallback.thumbGeometryValid, true);
+    assert.ok(Math.abs(fallback.thumbSpread! - expected.thumbSpread!) < 1e-12);
+    assert.ok(Math.abs(fallback.thumbReach! - expected.thumbReach!) < 1e-12);
+    points[4] = { x: 0.9, y: 0.9, z: 0.3 };
+    const worldPreferred = new GestureRecognizer().analyze(
+      points,
+      fixture.world,
+      0,
+      aspect,
+    );
+    assert.equal(worldPreferred.thumbSpread, expected.thumbSpread);
+    assert.equal(worldPreferred.thumbReach, expected.thumbReach);
+  }
+});
+
+test("bending only the index cannot manufacture thumb opening or change its measured reach", () => {
+  for (const thumbOpening of [0, 0.5, 1]) {
+    const recognizer = new GestureRecognizer();
+    let spread: number | undefined, reach: number | undefined;
+    for (const [frame, indexPipAngle] of [165, 135, 105, 75].entries()) {
+      const fixture = handFixture("POINT", {
+        thumbOpening,
+        indexPipAngle,
+        otherFingerFlexion: 55,
+      });
+      const hand = recognizer.analyze(
+        fixture.points,
+        fixture.world,
+        frame * 50,
+      );
+      spread ??= hand.thumbSpread;
+      reach ??= hand.thumbReach;
+      assert.equal(hand.thumbSpread, spread);
+      assert.equal(hand.thumbReach, reach);
+      assert.notEqual(hand.gesture, "THUMB_OPEN");
+    }
+  }
+});
+
+test("invalid palm or thumb bones never provide usable thumb opening geometry", () => {
+  for (const invalid of [
+    "thumb-bone",
+    "palm-width",
+    "nonfinite-thumb",
+  ] as const) {
+    const fixture = handFixture("POINT", { thumbOpening: 1 });
+    if (invalid === "thumb-bone") fixture.world[2] = { ...fixture.world[1] };
+    if (invalid === "palm-width") fixture.world[17] = { ...fixture.world[5] };
+    if (invalid === "nonfinite-thumb") fixture.world[4].x = NaN;
+    const hand = new GestureRecognizer().analyze(
+      fixture.points,
+      fixture.world,
+      0,
+    );
+    assert.equal(hand.thumbGeometryValid, false, invalid);
+    assert.equal(hand.thumbSpread, 0);
+    assert.equal(hand.thumbReach, 0);
+  }
+});
+
+test("an outward but folded-back thumb has low reach so position alone cannot count as open", () => {
+  const fixture = handFixture("POINT", {
+    indexPipAngle: 165,
+    otherFingerFlexion: 55,
+  });
+  fixture.world[2] = { x: -0.068, y: 0.055, z: 0 };
+  fixture.world[3] = { x: -0.094, y: 0.055, z: 0 };
+  fixture.world[4] = { x: -0.072, y: 0.055, z: 0 };
+  const hand = new GestureRecognizer().analyze(
+    fixture.points,
+    fixture.world,
+    0,
+  );
+  assert.equal(hand.thumbGeometryValid, true);
+  assert.equal(hand.gesture, "POINT");
+  assert.ok(hand.thumbSpread! > gestureConfig.THUMB_OPEN_THRESHOLD);
+  assert.ok(hand.thumbReach! < gestureConfig.THUMB_MIN_REACH);
+});
+
+test("thumb spread does not make pinch, V, fist or open-palm poses eligible as Point targets", () => {
+  for (const gesture of ["PINCH", "V_GESTURE", "FIST", "OPEN_PALM"] as const) {
+    for (const mirror of [false, true]) {
+      const fixture = handFixture(gesture, {
+        mirror,
+        relaxed: true,
+        yaw: 0.6,
+        pitch: 0.35,
+      });
+      const hand = new GestureRecognizer().analyze(
+        fixture.points,
+        fixture.world,
+        0,
+      );
+      assert.equal(hand.gesture, gesture);
+      assert.equal(hand.pointConfidence, 0);
+      assert.equal(hand.thumbGeometryValid, true);
     }
   }
 });

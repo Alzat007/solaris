@@ -3,8 +3,8 @@ import { useSolaris } from "../interaction/store";
 import { useGestureFeedback } from "./gestureFeedback";
 import { gestureTargets } from "./gestureTargets";
 
-/** The target ring stays on the locked celestial body as the fingertip bends. */
-export function IndexTargetFeedback() {
+/** The target ring stays on the locked celestial body as the thumb opens. */
+export function ThumbTargetFeedback() {
   const s = useSolaris();
   const f = useGestureFeedback();
   const anchor = useRef<HTMLDivElement>(null);
@@ -17,8 +17,8 @@ export function IndexTargetFeedback() {
       "POINT_HOVER",
       "TARGET_LOCKING",
       "TARGET_LOCKED",
-      "INDEX_PRESSING",
-    ].includes(f.indexPhase) &&
+      "THUMB_OPENING",
+    ].includes(f.selectionPhase) &&
     s.tracking === "online" &&
     !s.transitioning &&
     !f.locked &&
@@ -57,18 +57,18 @@ export function IndexTargetFeedback() {
   }, [visible]);
   const locked = Boolean(f.lockedTarget);
   const label =
-    f.indexPhase === "INDEX_TRIGGERED"
+    f.selectionPhase === "THUMB_TRIGGERED"
       ? "已确认"
-      : f.indexNeedsRelease
-        ? "伸直食指"
-        : f.indexPhase === "INDEX_PRESSING"
-          ? "弯到底确认"
+      : f.thumbNeedsRelease
+        ? "收回大拇指"
+        : f.selectionPhase === "THUMB_OPENING"
+          ? "张开大拇指确认"
           : locked
-            ? "食指弯到底"
+            ? "张开大拇指"
             : "保持指向";
   const style = {
     "--target-lock-progress": Math.max(0, Math.min(1, f.targetLockProgress)),
-    "--index-press-progress": Math.max(0, Math.min(1, f.indexPressProgress)),
+    "--thumb-open-progress": Math.max(0, Math.min(1, f.thumbOpenProgress)),
   } as CSSProperties;
   return (
     <div ref={anchor} className="index-target-anchor" aria-hidden="true">
@@ -76,7 +76,7 @@ export function IndexTargetFeedback() {
         className="index-target-feedback"
         data-visible={visible}
         data-locked={locked}
-        data-index-phase={f.indexPhase}
+        data-selection-phase={f.selectionPhase}
         style={style}
       >
         <div className="index-target-ring">
@@ -90,7 +90,7 @@ export function IndexTargetFeedback() {
               pathLength="1"
             />
           </svg>
-          {f.lastAction === "INDEX_PRESS" && f.pulseId > 0 && (
+          {f.lastAction === "THUMB_OPEN" && f.pulseId > 0 && (
             <i className="index-target-pulse" key={f.pulseId} />
           )}
         </div>

@@ -33,6 +33,7 @@ export function handFixture(
     gripDirection = "forward",
     gripDepth = 0.045,
     thumbPose = "open",
+    thumbOpening,
     indexPipAngle,
     otherFingerFlexion,
   }: {
@@ -53,6 +54,8 @@ export function handFixture(
     gripDirection?: "forward" | "camera";
     gripDepth?: number;
     thumbPose?: "open" | "tucked" | "index-contact";
+    /** Continuous natural thumb abduction: 0 tucked across palm, 1 open in an L. */
+    thumbOpening?: number;
     /** Strict MCP-PIP-DIP angle, independent of DIP-tip flexion. */
     indexPipAngle?: number;
     /** PIP flexion for the other three fingers; e.g. 55-75 degrees is half-bent. */
@@ -120,6 +123,29 @@ export function handFixture(
     world[4] = { x: -0.001, y: 0.018, z: -0.03 };
   } else if (thumbPose === "index-contact") {
     world[4] = { ...world[8], x: world[8].x - 0.003 };
+  }
+  if (thumbOpening !== undefined) {
+    const opening = Math.max(0, Math.min(1, thumbOpening));
+    // Move the three thumb bones through joint rotations, preserving their
+    // lengths at every opening. A fingertip lerp would shrink/tear the chain.
+    const closedAngles = [30, 75, 130];
+    const openAngles = [-75, -85, -90];
+    const closedDepth = [15, 35, 25];
+    [0.033, 0.026, 0.022].forEach((length, joint) => {
+      const bearing =
+        ((closedAngles[joint] +
+          (openAngles[joint] - closedAngles[joint]) * opening) *
+          Math.PI) /
+        180;
+      const depth =
+        ((closedDepth[joint] * (1 - opening) + 2 * opening) * Math.PI) / 180;
+      const previous = world[joint + 1];
+      world[joint + 2] = {
+        x: previous.x + length * Math.sin(bearing) * Math.cos(depth),
+        y: previous.y - length * Math.cos(bearing) * Math.cos(depth),
+        z: previous.z - length * Math.sin(depth),
+      };
+    });
   }
   if (gesture === "PINCH") {
     // Index bends toward the opposing thumb; other fingers remain visibly open.

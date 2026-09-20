@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSolaris } from "../interaction/store";
 import { useGestureFeedback } from "./gestureFeedback";
 
-const completionKey = "solarisIndexCurlTutorialCompleted";
+const completionKey = "solarisThumbOpenTutorialCompleted";
 function isCompleted() {
   try {
     return localStorage.getItem(completionKey) === "true";
@@ -11,7 +11,7 @@ function isCompleted() {
   }
 }
 
-/** Only a successful index press completes this lesson; mouse selection cannot. */
+/** Only a successful thumb opening completes this lesson; mouse selection cannot. */
 export function GestureTutorial() {
   const s = useSolaris();
   const f = useGestureFeedback();
@@ -23,7 +23,7 @@ export function GestureTutorial() {
     lastActionAt.current = f.actionAt;
     if (complete) return;
     if (f.handCount > 0) setStarted(true);
-    if (newAction && f.lastAction === "INDEX_PRESS") {
+    if (newAction && f.lastAction === "THUMB_OPEN") {
       setComplete(true);
       try {
         localStorage.setItem(completionKey, "true");
@@ -49,23 +49,23 @@ export function GestureTutorial() {
   )
     return null;
   const ready = Boolean(f.lockedTarget);
-  const releasing = f.indexNeedsRelease || f.indexPhase === "WAIT_RELEASE";
+  const releasing = f.thumbNeedsRelease || f.selectionPhase === "WAIT_RELEASE";
   const title = releasing
-    ? "重新伸直食指"
+    ? "先收回大拇指"
     : ready
       ? f.lockedTarget?.kind === "body"
-        ? "完全弯曲食指进入"
-        : "完全弯曲食指确认"
-      : "指向星球";
+        ? "张开大拇指进入"
+        : "张开大拇指确认"
+      : "收拢拇指，食指指向星球";
   const detail = releasing
-    ? "伸直后，可继续选择"
+    ? "食指保持指向，准备下一次选择"
     : ready
-      ? "稳住手掌，只弯食指，不必握拳"
-      : "食指伸直，等星球圆环填满";
+      ? "食指保持指向，不要弯曲"
+      : "保持食指伸直，等星球圆环填满";
   return (
     <div className="gesture-tutorial" role="status" aria-live="polite">
       <span className="tutorial-symbol" aria-hidden="true">
-        {ready ? "⌁" : "☝"}
+        {ready ? "⊙" : "☝"}
       </span>
       <span>
         {title}

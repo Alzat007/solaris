@@ -7,7 +7,7 @@ export type Gesture =
   | "NONE"
   | "OPEN_PALM"
   | "POINT"
-  | "INDEX_PRESS"
+  | "THUMB_OPEN"
   | "PINCH"
   | "FIVE_PINCH"
   | "FIST"
@@ -37,6 +37,11 @@ export interface HandFeatures {
   indexState?: "EXTENDED" | "BENT" | "BETWEEN";
   /** Index dominance evidence; unrelated to MediaPipe tracking confidence. */
   pointConfidence?: number;
+  /** Thumb tip's outward projection from index MCP along pinky-to-index palm axis, in palm widths. */
+  thumbSpread?: number;
+  thumbGeometryValid?: boolean;
+  /** Thumb CMC-to-tip reach divided by its three-bone chain length. */
+  thumbReach?: number;
   /** Mirrored thumb/index midpoint, smoothed independently of the pointing tip. */
   pinchPoint?: { x: number; y: number };
   fingerState?: {

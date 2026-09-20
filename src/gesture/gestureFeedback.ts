@@ -18,23 +18,26 @@ export type GesturePresence =
 export type GestureAction =
   | "NONE"
   | "POINT"
-  | "INDEX_PRESS"
+  | "THUMB_OPEN"
   | "PINCH_DRAG"
   | "V_ZOOM"
   | "FIST_BACK"
   | "SWIPE"
   | "COLLAPSE"
   | "REBIRTH";
-export type IndexSelectionPhase =
+export type SelectionPhase =
   | "POINT_IDLE"
   | "POINT_HOVER"
   | "TARGET_LOCKING"
   | "TARGET_LOCKED"
-  | "INDEX_PRESSING"
-  | "INDEX_TRIGGERED"
+  | "THUMB_OPENING"
+  | "THUMB_TRIGGERED"
   | "WAIT_RELEASE";
 export interface GestureFeedbackState {
-  indexPhase: IndexSelectionPhase;
+  selectionPhase: SelectionPhase;
+  thumbSpread: number | null;
+  thumbReach: number;
+  thumbGeometryValid: boolean;
   indexAngle: number | null;
   indexAngularVelocity: number;
   indexState: "EXTENDED" | "BENT" | "BETWEEN";
@@ -42,8 +45,8 @@ export interface GestureFeedbackState {
   hoverTarget: GestureTarget | null;
   lockedTarget: GestureTarget | null;
   targetLockProgress: number;
-  indexPressProgress: number;
-  indexNeedsRelease: boolean;
+  thumbOpenProgress: number;
+  thumbNeedsRelease: boolean;
   presence: GesturePresence;
   readiness: "RECONNECTING" | "READY";
   action: GestureAction;
@@ -86,7 +89,10 @@ export interface GestureFeedbackState {
   updatedAt: number;
 }
 const initial: GestureFeedbackState = {
-  indexPhase: "POINT_IDLE",
+  selectionPhase: "POINT_IDLE",
+  thumbSpread: null,
+  thumbReach: 0,
+  thumbGeometryValid: false,
   indexAngle: null,
   indexAngularVelocity: 0,
   indexState: "BETWEEN",
@@ -94,8 +100,8 @@ const initial: GestureFeedbackState = {
   hoverTarget: null,
   lockedTarget: null,
   targetLockProgress: 0,
-  indexPressProgress: 0,
-  indexNeedsRelease: false,
+  thumbOpenProgress: 0,
+  thumbNeedsRelease: false,
   presence: "NO_HAND",
   readiness: "RECONNECTING",
   action: "NONE",

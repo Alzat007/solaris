@@ -25,6 +25,11 @@ export const recognizerConfig = {
   POINTER_FAST_SPEED_SCREEN: 0.8,
   INDEX_ANGLE_MIN_BONE_LENGTH: 0.00001,
   INDEX_ANGULAR_VELOCITY_SMOOTHING_TIME: 0.075,
+  // Index angles remain diagnostic; they are no longer selection thresholds.
+  INDEX_BENT_ANGLE_DEG: 85,
+  INDEX_EXTENDED_ANGLE_DEG: 145,
+  THUMB_GEOMETRY_MIN_BONE_LENGTH: 0.00001,
+  THUMB_GEOMETRY_MIN_PALM_WIDTH: 0.001,
   V_EXTENDED_MIN_SCORE: 0.48,
   V_FOLDED_MAX_SCORE: 0.42,
   // Roll comes from the screen MCP axis, but edge-on palms are unreliable.

@@ -3,7 +3,7 @@ export const gestureLabels: Record<string, string> = {
   NONE: "姿势未确定",
   OPEN_PALM: "张掌",
   POINT: "指向",
-  INDEX_PRESS: "食指弯到底 · 确认",
+  THUMB_OPEN: "张开大拇指 · 确认",
   PINCH: "双指捏合",
   FIVE_PINCH: "姿势未确定",
   V_GESTURE: "✌ 手势",

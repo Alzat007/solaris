@@ -2,16 +2,16 @@ import { gestureConfig as config } from "./gestureConfig";
 import type { GestureTarget } from "./gestureFeedback";
 import type { HandFeatures } from "./GestureTypes";
 
-export type IndexSelectionState =
+export type ThumbSelectionState =
   | "POINT_IDLE"
   | "POINT_HOVER"
   | "TARGET_LOCKING"
   | "TARGET_LOCKED"
-  | "INDEX_PRESSING"
-  | "INDEX_TRIGGERED"
+  | "THUMB_OPENING"
+  | "THUMB_TRIGGERED"
   | "WAIT_RELEASE";
 
-export interface IndexSelectionUpdate {
+export interface ThumbSelectionUpdate {
   owned: boolean;
   triggered?: GestureTarget;
 }
@@ -20,10 +20,11 @@ const sameTarget = (a: GestureTarget | null, b: GestureTarget | null) =>
   a !== null && b !== null && a.kind === b.kind && a.id === b.id;
 const clamp = (value: number) => Math.max(0, Math.min(1, value));
 
-/** Point captures a target before finger flexion can move the cursor away.
- * Scene eligibility and continuous hand identity belong to the controller. */
-export class IndexTriggerSelection {
-  state: IndexSelectionState = "POINT_IDLE";
+/** A closed-thumb Point captures a target, then opening the thumb confirms it.
+ * Finger curl and angular velocity never participate in this selection path.
+ * The caller owns scene eligibility, hand identity and re-entry delay. */
+export class ThumbOpenSelection {
+  state: ThumbSelectionState = "POINT_IDLE";
   lockedTarget: GestureTarget | null = null;
   hoverTarget: GestureTarget | null = null;
   lockProgress = 0;
@@ -33,26 +34,26 @@ export class IndexTriggerSelection {
   private candidate: GestureTarget | null = null;
   private lockStarted: number | null = null;
   private graceStarted: number | null = null;
+  private openingStarted: number | null = null;
   private releaseStarted: number | null = null;
   private lastTime: number | null = null;
-  private lastAngle: number | null = null;
 
   get owned() {
     return (
       this.state === "TARGET_LOCKED" ||
-      this.state === "INDEX_PRESSING" ||
-      this.state === "INDEX_TRIGGERED"
+      this.state === "THUMB_OPENING" ||
+      this.state === "THUMB_TRIGGERED"
     );
   }
 
-  /** Cancellation never silently clears an existing press/re-entry latch. */
+  /** A new identity must not inherit another hand's partial release hold. */
   cancel(requireRelease = false) {
     if (requireRelease) this.releaseStarted = null;
     this.needsRelease ||= requireRelease;
     this.state = this.needsRelease ? "WAIT_RELEASE" : "POINT_IDLE";
     this.lockedTarget = this.hoverTarget = this.candidate = null;
     this.lockProgress = this.pressProgress = 0;
-    this.lockStarted = this.graceStarted = this.lastAngle = null;
+    this.lockStarted = this.graceStarted = this.openingStarted = null;
     if (!this.needsRelease) this.releaseStarted = null;
   }
 
@@ -62,17 +63,13 @@ export class IndexTriggerSelection {
     this.lastTime = this.releaseStarted = null;
   }
 
-  private observeRelease(angle: number, time: number) {
-    if (!this.needsRelease) {
-      this.releaseStarted = null;
-      return;
-    }
-    if (angle <= config.INDEX_RELEASE_THRESHOLD_DEG) {
+  private observeRelease(closed: boolean, time: number) {
+    if (!this.needsRelease || !closed) {
       this.releaseStarted = null;
       return;
     }
     this.releaseStarted ??= time;
-    if (time - this.releaseStarted < config.INDEX_RELEASE_HOLD) return;
+    if (time - this.releaseStarted < config.THUMB_RELEASE_HOLD) return;
     this.needsRelease = false;
     this.releaseStarted = null;
     if (this.state === "WAIT_RELEASE") this.state = "POINT_IDLE";
@@ -83,127 +80,114 @@ export class IndexTriggerSelection {
     target: GestureTarget | null,
     time: number,
     enabled = true,
-  ): IndexSelectionUpdate {
-    const dt = this.lastTime === null ? 0 : (time - this.lastTime) / 1000;
+  ): ThumbSelectionUpdate {
     if (
       !Number.isFinite(time) ||
       (this.lastTime !== null &&
         (time < this.lastTime || time - this.lastTime > config.FRAME_GAP_RESET))
     ) {
-      this.releaseStarted = null;
       this.cancel(true);
       this.lastTime = Number.isFinite(time) ? time : null;
       return { owned: false };
     }
     const duplicate = this.lastTime !== null && time === this.lastTime;
     this.lastTime = time;
-
-    const angle = hand?.indexAngle;
     const tracking = hand?.trackingConfidence ?? hand?.confidence;
     if (
       !hand ||
-      hand.indexAngleValid !== true ||
-      !Number.isFinite(angle) ||
-      angle! < 0 ||
-      angle! > 180 ||
-      !Number.isFinite(hand.indexAngularVelocity) ||
+      hand.thumbGeometryValid !== true ||
+      !Number.isFinite(hand.thumbSpread) ||
+      !Number.isFinite(hand.thumbReach) ||
+      hand.thumbReach! < 0 ||
       !Number.isFinite(tracking) ||
-      tracking! < config.MIN_CONFIDENCE
+      tracking! < config.MIN_CONFIDENCE ||
+      (hand.gesture === "POINT" &&
+        (!Number.isFinite(hand.pointConfidence) ||
+          hand.pointConfidence! < config.POINT_MIN_CONFIDENCE))
     ) {
-      this.releaseStarted = null;
       this.cancel(true);
       return { owned: false };
     }
-    // A duplicate cannot invent motion, but loss or a scene lock must still
-    // cancel immediately even if it arrives with the previous timestamp.
+    // Duplicate motion cannot advance a hold. Missing/invalid geometry above
+    // and disabled scene frames below still cancel immediately at the same time.
     if (duplicate && enabled) return { owned: this.owned };
-    const currentAngle = angle!;
-    const previousAngle = this.lastAngle;
-    this.lastAngle = currentAngle;
     this.hoverTarget = target;
+    const closed = hand.thumbSpread! <= config.THUMB_CLOSED_THRESHOLD;
+    const point =
+      hand.gesture === "POINT" &&
+      hand.pointConfidence! >= config.POINT_MIN_CONFIDENCE;
 
-    // Keep the trigger observable for one update, then only a release is legal.
-    if (this.state === "INDEX_TRIGGERED") {
+    // Preserve the fired target for one update; subsequent held-open samples
+    // can only wait for a deliberate return of the thumb toward the palm.
+    if (this.state === "THUMB_TRIGGERED") {
       this.state = "WAIT_RELEASE";
       this.lockedTarget = this.candidate = null;
       this.lockProgress = this.pressProgress = 0;
-      this.lockStarted = this.graceStarted = null;
+      this.lockStarted = this.graceStarted = this.openingStarted = null;
     }
-    this.observeRelease(currentAngle, time);
+    this.observeRelease(closed, time);
     if (!enabled) {
-      this.cancel(
-        this.owned && currentAngle <= config.INDEX_RELEASE_THRESHOLD_DEG,
-      );
+      this.cancel(!closed && (this.owned || point));
       return { owned: false };
     }
-    if (this.needsRelease && !this.owned) {
+    if (this.needsRelease) {
       this.state = "WAIT_RELEASE";
       return { owned: false };
     }
 
-    const straight = currentAngle > config.INDEX_RELEASE_THRESHOLD_DEG;
-    const point =
-      hand.gesture === "POINT" &&
-      straight &&
-      (hand.pointConfidence ?? 0) >= config.INDEX_POINT_MIN_CONFIDENCE;
     const velocity = hand.pointerVelocity;
     const stable =
       velocity !== undefined &&
       Number.isFinite(velocity.x) &&
       Number.isFinite(velocity.y) &&
       Math.hypot(velocity.x, velocity.y) <= config.POINT_STABILITY_THRESHOLD;
-    const decreasing =
-      previousAngle !== null &&
-      dt > 0 &&
-      currentAngle < previousAngle &&
-      (hand.indexAngularVelocity ?? 0) < -config.INDEX_PRESS_MIN_VELOCITY;
 
     if (this.lockedTarget) {
-      // The first departure starts a fixed deadline. Re-entering the hover or
-      // changing pose cannot renew it and hold a stale target indefinitely.
-      if (!point || !stable || !sameTarget(target, this.lockedTarget))
+      // A stable closed Point may wait indefinitely. Once it departs or opens,
+      // neither re-hovering nor repeatedly opening the thumb renews the grace.
+      if (
+        !point ||
+        !closed ||
+        !stable ||
+        !sameTarget(target, this.lockedTarget)
+      )
         this.graceStarted ??= time;
       if (
         this.graceStarted !== null &&
         time - this.graceStarted >= config.TARGET_LOCK_GRACE
       ) {
-        this.cancel(this.state === "INDEX_PRESSING" || !straight);
+        this.cancel(!closed);
         return { owned: false };
       }
-
-      const pressPose =
-        hand.gesture === "POINT" ||
-        hand.gesture === "INDEX_PRESS" ||
-        hand.gesture === "NONE" ||
-        hand.gesture === "FIST";
-      if (!pressPose) return { owned: true };
+      const open =
+        point &&
+        hand.thumbSpread! >= config.THUMB_OPEN_THRESHOLD &&
+        hand.thumbReach! >= config.THUMB_MIN_REACH;
+      this.state = point && !closed ? "THUMB_OPENING" : "TARGET_LOCKED";
+      if (!open) {
+        this.openingStarted = null;
+        this.pressProgress = 0;
+        return { owned: true };
+      }
+      this.openingStarted ??= time;
       this.pressProgress = clamp(
-        (config.INDEX_RELEASE_THRESHOLD_DEG - currentAngle) /
-          (config.INDEX_RELEASE_THRESHOLD_DEG -
-            config.INDEX_PRESS_THRESHOLD_DEG),
+        (time - this.openingStarted) / config.THUMB_OPEN_HOLD,
       );
-      this.state = straight ? "TARGET_LOCKED" : "INDEX_PRESSING";
-      if (
-        currentAngle < config.INDEX_PRESS_THRESHOLD_DEG &&
-        !this.needsRelease
-      ) {
-        // Latch the first threshold crossing even if it was too slow to fire.
-        // Jitter around a held bent finger cannot become a later fresh press.
+      if (this.pressProgress === 1) {
+        this.state = "THUMB_TRIGGERED";
         this.needsRelease = true;
         this.releaseStarted = null;
-        if (
-          decreasing &&
-          previousAngle !== null &&
-          previousAngle >= config.INDEX_PRESS_THRESHOLD_DEG
-        ) {
-          this.state = "INDEX_TRIGGERED";
-          this.pressProgress = 1;
-          return { owned: true, triggered: this.lockedTarget };
-        }
+        return { owned: true, triggered: this.lockedTarget };
       }
       return { owned: true };
     }
 
+    // An already-open Point entering a target must close first; it cannot
+    // acquire a lock and turn an old thumb posture into a fresh confirmation.
+    if (point && !closed) {
+      this.cancel(true);
+      return { owned: false };
+    }
     if (!point || !target || !stable) {
       this.candidate = null;
       this.lockStarted = null;
