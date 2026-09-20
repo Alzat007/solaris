@@ -31,13 +31,21 @@ export class SingleHandZoom {
     return wasActive;
   }
 
-  update(hand: HandFeatures, time: number) {
+  /** Release is input evidence even while an animation owns the scene. It
+   * clears the safety latch without accumulating any zoom confirmation time. */
+  observeRelease(hand: HandFeatures) {
     const released =
       (hand.gesture === "OPEN_PALM" || hand.gesture === "POINT") &&
       hand.confidence >= config.MIN_CONFIDENCE &&
+      (hand.trackingConfidence ?? hand.confidence) >= config.MIN_CONFIDENCE &&
       hand.pinchDistance > config.PINCH_RELEASE_THRESHOLD;
+    if (released) this.needsRelease = false;
+    return released;
+  }
+
+  update(hand: HandFeatures, time: number) {
     if (this.needsRelease) {
-      if (released) this.needsRelease = false;
+      const released = this.observeRelease(hand);
       return { owned: !released, ended: false };
     }
     const valid =
@@ -49,7 +57,9 @@ export class SingleHandZoom {
     const starting = valid && hand.gesture === "FIVE_PINCH";
     if (!this.owned && !starting) return { owned: false, ended: false };
 
-    if (!valid || (!this.active && !starting)) {
+    // Once five tips have been captured, their reliable opening is the same
+    // gesture. Requiring a static closed pose here discarded natural cycles.
+    if (!valid) {
       this.openAt = null;
       if (!this.active) {
         this.cancel(true);

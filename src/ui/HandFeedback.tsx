@@ -29,8 +29,9 @@ export function HandFeedback() {
     }
     if (s.gesture === "FIVE_PINCH" && f.needsRelease && !f.zoomActive)
       return "先张开五指，再聚拢";
-    if (f.zoomActive) return `开合缩放 · ${f.zoomScale.toFixed(2)}×`;
-    if (f.action === "ONE_HAND_ZOOM") return `五指聚拢 · 稍停 ${zoomPercent}%`;
+    if (f.zoomActive)
+      return `${s.selected ? "星球缩放" : "开合缩放"} · ${f.zoomScale.toFixed(2)}×`;
+    if (f.action === "ONE_HAND_ZOOM") return `逐渐张开 · 启动 ${zoomPercent}%`;
     if (f.action === "FIST_BACK") return "握住 · 返回";
     if (f.action === "PINCH_DRAG") return "已抓住 · 拖动旋转";
     if (s.mode === "COLLAPSE")

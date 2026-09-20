@@ -276,7 +276,10 @@ export class GestureController {
     };
     if (!enabled) {
       this.stopMotion();
-      if (first.gesture === "FIVE_PINCH") this.zoom.cancel(true);
+      // Lost/reacquired hands still need a release. A scene animation only
+      // suspends zoom: a new confirmation may start after it has finished.
+      if (!ready && first.gesture === "FIVE_PINCH") this.zoom.cancel(true);
+      if (!second) this.zoom.observeRelease(first);
       rotation.stop();
       if (locked || !ready) this.pointTarget = null;
       if (first.gesture === "FIST" || second?.gesture === "FIST")

@@ -17,6 +17,7 @@ const recognizers = [new GestureRecognizer(), new GestureRecognizer()];
 let target = { x: 0.5, y: 0.5 };
 let motion = "";
 let started = 0;
+let focusUnlockedAt: number | null = null;
 let previewVideo: HTMLVideoElement | null = null;
 const previewCanvas = document.createElement("canvas");
 previewCanvas.width = 640;
@@ -58,6 +59,8 @@ document.getElementById("lab-buttons")!.addEventListener("click", (event) => {
   pose = (button.dataset.pose ?? "NONE") as typeof pose;
   motion = button.dataset.motion ?? "";
   started = performance.now();
+  focusUnlockedAt = null;
+  if (motion === "focus-grip-fast") interaction.selectBody("earth");
   recognizers.forEach((r) => r.reset());
   if (button.dataset.target) {
     pose = "POINT";
@@ -123,7 +126,25 @@ const timer = window.setInterval(() => {
   const time = performance.now(),
     elapsed = time - started;
   let hands: HandFeatures[] = [];
-  if (motion === "drag") {
+  if (motion === "focus-grip-fast") {
+    if (interaction.isLocked()) {
+      // The user attempts a grip, then releases while the camera is flying.
+      hands = [
+        feature(
+          elapsed > 350 && elapsed < 650 ? "FIVE_PINCH" : "OPEN_PALM",
+          0.5,
+          0.5,
+          time,
+          0,
+          true,
+        ),
+      ];
+    } else {
+      focusUnlockedAt ??= time;
+      const spread = clamp((time - focusUnlockedAt - 50) / 250);
+      hands = [feature("FIVE_PINCH", 0.5, 0.5, time, 0, true, spread)];
+    }
+  } else if (motion === "drag") {
     const progress = clamp((elapsed - 900) / 1000);
     hands = [
       feature(

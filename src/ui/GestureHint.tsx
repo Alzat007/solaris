@@ -20,6 +20,7 @@ export function GestureHint() {
           ]
         : selected
           ? [
+              ...(hand ? [["五指开合", "缩放星球"]] : []),
               [hand ? "左右拨动" : touch ? "快速横滑" : "←  →", "切换星球"],
               [
                 hand ? "握拳保持" : touch ? "点按 SOLARIS" : "ESC",
