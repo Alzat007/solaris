@@ -45,6 +45,7 @@ export class ParticleEngine {
   focus = 0;
   /** Smoothly blends the solar-system view into the surrounding solar interior. */
   sunInterior = 0;
+  locationApproach = 0;
   scale = 1;
   targetScale = 1;
   rotation = 0;

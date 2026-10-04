@@ -25,6 +25,12 @@ export interface UIState {
   welcome: boolean;
   heldUniverse: boolean;
   webglError: boolean;
+  destinationId: string | null;
+  explorationCityId: string | null;
+  activeStoryId: string | null;
+  explorationError: string;
+  language: "zh" | "en";
+  locationResourcesReady: boolean;
 }
 let snapshot: UIState = {
   mode: "INTRO",
@@ -44,6 +50,12 @@ let snapshot: UIState = {
   welcome: true,
   heldUniverse: false,
   webglError: false,
+  destinationId: null,
+  explorationCityId: null,
+  activeStoryId: null,
+  explorationError: "",
+  language: "zh",
+  locationResourcesReady: false,
 };
 const listeners = new Set<() => void>();
 export const store = {

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
+import { createHash } from "node:crypto";
 
 const base = process.env.VITE_BASE_PATH || "/";
 const root = path.resolve("dist");
@@ -46,7 +47,7 @@ for (const rootPath of [
   "/textures/earth-night.png",
 ]) {
   assert.ok(
-    !bundles.includes(`"${rootPath}"`),
+    base === "/" || !bundles.includes(`"${rootPath}"`),
     `Runtime asset still uses a root-only URL: ${rootPath}`,
   );
 }
@@ -54,6 +55,22 @@ assert.ok(
   bundles.includes(base),
   "The runtime asset base is missing from the bundle",
 );
+const pack = JSON.parse(
+  await readFile(path.join(root, "exploration/content-pack.json"), "utf8"),
+);
+let packBytes = 0;
+for (const item of pack.files) {
+  assert.match(item.path, /^exploration\/[a-z0-9-]+\.(jpg|jpeg|png|webp)$/);
+  const file = await readFile(path.join(root, item.path));
+  assert.equal(file.length, item.bytes, item.path);
+  assert.equal(
+    createHash("sha256").update(file).digest("hex"),
+    item.sha256,
+    item.path,
+  );
+  packBytes += file.length;
+}
+assert.equal(packBytes, pack.totalBytes);
 console.log(
-  `Static export verified: ${assets.length} entry assets, 7 runtime assets, base ${base}`,
+  `Static export verified: ${assets.length} entry assets, 7 runtime assets, ${pack.files.length} exploration images with SHA-256, base ${base}`,
 );

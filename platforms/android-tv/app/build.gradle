@@ -1,0 +1,41 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'cn.solaris.tv'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'cn.solaris.tv'
+        minSdk 23
+        targetSdk 35
+        versionCode 1
+        versionName '0.3.0'
+    }
+    buildFeatures {
+        buildConfig true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    sourceSets.main.assets.srcDir(layout.buildDirectory.dir('generated/solarisAssets'))
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.14.0'
+}
+
+def webDist = rootProject.file('../../dist')
+tasks.register('syncWebAssets', Sync) {
+    from(webDist)
+    into(layout.buildDirectory.dir('generated/solarisAssets'))
+    doFirst {
+        if (!new File(webDist, 'index.html').isFile()) {
+            throw new GradleException('Build the Web app from the repository root first: VITE_BASE_PATH=/ npm run build')
+        }
+    }
+}
+tasks.named('preBuild').configure {
+    dependsOn('syncWebAssets')
+}

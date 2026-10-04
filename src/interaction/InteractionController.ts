@@ -2,6 +2,7 @@ import { gsap } from "gsap";
 import {
   InteractionStateMachine,
   type InteractionEvent,
+  type InteractionState,
 } from "./InteractionStateMachine";
 import { store } from "./store";
 import { rotation } from "./rotation";
@@ -11,12 +12,238 @@ import { audio } from "../audio/AudioManager";
 import { gestureConfig as config } from "../gesture/gestureConfig";
 import type { CelestialId } from "../gesture/gestureFeedback";
 import { gestureTargets } from "../gesture/gestureTargets";
+import { assets, destinations } from "../exploration/content";
+import { bodyTransforms, facingRotation } from "../exploration/sceneState";
+
+export type ResourceLoader = (
+  paths: string[],
+  signal?: AbortSignal,
+) => Promise<void>;
+const preloadLocation: ResourceLoader = (paths, signal) =>
+  Promise.all(
+    paths.map(
+      (path) =>
+        new Promise<void>((resolve, reject) => {
+          const image = new Image();
+          const cleanup = () => {
+            clearTimeout(timer);
+            image.onload = image.onerror = null;
+            signal?.removeEventListener("abort", abort);
+          };
+          const fail = (reason: string) => {
+            cleanup();
+            image.src = "";
+            reject(new Error(reason));
+          };
+          const abort = () => fail("Resource cancelled");
+          const timer = setTimeout(() => fail("Resource timeout"), 10000);
+          image.onload = () => {
+            cleanup();
+            resolve();
+          };
+          image.onerror = () => fail("Resource unavailable");
+          signal?.addEventListener("abort", abort, { once: true });
+          if (signal?.aborted) {
+            abort();
+            return;
+          }
+          image.src = new URL(path.replace(/^\//, ""), document.baseURI).href;
+        }),
+    ),
+  ).then(() => undefined);
 
 export class InteractionController {
   machine = new InteractionStateMachine();
   private transition: gsap.core.Timeline | null = null;
   private infoTimer: ReturnType<typeof setTimeout> | null = null;
   private visited = new Set<PlanetId>();
+  private locationEpoch = 0;
+  private resourceAbort: AbortController | null = null;
+  private bodySnapshot: {
+    id: PlanetId;
+    x: number;
+    y: number;
+    z: number;
+  } | null = null;
+  private directoryInfoVisible = false;
+  private directoryOrigin: InteractionState = "PLANET_FOCUS";
+  private restoreLocation() {
+    this.locationEpoch++;
+    this.resourceAbort?.abort();
+    this.resourceAbort = null;
+    this.transition?.kill();
+    particles.locationApproach = 0;
+    if (this.bodySnapshot) {
+      const body = bodyTransforms.get(this.bodySnapshot.id);
+      body?.rotation.set(
+        this.bodySnapshot.x,
+        this.bodySnapshot.y,
+        this.bodySnapshot.z,
+      );
+    }
+    this.machine.send("LOCATION_CANCEL");
+    store.set({
+      destinationId: null,
+      activeStoryId: null,
+      mode: this.machine.state,
+      transitioning: false,
+      locationResourcesReady: false,
+    });
+  }
+  browse() {
+    if (
+      this.isLocked() ||
+      store.get().webglError ||
+      !store.get().selected ||
+      !this.machine.can("BROWSE")
+    )
+      return false;
+    this.directoryOrigin = this.machine.state;
+    this.machine.send("BROWSE");
+    this.cancelInfo();
+    rotation.stop();
+    this.directoryInfoVisible = store.get().infoVisible;
+    store.set({
+      mode: this.machine.state,
+      infoVisible: false,
+      explorationCityId: null,
+      destinationId: null,
+      activeStoryId: null,
+      explorationError: "",
+    });
+    return true;
+  }
+  openStory(id: string | null) {
+    if (this.machine.state !== "LOCATION_VIEW") return false;
+    const destination = destinations.find(
+      (entry) => entry.id === store.get().destinationId,
+    );
+    if (id !== null && !destination?.storyIds.includes(id)) return false;
+    store.set({ activeStoryId: id });
+    return true;
+  }
+  async enterDestination(id: string, load: ResourceLoader = preloadLocation) {
+    const destination = destinations.find((entry) => entry.id === id);
+    if (
+      !destination ||
+      destination.status !== "ready" ||
+      destination.bodyId !== store.get().selected ||
+      store.get().webglError ||
+      this.isLocked() ||
+      !this.machine.send("ENTER_LOCATION")
+    )
+      return false;
+    const body = bodyTransforms.get(destination.bodyId);
+    this.bodySnapshot = body
+      ? {
+          id: destination.bodyId,
+          x: body.rotation.x,
+          y: body.rotation.y,
+          z: body.rotation.z,
+        }
+      : null;
+    const epoch = ++this.locationEpoch;
+    this.resourceAbort = new AbortController();
+    gestureTargets.set(null);
+    store.set({
+      mode: this.machine.state,
+      transitioning: true,
+      destinationId: id,
+      explorationCityId: destination.cityId ?? null,
+      explorationError: "",
+      activeStoryId: null,
+      locationResourcesReady: false,
+    });
+    try {
+      const resources = destination.assetIds.map((assetId) =>
+        assets.find((asset) => asset.id === assetId),
+      );
+      if (
+        resources.some(
+          (asset) => !asset || asset.review.status !== "source-checked",
+        )
+      )
+        throw new Error("Unreviewed resource");
+      await load(
+        resources.map((asset) => asset!.path),
+        this.resourceAbort.signal,
+      );
+      if (epoch !== this.locationEpoch) return false;
+      if (store.get().webglError) throw new Error("Scene unavailable");
+      this.resourceAbort = null;
+      store.set({ locationResourcesReady: true });
+      const reduced =
+        typeof matchMedia !== "undefined" &&
+        matchMedia("(prefers-reduced-motion: reduce)").matches;
+      this.transition = gsap.timeline({
+        onComplete: () => {
+          if (epoch !== this.locationEpoch) return;
+          if (store.get().webglError) {
+            this.restoreLocation();
+            store.set({
+              explorationError:
+                "场景不可用，已取消接近。 / Scene unavailable; approach cancelled.",
+            });
+            return;
+          }
+          this.machine.send("LOCATION_READY");
+          store.set({ mode: this.machine.state, transitioning: false });
+        },
+      });
+      if (body && destination.position) {
+        const pose = facingRotation(
+          destination.position.latitude,
+          destination.position.longitude,
+        );
+        this.transition.to(
+          body.rotation,
+          {
+            ...pose,
+            z: 0,
+            duration: reduced ? 0.05 : 1.4,
+            ease: "power2.inOut",
+          },
+          0,
+        );
+      }
+      this.transition.to(
+        particles,
+        {
+          locationApproach: 1,
+          duration: reduced ? 0.05 : 3.6,
+          ease: "power2.inOut",
+        },
+        0,
+      );
+      return true;
+    } catch {
+      if (epoch !== this.locationEpoch) return false;
+      this.restoreLocation();
+      store.set({
+        explorationError:
+          "地点资源未能加载，未进入。可以重试或返回。 / Location resources unavailable; retry or go back.",
+      });
+      return false;
+    }
+  }
+  skipLocationTransition() {
+    if (
+      this.machine.state !== "LOCATION_TRANSITION" ||
+      !store.get().locationResourcesReady ||
+      !this.transition
+    )
+      return false;
+    if (store.get().webglError) {
+      this.restoreLocation();
+      store.set({
+        explorationError:
+          "场景不可用，已取消接近。 / Scene unavailable; approach cancelled.",
+      });
+      return false;
+    }
+    this.transition.progress(1);
+    return true;
+  }
   private cancelInfo() {
     if (this.infoTimer !== null) clearTimeout(this.infoTimer);
     this.infoTimer = null;
@@ -112,6 +339,33 @@ export class InteractionController {
     return selected;
   }
   return() {
+    if (store.get().help) {
+      store.set({ help: false });
+      return true;
+    }
+    if (this.machine.state === "LOCATION_VIEW" && store.get().activeStoryId) {
+      store.set({ activeStoryId: null });
+      return true;
+    }
+    if (["LOCATION_TRANSITION", "LOCATION_VIEW"].includes(this.machine.state)) {
+      this.restoreLocation();
+      return true;
+    }
+    if (this.machine.state === "EXPLORATION_DIRECTORY") {
+      if (store.get().explorationCityId) {
+        store.set({ explorationCityId: null });
+        return true;
+      }
+      this.machine.send("EXIT_DIRECTORY");
+      if (this.directoryOrigin === "INFO") this.machine.send("INFO");
+      this.bodySnapshot = null;
+      store.set({
+        mode: this.machine.state,
+        infoVisible: this.directoryInfoVisible,
+        explorationError: "",
+      });
+      return true;
+    }
     if (!this.begin("RETURN")) return false;
     store.set({ selected: null });
     particles.targetScale = 1;

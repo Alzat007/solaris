@@ -36,6 +36,27 @@ export function CameraController() {
     position.z += impact * 1.8;
     position.x += Math.sin(clock.elapsedTime * 31) * impact * 0.09;
     target.set(0, mobile ? -5.5 * (1 - focus) - 1.3 * focus : 0, focus * 2.4);
+    const approach = particles.locationApproach;
+    const approachDistance = mobile ? 9 : 8;
+    // Keep the approach outside the scaled planet, including prior user zoom.
+    position.lerp(
+      interiorPosition.set(
+        particles.anchor.x,
+        particles.anchor.y +
+          (0.3 + (approachDistance - 3.5) * Math.tan((13.3 * Math.PI) / 180)) *
+            particles.scale,
+        particles.anchor.z + approachDistance * particles.scale,
+      ),
+      approach,
+    );
+    target.lerp(
+      interiorTarget.set(
+        particles.anchor.x,
+        particles.anchor.y + 0.3 * particles.scale,
+        particles.anchor.z + 3.5 * particles.scale,
+      ),
+      approach,
+    );
     const interior = MathUtils.smoothstep(particles.sunInterior, 0, 1);
     const time = clock.elapsedTime;
     interiorPosition.set(

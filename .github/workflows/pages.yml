@@ -29,6 +29,11 @@ jobs:
         uses: actions/configure-pages@v5
       - run: npm ci
       - run: npm test
+      - name: Verify public preview content and directory
+        run: |
+          node --import tsx scripts/verify-exploration-content.ts --public-preview
+          node --import tsx scripts/import-earth-directory.mjs --check
+          node scripts/verify-content-pack.mjs
       - name: Build and verify website
         env:
           VITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}/

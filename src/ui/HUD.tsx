@@ -15,10 +15,16 @@ import { HandFeedback } from "./HandFeedback";
 import { CameraPreview } from "../gesture/CameraPreview";
 import { CameraStatus } from "./CameraStatus";
 import { useCameraDiagnostics } from "../gesture/cameraDiagnostics";
+import { TextCommandInput } from "./TextCommandInput";
+import { ExplorationPanel } from "./ExplorationPanel";
+import { explorationModes } from "../exploration/sceneState";
+import { isTvMode } from "../platform/tvNavigation";
 export function HUD() {
   const s = useSolaris();
   const camera = useCameraDiagnostics();
   const insideSun = s.mode === "SUN_INTERIOR";
+  const exploring = explorationModes.includes(s.mode);
+  const tv = isTvMode(location.search);
   const p = insideSun ? undefined : planetById(s.selected);
   const [soundError, setSoundError] = useState("");
   const cameraActive = ["loading", "seeking", "online"].includes(s.tracking);
@@ -53,27 +59,32 @@ export function HUD() {
   }, [s.mode]);
   return (
     <div
-      className={`hud ${s.mode === "INTRO" ? "intro-hud" : ""}${s.tracking === "online" ? " hand-active" : ""}${insideSun ? " sun-interior-hud" : ""}`}
+      className={`hud ${s.mode === "INTRO" ? "intro-hud" : ""}${s.tracking === "online" ? " hand-active" : ""}${insideSun ? " sun-interior-hud" : ""}${exploring ? " exploring" : ""}`}
     >
       <GestureCursor />
       <ThumbTargetFeedback />
       <VZoomDial />
       <GestureTutorial />
       <header className="topbar">
-        <button
-          className="wordmark"
-          aria-label="返回太阳系"
-          data-gesture-id="back-home"
-          data-gesture-label="返回太阳系"
-          disabled={busy}
-          onClick={() => {
-            interaction.return();
-            store.set({ welcome: false });
-          }}
-        >
-          <OrbitIcon />
-          <span>SOLARIS</span>
-        </button>
+        <div className="brand-block">
+          <button
+            className="wordmark"
+            aria-label="返回太阳系"
+            data-gesture-id="back-home"
+            data-gesture-label="返回太阳系"
+            disabled={busy}
+            onClick={() => {
+              interaction.return();
+              store.set({ welcome: false });
+            }}
+          >
+            <OrbitIcon />
+            <span>SOLARIS</span>
+          </button>
+          <small className="public-beta">
+            {s.language === "zh" ? "公开测试版" : "Public beta"}
+          </small>
+        </div>
         <span className="top-note">向无垠宇宙，再靠近一点</span>
         <div className="top-actions">
           <button
@@ -140,6 +151,18 @@ export function HUD() {
           )}
           {p && (
             <button
+              className="text-action explore-entry"
+              data-gesture-id="browse-destinations"
+              data-gesture-label="探索经典区域"
+              disabled={busy}
+              onClick={() => interaction.browse()}
+            >
+              {s.language === "zh" ? "探索经典区域" : "Explore destinations"}{" "}
+              <span>→</span>
+            </button>
+          )}
+          {p && (
+            <button
               className="text-action"
               data-gesture-id="toggle-info"
               data-gesture-label={s.infoVisible ? "收起资料" : "查看资料"}
@@ -177,7 +200,7 @@ export function HUD() {
             disabled={busy}
             onClick={startMouse}
           >
-            也可以用鼠标探索 <span>→</span>
+            {tv ? "开始探索" : "也可以用鼠标探索"} <span>→</span>
           </button>
           <p className="privacy">摄像头画面仅在本机处理</p>
         </section>
@@ -234,7 +257,8 @@ export function HUD() {
         </button>
       )}
       {s.heldUniverse && <div className="held-universe">宇宙，尽在掌中</div>}
-      {!insideSun && <PlanetInfo />}
+      {!insideSun && !exploring && <PlanetInfo />}
+      <ExplorationPanel />
       <footer>
         <div className="footer-top">
           <div className="location">
@@ -252,11 +276,7 @@ export function HUD() {
               </small>
             </span>
           </div>
-          <div className="quiet-status">
-            {s.tracking === "online"
-              ? "指 · 张拇指 · 拖 · 转 · 拨 · 握"
-              : "漫游无垠宇宙"}
-          </div>
+          <TextCommandInput />
           <GestureHint />
         </div>
         <nav className="planet-nav" aria-label="选择星球">

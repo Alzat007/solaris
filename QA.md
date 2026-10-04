@@ -1,6 +1,6 @@
-# Verification · 2026-09-19–20
+# Verification · 2026-09-19–2026-10-03
 
-Current contract: **V Gesture Rotation Zoom** (final section). Earlier sections are historical and may describe superseded gesture mappings.
+Current gesture contract: **Point plus thumb opening** and **V Gesture Rotation Zoom**. The latest SOLARIS Talk checks are recorded at the end. Earlier sections are historical and may describe superseded mappings.
 
 - `npm install`: successful; MediaPipe WASM copied locally by postinstall.
 - `npm run build`: TypeScript and Vite production compilation passed.
@@ -184,3 +184,66 @@ This supersedes **all index-bend selection instructions** above. The user keeps 
 - Tutorial completion now uses `solarisThumbOpenTutorialCompleted`, so users of the previous selection method see the new lesson. Help, lock prompts, debug and preview highlights now show thumb opening; the preview highlights the thumb chain and pointing index. Test photographs remain ignored and lab pages remain development-only.
 - No physical camera was used in this pass. Anatomical replay and real-model photo checks do not establish natural thumb-opening accuracy on the user's Windows Edge camera.
 - Final TypeScript / GitHub Pages production build passed. Static export verification passed for 4 entry assets and 7 runtime assets using `/solaris/`.
+
+## SOLARIS Talk text-control prototype · 2026-10-03
+
+Baseline: local HEAD and the read-only remote `main` reference both matched `2353680b32060c4aa6a0a814d18e10290d644b07`; the working tree was clean before edits. Work is on `codex/solaris-talk-text-control`. No push, public deployment, Devpost edit or submission was performed.
+
+- Baseline `npm test`: 258 passed, 0 failed. Updated suite: **278 passed, 0 failed**, including 20 new parser/controller cases. `npm run build` passed TypeScript and Vite compilation. The shell lacked npm, so these scripts were run using bundled Node 24.19.0 and a temporary npm 10.9.3 tool outside the repository. Package manifests and the dependency lockfile were not changed. A pnpm attempt tried to migrate the existing dependency tree; it was stopped, and the moved dependencies were restored before running npm.
+- New module `src/interaction/textCommands.ts` accepts explicit Chinese/English navigation sentences for eight planets and a return-to-overview command. Tests use the real controller, state store and GSAP timelines, not a successful mock response. They cover negative/unknown/multiple-target/question/overlong inputs, all animation locks, stable duplicate selection without replay, special-scene restrictions, controller rejection, render failure and completion/interruption checks.
+- New HUD form separates accepted animation start from confirmed completion. It rejects busy input without queuing or replacing the original target. A 10-second confirmation timeout cannot claim success. The prototype is explicitly labelled local commands; it has **no AI, voice, external API calls or credentials**.
+- Local Playwright Chromium 151 with actual WebGL 2 rendered the existing scene. Browser smoke checks exercised Chinese Mars navigation, English Saturn navigation, return, duplicate and invalid commands, and original mouse navigation. A controlled pause of the real GSAP selection timeline made the busy-state check deterministic; it was resumed afterward. Completion feedback came from the settled scene state.
+- Synthetic composition events plus Enter did not submit while composing; ending composition and pressing Enter then navigated. Typing Space, I, S, arrows and Escape inside the form did not trigger scene shortcuts. A review found that Space on the new Tab-focused submit button originally reached the global scene shortcut; the form now stops keyboard-event propagation, and actual Tab plus Space successfully navigated to Mars.
+- Screenshots and element bounds checked 1440 × 900, 1440 × 768, 390 × 844, 390 × 667, 844 × 390 and 320 × 568. No document-width overflow was found; the command form stayed above the planet navigation. Short-view information is scrollable and does not overlap the form. The narrow welcome layout also fits between the top bar and form.
+- A screenshot-pixel check of the central scene, excluding the HUD, found about 46.2% non-dark pixels and 19.5% changed pixels across 60 animation frames. This confirms nonblank, changing rendering for this local run; it is not a performance or physics-accuracy benchmark. No application or console errors were captured during the browser smoke checks.
+- Screenshots are generated evidence in ignored `artifacts/solaris-talk-*.png`. They are not a demo video or proof of AI integration. Original cameras were not enabled, and no video was uploaded.
+
+Still unverified: physical-camera hand/text handoff, real Chinese IME on the user's keyboard, Safari and physical-phone keyboard behavior, DeepSeek integration, conversational context and speech. The generated composition test does not substitute for real IME or microphone testing. Final contest eligibility and submission completeness must be checked again after actual AI functionality and the final materials exist.
+
+## V3 classic-region exploration · 2026-10-04
+
+This section is the current delivery record. The user's V3 scope supersedes the historical Talk AI/voice plan above; no new AI, phone app, account or quiz work was performed.
+
+### Baseline and implementation
+
+- Local HEAD remains `2353680b32060c4aa6a0a814d18e10290d644b07`, on `codex/solaris-talk-text-control`. The previous seven uncommitted Talk files were preserved and extended where needed. No commit, push, deployment or competition submission occurred; package manifests and lockfiles were not changed.
+- Fresh pre-change suite: **278 passed / 0 failed**. Final suite: **354 passed / 0 failed / 0 skipped**, using bundled Node 24.19.0 and the existing temporary npm tool. `npm run build` passed TypeScript and Vite; `git diff --check` passed.
+- Reused the original store, FSM, camera and input. The new directory, approach, place and story layers share one navigation state. Failed resources do not enter a destination; abort and epoch checks prevent late re-entry. Cancel restores body rotation, while the camera approach follows actual solar-system scale/anchor so prior user zoom does not put the camera inside the planet.
+- A dedicated 600 ms fresh-Fist cancellation channel is available only during location approach; selection, drag, swipe and zoom stay locked. Six synthetic controller tests cover it and existing hand regressions remain green. This is not a physical-camera accuracy test.
+- Three destinations use the same bilingual reader: Olympus Mons natural region, Viking 1 robotic landing site, Beijing Central Axis city heritage. Image roles, dates, explicit place/story relations, source links, credit and license links are displayed. Reading hides 3D draws/postprocessing but retains the existing input pipeline; images are removed from the reader when returning.
+
+### Honest content and directory counts
+
+- Eight planets have 9 source-backed candidate destinations: **3 local-preview ready / 6 pending**. Pending candidates have no enter action.
+- Source-checked local preview: **3 stories / 3 real images**, totaling **329,763 bytes**. **0 human-approved stories or images**. All `humanReview` values remain pending; source checking by Codex is not editor approval.
+- Earth snapshot baseline: **250 country/territory entries; 246 with source-listed capitals; 249 capital relationships; 247 unique capital cities; 248 total cities; 6 featured cities**. There are 244 source city coordinates and 61 Chinese editorial city aliases; unknown translations fall back to source English and missing coordinates remain null.
+- This frozen source is not a current legal/administrative capital certification. Capital roles/effective dates require record-by-record research. All 248 directory content metadata entries remain pending; joining reviewed destinations exposes one Beijing place independently. Neither directory counts nor six selected cities imply a completed worldwide story collection.
+- Import validation returned zero errors. Content-pack byte/SHA-256 verification passed. Cross-table preview validation passed; **`--release` validation failed as expected because human reviews are pending**. Browser offline cold start is not cached or verified; bundled image files alone are not proof of offline app support.
+
+### Browser and export verification
+
+- Actual local Chromium 151 / WebGL2 passed desktop 1440×900 workflow, all three place readers, real image decode, story-first Escape return, Chinese/English content, cancellation without late re-entry, pending-city/draft-planet protection, and closed-details Tab trapping. Narrow 390×844 and 320×568 reader screenshots had no horizontal text/container overflow. These are responsive Web checks, not a new phone platform.
+- The desktop Mars canvas contained 183,023 pixels above the brightness threshold. A zoomed mobile Earth canvas contained 242,597 visible pixels; 114,427 pixels changed across one second. Screenshots were visually inspected. These confirm rendered/moving content, not device-performance benchmarks or geographic texture calibration.
+- Browser fault checks blocked the actual Viking image request and confirmed failure recovery without an empty location. A synthetic `webglcontextlost` event canceled location navigation, removed the background exploration dialog and focused the graphics recovery button. The event check is not a forced GPU-driver failure test.
+- Root and `/solaris/` production builds/export checks passed: 4 entry assets, 7 original runtime assets, 3 exploration images with matching SHA-256. The actual `/solaris/` production page loaded the Viking image at its correct prefixed URL. Subpath preview must also run with `VITE_BASE_PATH=/solaris/`. The temporary production preview was stopped afterward; the existing local dev server remains at port 5173.
+- QA infrastructure initially imported a second Vite store without its HMR timestamp, incorrectly observing INTRO. Browser checks were corrected to use actual DOM or the actual loaded module URL. The static-export checker also previously rejected legitimate root-base runtime URLs; it now restricts that check to non-root bases. Final corrected checks passed.
+
+### Platform verification and next work
+
+- Web TV mode at 1920×1080 passed real Chromium D-pad/Enter, visible focus, native-summary repeat guard, select edit/filter/exit, approach cancellation and simulated cancelable Back through all layers/root. No camera request or application/console error. The central TV Mars canvas had 124,416 visible pixels and 71,855 changed pixels over 800 ms. See `docs/PLATFORM_V3.md` and ignored `artifacts/tv-v3-*`.
+- **Android APK was not compiled, installed or run. Fire TV hardware/emulator and Vega were not verified.** Native container and lifecycle/Back source exist, but SDK/JDK/Gradle tooling is missing and installation authorization remains outstanding. Web TV mode does not count as target-platform success.
+- Physical webcam/hand reading handoff and Safari remain unverified for the new flow. The new framework uses lists; dense city-marker rendering and texture-offset calibration are not delivered. No browser offline package cache or full-planet surface reconstruction is claimed.
+- Next batches retain the full V3 target: first human-review the three previews, verify the actual TV target environment, then complete the six pending planet themes and expand Earth city/place stories with separately checked sources and rights. Maintain capital role/date research alongside content batches; do not auto-generate missing stories or claim all-capital completion.
+
+Local reproductions use ignored `artifacts/exploration-browser-qa.mjs`, `exploration-fault-qa.mjs`, `exploration-pages-qa.mjs` and `tv-v3-playwright.mjs`; they import the installed bundled Playwright runtime and are not competition videos.
+
+## Public beta publication preflight · 2026-10-04
+
+The participant authorized continuing with a clearly labeled public beta on the existing GitHub Pages website. This authorization is not human content approval, Amazon Appstore publication or competition submission.
+
+- `npm test`: **355 passed / 0 failed / 0 skipped**. TypeScript and the `/solaris/` production build passed; static export verified 4 entry assets, 7 runtime assets and 3 exploration images with matching SHA-256. Package manifests and lockfiles remain unchanged.
+- Explicit `--public-preview` validation, Earth directory validation and content-pack bytes/hash validation passed. `--release` still rejects pending human reviews, and conflicting preview/release flags are rejected. All original pending review statuses remain intact.
+- HUD and exploration toolbar show bilingual public-beta labels. The Earth directory carries separate ODbL-1.0 database attribution, source notices and a complete machine-readable JSON link pinned to tag `v3-public-preview-2026-10-04`; this does not license the application or images under ODbL.
+- Actual local production Chromium/WebGL2 checks passed all three illustrated stories, review notices, directory license/download links, 320/390px layout and 1920px Web TV beta visibility. No page exception or checked toolbar/document overflow. The desktop central canvas had 115,285 lit pixels and 51,414 changed pixels across 800 ms, verifying nonblank/moving rendering rather than device performance.
+- Visually inspected production screenshots are ignored local artifacts `artifacts/public-beta-*.png`; the repeatable local/online browser check is `artifacts/public-beta-qa.mjs`. Remote tag/download accessibility and GitHub Pages deployment must be verified after pushing, not inferred from this local preflight.
+- Static publication-file review found no real credentials, private user data or native build/signing products in the intended file list. It is not a penetration test. Physical gestures, Safari, Android APK and actual Fire TV/Vega results retain the limitations in the V3 record above.

@@ -4,6 +4,8 @@ import { HUD } from "../ui/HUD";
 import { GestureDebug } from "../gesture/GestureDebug";
 import { store, useSolaris } from "../interaction/store";
 import { handTracking } from "../gesture/HandTrackingManager";
+import { interaction } from "../interaction/InteractionController";
+import { installTvNavigation, isTvMode } from "../platform/tvNavigation";
 class SceneBoundary extends Component<
   { children: ReactNode },
   { error: boolean }
@@ -23,6 +25,33 @@ class SceneBoundary extends Component<
 export function App() {
   const { webglError } = useSolaris();
   useEffect(() => () => handTracking.stop(), []);
+  useEffect(() => {
+    if (!webglError) return;
+    if (["LOCATION_TRANSITION", "LOCATION_VIEW"].includes(store.get().mode)) {
+      interaction.openStory(null);
+      interaction.return();
+    }
+    const timer = setTimeout(
+      () =>
+        document
+          .querySelector<HTMLButtonElement>(".render-error button")
+          ?.focus(),
+      0,
+    );
+    return () => clearTimeout(timer);
+  }, [webglError]);
+  useEffect(() => {
+    if (!isTvMode(location.search)) return;
+    document.body.classList.add("tv-mode");
+    const dispose = installTvNavigation(
+      document.querySelector<HTMLElement>(".solaris-app")!,
+      () => interaction.return(),
+    );
+    return () => {
+      dispose();
+      document.body.classList.remove("tv-mode");
+    };
+  }, []);
   return (
     <main className="solaris-app">
       <SceneBoundary>
@@ -44,7 +73,12 @@ export function App() {
         <GestureDebug />
       )}
       {webglError && (
-        <div className="render-error" role="alert">
+        <div
+          className="render-error"
+          role="dialog"
+          aria-modal="true"
+          aria-label="场景恢复"
+        >
           <p className="eyebrow">为宇宙，再留一点空间</p>
           <h1>暂时无法呈现宇宙</h1>
           <p>请开启浏览器硬件加速，或使用支持 WebGL 2 的浏览器打开 SOLARIS。</p>

@@ -55,7 +55,8 @@ function Intro() {
   return null;
 }
 function Scene() {
-  const { quality } = useSolaris();
+  const { quality, mode } = useSolaris();
+  const reading = mode === "LOCATION_VIEW";
   return (
     <>
       <color attach="background" args={["#020204"]} />
@@ -65,15 +66,17 @@ function Scene() {
         intensity={1.8}
         color="#fff1d7"
       />
-      <StarField />
-      <SolarSystem />
+      <group visible={!reading}>
+        <StarField />
+        <SolarSystem />
+        <SunInterior />
+      </group>
       <CameraController />
-      <SunInterior />
       <InputField />
       <Intro />
       <RendererLifecycle />
       <PerformanceManager />
-      {quality !== "LOW" && (
+      {quality !== "LOW" && !reading && (
         <EffectComposer multisampling={0}>
           <Bloom
             intensity={0.43}

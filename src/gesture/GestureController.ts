@@ -52,6 +52,8 @@ export class GestureController {
   private zoomHandId = "";
   private fistId = "";
   private fistNeedsRelease = false;
+  private previousMode = "";
+  private previousFistPresent = false;
   private pairedReleaseAt = -Infinity;
 
   private id(hand: HandFeatures, index: number) {
@@ -66,6 +68,10 @@ export class GestureController {
     return machine;
   }
   private stopMotion(preserveDial = false) {
+    this.stopNonBackMotion(preserveDial);
+    this.fist.reset();
+  }
+  private stopNonBackMotion(preserveDial = false) {
     rotation.end();
     if (!preserveDial) {
       if (this.zoom.speed !== 0) this.settleDial();
@@ -73,7 +79,6 @@ export class GestureController {
       this.zoomHandId = "";
     }
     this.pinchContext = null;
-    this.fist.reset();
     this.swipe.reset();
     this.special.reset();
     particles.collapseCharge = 0;
@@ -273,6 +278,16 @@ export class GestureController {
       });
     const mode = store.get().mode;
     const locked = interaction.isLocked();
+    const fistPresent = first.gesture === "FIST" || second?.gesture === "FIST";
+    if (
+      mode === "LOCATION_TRANSITION" &&
+      this.previousMode !== "LOCATION_TRANSITION"
+    ) {
+      this.fist.reset();
+      if (this.previousFistPresent && fistPresent) this.fistNeedsRelease = true;
+    }
+    this.previousMode = mode;
+    this.previousFistPresent = fistPresent;
     const ready = confidenceReady && time >= this.readyAt;
     const cooldownMs = Math.max(0, this.cooldownUntil - time);
     const enabled = ready && !locked && cooldownMs === 0;
@@ -359,6 +374,41 @@ export class GestureController {
         updatedAt: time,
       });
     };
+    // The location animation stays locked, but a fresh deliberate fist may
+    // cancel it. All selection, zoom, swipe and drag remain disabled.
+    if (mode === "LOCATION_TRANSITION" && locked && ready && cooldownMs === 0) {
+      this.stopNonBackMotion();
+      rotation.stop();
+      this.updateSelectionMachine(first, null, time, false);
+      const fistHand =
+        first.gesture === "FIST"
+          ? first
+          : second?.gesture === "FIST"
+            ? second
+            : null;
+      if (
+        fistHand &&
+        fistHand.confidence >= config.MIN_CONFIDENCE &&
+        !this.fistNeedsRelease &&
+        !this.thumbBackNeedsRelease
+      ) {
+        const id = fistHand.id ?? fistHand.handedness ?? "fist";
+        if (id !== this.fistId) {
+          this.fist.reset();
+          this.fistId = id;
+        }
+        action = "FIST_BACK";
+        if (
+          this.fist.update(true, time, config.FIST_HOLD_TIME) &&
+          interaction.return()
+        ) {
+          this.fistNeedsRelease = true;
+          this.trigger("FIST_BACK", time, config.BACK_COOLDOWN);
+        }
+      } else this.fist.reset();
+      report();
+      return;
+    }
     if (!enabled) {
       this.stopMotion();
       rotation.stop();
@@ -625,6 +675,8 @@ export class GestureController {
     this.thumbBackNeedsRelease = false;
     this.fistId = "";
     this.fistNeedsRelease = false;
+    this.previousMode = "";
+    this.previousFistPresent = false;
     this.pairedReleaseAt = -Infinity;
     particles.cursorVisible = particles.active = false;
     particles.pinchStrength = 0;

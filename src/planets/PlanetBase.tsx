@@ -9,6 +9,7 @@ import { PlanetMaterial } from "./PlanetMaterial";
 import { ParticleField } from "../particles/ParticleField";
 import { planetObjects } from "../scene/planetPicking";
 import { gestureFeedback } from "../gesture/gestureFeedback";
+import { bodyTransforms, explorationModes } from "../exploration/sceneState";
 export function PlanetBase({
   id,
   children,
@@ -36,8 +37,10 @@ export function PlanetBase({
   useLayoutEffect(() => {
     const object = root.current!;
     planetObjects.set(id, object);
+    bodyTransforms.set(id, body.current!);
     return () => {
       if (planetObjects.get(id) === object) planetObjects.delete(id);
+      bodyTransforms.delete(id);
     };
   }, [id]);
   useFrame(({ clock }, delta) => {
@@ -109,7 +112,8 @@ export function PlanetBase({
       desiredScale.set(desired, desired, desired),
       1 - Math.exp(-delta * 6),
     );
-    if (body.current) body.current.rotation.y += delta * data.rotationSpeed;
+    if (body.current && !(active && explorationModes.includes(mode)))
+      body.current.rotation.y += delta * data.rotationSpeed;
     if (hoverRing.current)
       hoverRing.current.scale.setScalar(
         1 - gestureFeedback.get().pinchProgress * 0.12,

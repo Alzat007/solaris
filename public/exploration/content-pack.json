@@ -1,0 +1,33 @@
+{
+  "id": "solaris-v3-batch-1",
+  "version": "2026-10-04-v3-batch-1",
+  "destinationIds": [
+    "mars-olympus-mons",
+    "mars-viking-1",
+    "earth-beijing-central-axis"
+  ],
+  "assetIds": ["asset-olympus-mons", "asset-viking-1", "asset-beijing-axis"],
+  "files": [
+    {
+      "assetId": "asset-olympus-mons",
+      "path": "exploration/olympus-mons-pia00993.jpg",
+      "bytes": 35045,
+      "sha256": "a190196034d30c33e91be67c3dd23358b2ee46b8fa816d6e6448330a30fb0726"
+    },
+    {
+      "assetId": "asset-viking-1",
+      "path": "exploration/viking-1-pia00381.jpg",
+      "bytes": 166273,
+      "sha256": "cf33909637a4028ff3902a6b2d701c17eeb77829d543968d9b742a35c73d8874"
+    },
+    {
+      "assetId": "asset-beijing-axis",
+      "path": "exploration/beijing-central-axis-2012.jpg",
+      "bytes": 128445,
+      "sha256": "715c92d074f018400b81239580f27d09491a576b2cf9b3cebb2a7bfcb917483d"
+    }
+  ],
+  "totalBytes": 329763,
+  "offlineStatus": "bundled-assets-only",
+  "browserColdStartVerified": false
+}

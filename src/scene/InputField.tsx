@@ -15,6 +15,7 @@ import {
   projectPlanetTarget,
 } from "./planetPicking";
 import { PointerFallback } from "./PointerFallback";
+import { explorationModes } from "../exploration/sceneState";
 export function InputField() {
   const { camera, gl, size } = useThree();
   const tip = useRef<Mesh>(null);
@@ -120,6 +121,13 @@ export function InputField() {
         interaction.endScale();
     };
     const key = (event: KeyboardEvent) => {
+      if (explorationModes.includes(store.get().mode)) {
+        if (event.code === "Escape" && !event.repeat) {
+          event.preventDefault();
+          interaction.return();
+        }
+        return;
+      }
       if (
         event.target instanceof HTMLElement &&
         (event.target.isContentEditable ||
