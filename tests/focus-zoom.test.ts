@@ -137,12 +137,12 @@ function setup(t: TestContext, fixtureOptions: Geometry = {}) {
   const finishAndRevealFacts = () => {
     timeline().progress(1);
     gsap.ticker.sleep();
-    assert.equal(store.get().mode, "PLANET_FOCUS");
+    assert.equal(store.get().mode, "PLANET_OVERVIEW");
     assert.equal(interaction.isLocked(), false);
     assert.equal(store.get().infoVisible, false);
     t.mock.timers.tick(config.INFO_REVEAL_DELAY);
     assert.equal(store.get().infoVisible, true);
-    assert.equal(store.get().mode, "PLANET_FOCUS");
+    assert.equal(store.get().mode, "PLANET_OVERVIEW");
   };
   const focusEarth = () => {
     selectEarth();
@@ -264,7 +264,7 @@ test("releasing V stops immediately, preserves facts, returns to focus, and perm
   assert.equal(particles.targetScale, stoppedScale);
   s.hold("OPEN_PALM", config.V_GESTURE_RELEASE_GRACE);
   assert.equal(gestureFeedback.get().zoomMode, "ZOOM_DIAL_RELEASE");
-  assert.equal(store.get().mode, "PLANET_FOCUS");
+  assert.equal(store.get().mode, "PLANET_OVERVIEW");
   assert.equal(store.get().selected, "earth");
   assert.equal(store.get().infoVisible, true);
   assert.equal(particles.targetScale, stoppedScale);
@@ -282,7 +282,7 @@ test("an open thumb held across entry cannot select another planet until explici
   gestureTargets.set({ kind: "body", id: "mars", label: "火星" });
   s.hold("POINT", 800, { thumbOpening: 1 });
   assert.equal(store.get().selected, "earth");
-  assert.equal(store.get().mode, "PLANET_FOCUS");
+  assert.equal(store.get().mode, "PLANET_OVERVIEW");
   assert.equal(gestureFeedback.get().zoomMode, "IDLE");
   assert.equal(particles.targetScale, 1);
   s.hold("POINT", config.THUMB_RELEASE_HOLD + config.TARGET_LOCK_TIME + 150);
@@ -324,7 +324,7 @@ test("legacy five-tip gathering and opening remain diagnostic and never scale th
       s.send("FIVE_PINCH", { gripDirection, gripSpread: step / 20 });
       assert.equal(particles.targetScale, 1);
       assert.equal(gestureFeedback.get().zoomMode, "IDLE");
-      assert.equal(store.get().mode, "PLANET_FOCUS");
+      assert.equal(store.get().mode, "PLANET_OVERVIEW");
       assert.equal(store.get().selected, "earth");
       assert.equal(store.get().infoVisible, true);
     }

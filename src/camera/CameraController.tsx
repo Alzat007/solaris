@@ -8,6 +8,7 @@ import {
   Vector3,
 } from "three";
 import { particles } from "../particles/ParticleEngine";
+import { descentPhase } from "../exploration/sceneState";
 export type CameraMode =
   | "SOLAR_VIEW"
   | "PLANET_VIEW"
@@ -37,7 +38,8 @@ export function CameraController() {
     position.x += Math.sin(clock.elapsedTime * 31) * impact * 0.09;
     target.set(0, mobile ? -5.5 * (1 - focus) - 1.3 * focus : 0, focus * 2.4);
     const approach = particles.locationApproach;
-    const approachDistance = mobile ? 9 : 8;
+    const phase = descentPhase(approach);
+    const approachDistance = 6.3;
     // Keep the approach outside the scaled planet, including prior user zoom.
     position.lerp(
       interiorPosition.set(
@@ -47,7 +49,7 @@ export function CameraController() {
             particles.scale,
         particles.anchor.z + approachDistance * particles.scale,
       ),
-      approach,
+      phase.orbit,
     );
     target.lerp(
       interiorTarget.set(
@@ -55,8 +57,18 @@ export function CameraController() {
         particles.anchor.y + 0.3 * particles.scale,
         particles.anchor.z + 3.5 * particles.scale,
       ),
-      approach,
+      phase.orbit,
     );
+    if (phase.localVisible) {
+      // The opaque atmosphere/dust handoff conceals the change of scene scale.
+      const local = MathUtils.smoothstep(phase.local, 0, 1);
+      position.set(
+        0,
+        MathUtils.lerp(55, mobile ? 31 : 20, local),
+        MathUtils.lerp(48, mobile ? 34 : 21, local),
+      );
+      target.set(0, 0, mobile ? 1 : 0);
+    }
     const interior = MathUtils.smoothstep(particles.sunInterior, 0, 1);
     const time = clock.elapsedTime;
     interiorPosition.set(

@@ -13,7 +13,7 @@ import { store } from "../src/interaction/store";
 import { particles } from "../src/particles/ParticleEngine";
 import { bodyTransforms } from "../src/exploration/sceneState";
 
-const beijing = "earth-beijing-central-axis";
+const beijing = "beijing";
 
 function hand(
   gesture: Gesture,
@@ -70,6 +70,9 @@ function setup(t: TestContext) {
     sound: false,
     destinationId: null,
     explorationCityId: null,
+    explorationContinentId: null,
+    explorationCountryId: null,
+    activeHotspotId: null,
     activeStoryId: null,
     explorationError: "",
     locationResourcesReady: false,
@@ -124,6 +127,8 @@ function setup(t: TestContext) {
   const directory = () => {
     focus();
     assert.equal(interaction.browse(), true);
+    assert.equal(interaction.chooseContinent("asia"), true);
+    assert.equal(interaction.chooseCountry("cn"), true);
     hold("POINT", config.HAND_REENTRY_DELAY + 150);
     assert.equal(gestureFeedback.get().readiness, "READY");
   };
@@ -133,12 +138,12 @@ function setup(t: TestContext) {
       resolve = done;
     });
     const result = interaction.enterDestination(beijing, () => loaded);
-    assert.equal(store.get().mode, "LOCATION_TRANSITION");
+    assert.equal(store.get().mode, "DESCENT_TRANSITION");
     assert.equal(interaction.isLocked(), true);
     return { resolve, result };
   };
   t.after(() => {
-    if (store.get().mode === "LOCATION_TRANSITION") interaction.return();
+    if (store.get().mode === "DESCENT_TRANSITION") interaction.return();
     gestures.reset();
     bodyTransforms.clear();
     gsap.globalTimeline.clear();
@@ -167,10 +172,10 @@ test("a ready fresh fist cancels a locked location load only after 600 ms and ig
   s.send("FIST");
   for (let elapsed = 0; elapsed < 550; elapsed += 50) s.send("FIST");
   s.send("FIST", {}, 49);
-  assert.equal(store.get().mode, "LOCATION_TRANSITION");
+  assert.equal(store.get().mode, "DESCENT_TRANSITION");
   assert.equal(interaction.isLocked(), true);
   s.send("FIST", {}, 1);
-  assert.equal(store.get().mode, "EXPLORATION_DIRECTORY");
+  assert.equal(store.get().mode, "EARTH_CITY_PICKER");
   assert.equal(interaction.isLocked(), false);
   assert.equal(gestureFeedback.get().lastAction, "FIST_BACK");
   pending.resolve();
@@ -185,12 +190,12 @@ test("a held cancellation fist cannot cascade into city or planet Back without r
   s.hold("FIST", config.FIST_HOLD_TIME);
   assert.equal(store.get().explorationCityId, "city-beijing");
   s.hold("FIST", config.BACK_COOLDOWN + config.FIST_HOLD_TIME + 100);
-  assert.equal(store.get().mode, "EXPLORATION_DIRECTORY");
+  assert.equal(store.get().mode, "EARTH_CITY_PICKER");
   assert.equal(store.get().explorationCityId, "city-beijing");
   s.hold("POINT", 150);
   s.hold("FIST", config.FIST_HOLD_TIME);
   assert.equal(store.get().explorationCityId, null);
-  assert.equal(store.get().mode, "EXPLORATION_DIRECTORY");
+  assert.equal(store.get().mode, "EARTH_COUNTRY_PICKER");
   pending.resolve();
   assert.equal(await pending.result, false);
 });
@@ -205,11 +210,11 @@ test("location cancellation respects cooldown and requires release after a fist 
   const second = s.enter();
   s.hold("POINT", 150);
   s.hold("FIST", config.BACK_COOLDOWN + config.FIST_HOLD_TIME);
-  assert.equal(store.get().mode, "LOCATION_TRANSITION");
+  assert.equal(store.get().mode, "DESCENT_TRANSITION");
   assert.equal(gestureFeedback.get().fistProgress, 0);
   s.hold("POINT", 150);
   s.hold("FIST", config.FIST_HOLD_TIME);
-  assert.equal(store.get().mode, "EXPLORATION_DIRECTORY");
+  assert.equal(store.get().mode, "EARTH_CITY_PICKER");
   second.resolve();
   assert.equal(await second.result, false);
 });
@@ -220,14 +225,14 @@ test("a fist already held before entering the location and a tracking re-entry r
   s.hold("FIST", 200);
   const pending = s.enter();
   s.hold("FIST", config.FIST_HOLD_TIME + 100);
-  assert.equal(store.get().mode, "LOCATION_TRANSITION");
+  assert.equal(store.get().mode, "DESCENT_TRANSITION");
   s.send("POINT");
   s.empty();
   s.hold("FIST", config.HAND_REENTRY_DELAY + config.FIST_HOLD_TIME + 100);
-  assert.equal(store.get().mode, "LOCATION_TRANSITION");
+  assert.equal(store.get().mode, "DESCENT_TRANSITION");
   s.hold("POINT", 150);
   s.hold("FIST", config.FIST_HOLD_TIME);
-  assert.equal(store.get().mode, "EXPLORATION_DIRECTORY");
+  assert.equal(store.get().mode, "EARTH_CITY_PICKER");
   pending.resolve();
   assert.equal(await pending.result, false);
 });
@@ -257,7 +262,7 @@ test("locked location gestures never select UI or planets, zoom, swipe or drag",
   });
   assert.equal(activate.mock.callCount(), 0);
   assert.equal(store.get().selected, "earth");
-  assert.equal(store.get().mode, "LOCATION_TRANSITION");
+  assert.equal(store.get().mode, "DESCENT_TRANSITION");
   assert.equal(interaction.isLocked(), true);
   assert.equal(particles.targetScale, 1);
   assert.equal(particles.dragging, false);
@@ -275,14 +280,15 @@ test("low-confidence fists and normal planet animations cannot use the cancellat
   const pending = s.enter();
   s.hold("FIST", 1000, { confidence: 0.1 });
   s.hold("FIST", 1000, { trackingConfidence: 0.1 });
-  assert.equal(store.get().mode, "LOCATION_TRANSITION");
+  assert.equal(store.get().mode, "DESCENT_TRANSITION");
   assert.equal(gestureFeedback.get().fistProgress, 0);
   assert.equal(interaction.return(), true);
   pending.resolve();
   assert.equal(await pending.result, false);
   assert.equal(interaction.return(), true);
   assert.equal(interaction.return(), true);
-  assert.equal(store.get().mode, "PLANET_FOCUS");
+  assert.equal(interaction.return(), true);
+  assert.equal(store.get().mode, "PLANET_OVERVIEW");
   assert.equal(interaction.next(1), true);
   assert.equal(store.get().mode, "PLANET_TRANSITION");
   s.hold("POINT", 400);

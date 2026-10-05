@@ -1,0 +1,312 @@
+.globe-hotspots {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  pointer-events: none;
+}
+.globe-hotspot-connectors {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.globe-hotspot-connectors polyline {
+  fill: none;
+  stroke: rgba(191, 242, 222, 0.8);
+  stroke-width: 1.25;
+}
+.globe-hotspot {
+  position: absolute;
+  min-height: 44px;
+  pointer-events: auto;
+  cursor: pointer;
+  letter-spacing: 0;
+}
+.globe-hotspot-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: 1px solid rgba(210, 255, 236, 0.38);
+  border-radius: 8px;
+  background: rgba(13, 29, 25, 0.76);
+  color: #effff9;
+  font:
+    500 15px/1.4 system-ui,
+    sans-serif;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.22);
+}
+.globe-hotspot-point {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+.globe-hotspot-point span {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #e7fff4;
+  border-radius: 50%;
+  background: #64d9ad;
+  box-shadow: 0 0 12px #70efbd;
+  animation: globe-hotspot-pulse 2.2s ease-in-out infinite;
+}
+.globe-hotspot.is-active,
+.globe-hotspot.is-focused,
+.globe-hotspot:focus-visible {
+  outline: 2px solid #ffdb8a;
+  outline-offset: 3px;
+}
+.globe-hotspot-label.is-active,
+.globe-hotspot-label.is-focused {
+  border-color: #ffdb8a;
+  color: #ffefc1;
+}
+.globe-hotspot-point.is-active span,
+.globe-hotspot-point.is-focused span {
+  background: #ffdb8a;
+  box-shadow: 0 0 16px #ffd778;
+}
+.globe-story-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.22);
+  pointer-events: auto;
+}
+.globe-story-panel {
+  position: relative;
+  width: min(1100px, 76vw);
+  height: min(78dvh, 780px);
+  max-height: 78dvh;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 26px;
+  background: rgba(22, 29, 31, 0.75);
+  backdrop-filter: blur(26px);
+  -webkit-backdrop-filter: blur(26px);
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  color: #f5faf8;
+  animation: globe-story-open 90ms ease-out;
+  letter-spacing: 0;
+  font:
+    400 15px/1.75 system-ui,
+    sans-serif;
+}
+.globe-story-scroll {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 45% 55%;
+  overflow: hidden;
+}
+.globe-story-close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  cursor: pointer;
+  z-index: 2;
+}
+.globe-story-panel button:focus-visible,
+.globe-story-panel a:focus-visible {
+  outline: 2px solid #ffdb8a;
+  outline-offset: 3px;
+}
+.globe-story-media {
+  margin: 0;
+  padding: 28px 20px 28px 28px;
+  border-right: 1px solid rgba(255, 255, 255, 0.14);
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+}
+.globe-story-image-area {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: rgba(0, 0, 0, 0.32);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.globe-story-image-area img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: opacity 90ms;
+}
+.globe-story-image-status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  color: #d2ddd8;
+}
+.globe-story-image-status button {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  cursor: pointer;
+}
+.globe-story-media figcaption {
+  margin-top: 16px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #c2cec9;
+  overflow-wrap: anywhere;
+}
+.globe-story-media figcaption p {
+  margin: 0 0 8px;
+}
+.globe-story-panel a {
+  color: #abebd8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+.globe-story-media figcaption > a,
+.globe-story-sources a {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  min-height: 32px;
+}
+.globe-story-copy {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 28px 32px 28px 28px;
+}
+.globe-story-copy h2 {
+  font-size: 26px;
+  line-height: 1.35;
+  font-weight: 600;
+  margin: 12px 46px 8px 0;
+  overflow-wrap: anywhere;
+  letter-spacing: 0;
+}
+.globe-story-copy p {
+  margin: 0 0 16px;
+}
+.globe-story-copy .globe-story-review {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #ffda93;
+  margin: 0 44px 12px 0;
+}
+.globe-story-copy .globe-story-date {
+  font-size: 13px;
+  color: #bfcec7;
+  margin-bottom: 18px;
+}
+.globe-story-copy .globe-story-summary {
+  font-size: 17px;
+  line-height: 1.7;
+  color: #edfff6;
+}
+.globe-story-context {
+  border-top: 1px solid rgba(255, 255, 255, 0.17);
+  padding-top: 16px;
+  font-size: 13px;
+  color: #bfcec7;
+}
+.globe-story-sources h3 {
+  font-size: 14px;
+  margin: 8px 0;
+  letter-spacing: 0;
+}
+.globe-story-sources a {
+  display: flex;
+  width: fit-content;
+  font-size: 12px;
+  margin: 4px 0;
+}
+@keyframes globe-hotspot-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 10px #70efbd;
+  }
+  50% {
+    box-shadow: 0 0 20px #70efbd;
+  }
+}
+@keyframes globe-story-open {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (max-width: 700px) {
+  .globe-story-backdrop {
+    padding: 12px;
+  }
+  .globe-story-panel {
+    width: 100%;
+    height: 78dvh;
+    max-height: 78dvh;
+    border-radius: 26px;
+  }
+  .globe-story-scroll {
+    display: block;
+    overflow-y: auto;
+  }
+  .globe-story-media {
+    padding: 60px 20px 20px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    overflow: visible;
+  }
+  .globe-story-copy {
+    padding: 20px;
+    overflow: visible;
+  }
+  .globe-story-copy h2 {
+    font-size: 24px;
+    margin-right: 0;
+  }
+  .globe-story-copy .globe-story-review {
+    margin-right: 0;
+  }
+  .globe-story-image-area {
+    aspect-ratio: 16/10;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .globe-hotspot-point span,
+  .globe-story-panel {
+    animation: none;
+  }
+  .globe-story-image-area img {
+    transition: none;
+  }
+}

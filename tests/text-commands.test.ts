@@ -145,7 +145,7 @@ test("a real selection starts an animation and completes only after its timeline
     resolveTextCommand(earthCommand, controller, store.get()).status,
     "completed",
   );
-  assert.equal(store.get().mode, "PLANET_FOCUS");
+  assert.equal(store.get().mode, "PLANET_OVERVIEW");
   assert.equal(store.get().infoVisible, false);
   t.mock.timers.tick(400);
   assert.equal(store.get().infoVisible, true);

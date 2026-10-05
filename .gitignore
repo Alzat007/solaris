@@ -5,3 +5,6 @@ dist/
 .sites-runtime/
 artifacts/
 public/mediapipe/
+public/cesium/
+.env*
+!.env.example

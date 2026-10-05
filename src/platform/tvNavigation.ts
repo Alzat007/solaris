@@ -11,6 +11,15 @@ export function isTvMode(search: string): boolean {
   return new URLSearchParams(search).get("tv") === "1";
 }
 
+export function isBackKey(
+  event: Pick<KeyboardEvent, "key" | "keyCode">,
+): boolean {
+  return (
+    ["Escape", "GoBack", "BrowserBack"].includes(event.key) ||
+    event.keyCode === 4
+  );
+}
+
 // Prefer the closest control in the requested half-plane; never wrap at edges.
 export function findNextFocusIndex(
   items: readonly FocusRect[],
@@ -72,28 +81,37 @@ export function installTvNavigation(
     const modal = root.querySelector<HTMLElement>(
       '[role="dialog"][aria-modal="true"]',
     );
-    return Array.from((modal ?? root).querySelectorAll<HTMLElement>(selector)).filter(
-      (element) => {
+    return Array.from(
+      (modal ?? root).querySelectorAll<HTMLElement>(selector),
+    ).filter((element) => {
+      if (
+        element.tabIndex < 0 ||
+        element.matches(":disabled") ||
+        element.getAttribute("aria-disabled") === "true" ||
+        element.closest('[hidden], [inert], [aria-hidden="true"]')
+      )
+        return false;
+      for (
+        let closed = element.closest<HTMLElement>("details:not([open])");
+        closed;
+        closed =
+          closed.parentElement?.closest<HTMLElement>("details:not([open])") ??
+          null
+      ) {
         if (
-          element.tabIndex < 0 ||
-          element.matches(":disabled") ||
-          element.getAttribute("aria-disabled") === "true" ||
-          element.closest('[hidden], [inert], [aria-hidden="true"]')
+          !closed
+            .querySelector<HTMLElement>(":scope > summary")
+            ?.contains(element)
         )
           return false;
-        for (
-          let closed = element.closest<HTMLElement>("details:not([open])");
-          closed;
-          closed = closed.parentElement?.closest<HTMLElement>("details:not([open])") ?? null
-        ) {
-          if (!closed.querySelector<HTMLElement>(":scope > summary")?.contains(element))
-            return false;
-        }
-        const rect = element.getBoundingClientRect();
-        return rect.width > 0 && rect.height > 0 &&
-          window!.getComputedStyle(element).visibility !== "hidden";
-      },
-    );
+      }
+      const rect = element.getBoundingClientRect();
+      return (
+        rect.width > 0 &&
+        rect.height > 0 &&
+        window!.getComputedStyle(element).visibility !== "hidden"
+      );
+    });
   }
 
   function focus(element: HTMLElement | undefined) {
@@ -109,10 +127,21 @@ export function installTvNavigation(
 
   function moveSelect(select: HTMLSelectElement, step: number) {
     const options = Array.from(select.options);
-    const start = select.selectedIndex < 0 && step < 0 ? options.length : select.selectedIndex;
-    for (let index = start + step; index >= 0 && index < options.length; index += step) {
+    const start =
+      select.selectedIndex < 0 && step < 0
+        ? options.length
+        : select.selectedIndex;
+    for (
+      let index = start + step;
+      index >= 0 && index < options.length;
+      index += step
+    ) {
       const option = options[index];
-      if (option.disabled || option.hidden || option.parentElement?.matches("optgroup:disabled"))
+      if (
+        option.disabled ||
+        option.hidden ||
+        option.parentElement?.matches("optgroup:disabled")
+      )
         continue;
       select.selectedIndex = index;
       select.dispatchEvent(new window!.Event("input", { bubbles: true }));
@@ -124,8 +153,7 @@ export function installTvNavigation(
   function keydown(event: KeyboardEvent) {
     if (event.defaultPrevented || event.isComposing || event.keyCode === 229)
       return;
-    const back = event.key === "Escape" || event.key === "GoBack" ||
-      event.key === "BrowserBack" || event.keyCode === 4;
+    const back = isBackKey(event);
     if (back) {
       consume(event);
       if (!event.repeat) {
@@ -149,21 +177,29 @@ export function installTvNavigation(
       }
       return;
     }
-    const editing = active?.matches("input, textarea") ||
+    const editing =
+      active?.matches("input, textarea") ||
       (select && editingSelect === active) ||
       active?.isContentEditable;
     const direction = directions[event.key];
     if (direction) {
       // Native select popups do not consistently handle D-pad keys in TV WebViews.
-      if (select && editingSelect === active && (direction === "up" || direction === "down")) {
+      if (
+        select &&
+        editingSelect === active &&
+        (direction === "up" || direction === "down")
+      ) {
         consume(event);
         moveSelect(active as HTMLSelectElement, direction === "up" ? -1 : 1);
         return;
       }
-      if (editing && (
-        active?.matches("textarea") || active?.isContentEditable ||
-        (!select && (direction === "left" || direction === "right"))
-      )) return;
+      if (
+        editing &&
+        (active?.matches("textarea") ||
+          active?.isContentEditable ||
+          (!select && (direction === "left" || direction === "right")))
+      )
+        return;
       consume(event);
       const elements = controls();
       const currentIndex = elements.indexOf(active!);
@@ -209,7 +245,13 @@ export function installTvNavigation(
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ["hidden", "disabled", "aria-disabled", "aria-hidden", "open"],
+    attributeFilter: [
+      "hidden",
+      "disabled",
+      "aria-disabled",
+      "aria-hidden",
+      "open",
+    ],
   });
   focus(controls()[0]);
 

@@ -9,6 +9,17 @@ import type { HandFrame } from "./GestureTypes";
 
 type Detector = Pick<HandLandmarker, "detectForVideo" | "close">;
 type Backend = "GPU" | "CPU";
+export interface TrackingInputSink {
+  update(frame: HandFrame): void;
+  reset(): void;
+}
+const defaultInputSink: TrackingInputSink = {
+  update: (frame) => gestures.update(frame),
+  reset: () => {
+    gestures.reset();
+    interaction.endScale();
+  },
+};
 export interface TrackingDependencies {
   requestStream(): Promise<MediaStream>;
   createVideo(): HTMLVideoElement;
@@ -91,8 +102,36 @@ export class HandTrackingManager {
   private identities = new HandIdentityTracker();
   private compatibilityPreferred = false;
   private dependencies: TrackingDependencies;
-  constructor(dependencies: Partial<TrackingDependencies> = {}) {
+  private inputLeases: { sink: TrackingInputSink }[] = [];
+  private originalInputSink: TrackingInputSink | null = null;
+  constructor(
+    dependencies: Partial<TrackingDependencies> = {},
+    private inputSink: TrackingInputSink = defaultInputSink,
+  ) {
     this.dependencies = { ...defaults, ...dependencies };
+  }
+
+  /** Transfer commands without reopening the camera or rebuilding its detector. */
+  useInputSink(sink: TrackingInputSink) {
+    if (!this.inputLeases.length) this.originalInputSink = this.inputSink;
+    const lease = { sink };
+    this.inputLeases.push(lease);
+    this.inputSink.reset();
+    this.inputSink = sink;
+    sink.reset();
+    return () => {
+      const index = this.inputLeases.indexOf(lease);
+      if (index < 0) return;
+      const active = index === this.inputLeases.length - 1;
+      this.inputLeases.splice(index, 1);
+      if (active) {
+        this.inputSink.reset();
+        this.inputSink =
+          this.inputLeases.at(-1)?.sink ?? this.originalInputSink!;
+        this.inputSink.reset();
+      }
+      if (!this.inputLeases.length) this.originalInputSink = null;
+    };
   }
 
   async start() {
@@ -188,7 +227,7 @@ export class HandTrackingManager {
     // re-enter the ordinary readiness/release flow.
     this.identities.reset();
     this.frame = { hands: [], time: this.dependencies.now() };
-    gestures.update(this.frame);
+    this.inputSink.update(this.frame);
     store.set({
       tracking: "loading",
       gesture: "NONE",
@@ -270,7 +309,7 @@ export class HandTrackingManager {
         session.frames++;
         session.emptySince = hands.length ? null : (session.emptySince ?? now);
         this.frame = { hands, time: now };
-        gestures.update(this.frame);
+        this.inputSink.update(this.frame);
         const previous = cameraDiagnostics.get();
         if (
           now - session.lastReport >= 500 ||
@@ -292,7 +331,7 @@ export class HandTrackingManager {
       } else if (now - session.lastFrameTime > gestureConfig.FRAME_GAP_RESET) {
         this.identities.reset();
         this.frame = { hands: [], time: now };
-        gestures.update(this.frame);
+        this.inputSink.update(this.frame);
         if (now - session.lastReport >= 500) {
           session.lastReport = now;
           cameraDiagnostics.set({
@@ -359,8 +398,7 @@ export class HandTrackingManager {
     if (session) this.dispose(session);
     this.identities.reset();
     this.frame = { hands: [], time: 0 };
-    gestures.reset();
-    interaction.endScale();
+    this.inputSink.reset();
   }
   private fail(session: Session, message: string) {
     if (this.session !== session) return;

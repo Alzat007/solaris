@@ -6,15 +6,17 @@ import { InteractionController } from "../src/interaction/InteractionController"
 import { InteractionStateMachine } from "../src/interaction/InteractionStateMachine";
 import { store } from "../src/interaction/store";
 import { particles } from "../src/particles/ParticleEngine";
-import { assets, destinations } from "../src/exploration/content";
+import { assets } from "../src/exploration/content";
+import { getImmersiveSite } from "../src/exploration/immersiveCatalog";
 import {
   bodyTransforms,
   facingRotation,
   geographicPoint,
+  getSiteResourcePaths,
 } from "../src/exploration/sceneState";
 import type { PlanetId } from "../src/data/planets";
 
-const beijing = "earth-beijing-central-axis";
+const beijing = "beijing";
 const olympus = "mars-olympus-mons";
 
 function setup(t: TestContext) {
@@ -36,6 +38,9 @@ function setup(t: TestContext) {
     sound: false,
     destinationId: null,
     explorationCityId: null,
+    explorationContinentId: null,
+    explorationCountryId: null,
+    activeHotspotId: null,
     activeStoryId: null,
     explorationError: "",
     locationResourcesReady: false,
@@ -87,6 +92,10 @@ function focus(controller: InteractionController, id: PlanetId) {
 function directory(controller: InteractionController, id: PlanetId = "earth") {
   const body = focus(controller, id);
   assert.equal(controller.browse(), true);
+  if (id === "earth") {
+    assert.equal(controller.chooseContinent("asia"), true);
+    assert.equal(controller.chooseCountry("cn"), true);
+  }
   return body;
 }
 
@@ -118,7 +127,7 @@ test("the FSM admits a directory only from planet focus and makes location trans
   assert.equal(machine.send("BROWSE"), false);
   machine.send("TRANSITION_END");
   assert.equal(machine.send("BROWSE"), true);
-  assert.equal(machine.state, "EXPLORATION_DIRECTORY");
+  assert.equal(machine.state, "PLANET_REGION_PICKER");
   assert.equal(machine.send("ENTER_LOCATION"), true);
   assert.equal(machine.locked, true);
   for (const event of [
@@ -130,14 +139,14 @@ test("the FSM admits a directory only from planet focus and makes location trans
   ] as const)
     assert.equal(machine.send(event), false);
   assert.equal(machine.send("LOCATION_CANCEL"), true);
-  assert.equal(machine.state, "EXPLORATION_DIRECTORY");
+  assert.equal(machine.state, "PLANET_REGION_PICKER");
   assert.equal(machine.locked, false);
   machine.send("ENTER_LOCATION");
   machine.send("LOCATION_READY");
-  assert.equal(machine.state, "LOCATION_VIEW");
+  assert.equal(machine.state, "LOCATION_OVERVIEW");
   assert.equal(machine.send("LOCATION_CANCEL"), true);
   assert.equal(machine.send("EXIT_DIRECTORY"), true);
-  assert.equal(machine.state, "PLANET_FOCUS");
+  assert.equal(machine.state, "PLANET_OVERVIEW");
 });
 
 test("a real selected planet is required and browsing cancels the old information reveal timer", (t) => {
@@ -146,7 +155,7 @@ test("a real selected planet is required and browsing cancels the old informatio
   focus(controller, "earth");
   assert.equal(controller.browse(), true);
   t.mock.timers.tick(2000);
-  assert.equal(store.get().mode, "EXPLORATION_DIRECTORY");
+  assert.equal(store.get().mode, "EARTH_CONTINENT_PICKER");
   assert.equal(store.get().infoVisible, false);
   assert.equal(controller.browse(), false);
 });
@@ -183,7 +192,7 @@ test("ready, draft, unknown and cross-planet entry checks do not invoke the load
   assert.equal(await controller.enterDestination(olympus, load), true);
   assert.equal(calls, 1);
   finish(controller);
-  assert.equal(store.get().mode, "LOCATION_VIEW");
+  assert.equal(store.get().mode, "LOCATION_OVERVIEW");
 });
 
 test("ready resources are loaded before a location can finish and skip stays disabled while loading", async (t) => {
@@ -191,20 +200,18 @@ test("ready resources are loaded before a location can finish and skip stays dis
   directory(controller);
   const resource = deferredLoad();
   const action = controller.enterDestination(beijing, resource.load);
-  assert.equal(store.get().mode, "LOCATION_TRANSITION");
+  assert.equal(store.get().mode, "DESCENT_TRANSITION");
   assert.equal(store.get().transitioning, true);
   assert.equal(store.get().locationResourcesReady, false);
   assert.equal(controller.skipLocationTransition(), false);
-  const expected = destinations
-    .find((entry) => entry.id === beijing)!
-    .assetIds.map((id) => assets.find((asset) => asset.id === id)!.path);
+  const expected = getSiteResourcePaths(getImmersiveSite(beijing)!);
   assert.deepEqual(resource.calls, [expected]);
   resource.resolve();
   assert.equal(await action, true);
-  assert.equal(store.get().mode, "LOCATION_TRANSITION");
+  assert.equal(store.get().mode, "DESCENT_TRANSITION");
   assert.equal(store.get().locationResourcesReady, true);
   assert.equal(controller.skipLocationTransition(), true);
-  assert.equal(store.get().mode, "LOCATION_VIEW");
+  assert.equal(store.get().mode, "LOCATION_OVERVIEW");
   assert.equal(store.get().transitioning, false);
   assert.equal(particles.locationApproach, 1);
   assert.equal(controller.skipLocationTransition(), false);
@@ -225,7 +232,7 @@ test("busy location loading rejects duplicates and conflicting scene actions wit
   assert.equal(controller.info(), false);
   assert.equal(controller.scale(2), false);
   assert.equal(controller.browse(), false);
-  assert.equal(controller.openStory("story-olympus-orbital-view"), false);
+  assert.equal(controller.openHotspot("olympus-caldera"), false);
   assert.equal(store.get(), before);
   assert.equal(resource.calls.length, 1);
   resource.resolve();
@@ -241,7 +248,7 @@ test("cancelling a pending load restores the directory and a late successful loa
   const action = controller.enterDestination(beijing, resource.load);
   assert.equal(controller.return(), true);
   const afterCancel = store.get();
-  assert.equal(afterCancel.mode, "EXPLORATION_DIRECTORY");
+  assert.equal(afterCancel.mode, "EARTH_CITY_PICKER");
   assert.equal(afterCancel.explorationCityId, "city-beijing");
   assert.equal(afterCancel.destinationId, null);
   assert.equal(afterCancel.locationResourcesReady, false);
@@ -290,7 +297,7 @@ test("cancelling an active GSAP approach restores all body axes and invalidates 
   assert.equal(particles.locationApproach, 0);
   onComplete?.();
   assert.equal(store.get(), afterCancel);
-  assert.equal(store.get().mode, "EXPLORATION_DIRECTORY");
+  assert.equal(store.get().mode, "EARTH_CITY_PICKER");
 });
 
 test("a resource rejection recovers without entering an empty destination and retry remains possible", async (t) => {
@@ -303,7 +310,7 @@ test("a resource rejection recovers without entering an empty destination and re
     }),
     false,
   );
-  assert.equal(store.get().mode, "EXPLORATION_DIRECTORY");
+  assert.equal(store.get().mode, "EARTH_CITY_PICKER");
   assert.equal(store.get().destinationId, null);
   assert.equal(store.get().transitioning, false);
   assert.equal(store.get().locationResourcesReady, false);
@@ -315,14 +322,14 @@ test("a resource rejection recovers without entering an empty destination and re
   );
   assert.equal(store.get().explorationError, "");
   finish(controller);
-  assert.equal(store.get().mode, "LOCATION_VIEW");
+  assert.equal(store.get().mode, "LOCATION_OVERVIEW");
 });
 
 test("unreviewed image metadata cannot call the loader or start an approach", async (t) => {
   const controller = setup(t);
-  directory(controller);
-  const entry = destinations.find((destination) => destination.id === beijing)!;
-  const asset = assets.find((candidate) => candidate.id === entry.assetIds[0])!;
+  directory(controller, "mars");
+  const entry = getImmersiveSite(olympus)!;
+  const asset = assets.find((candidate) => candidate.id === entry.baseAssetId)!;
   const status = asset.review.status;
   t.after(() => {
     asset.review.status = status;
@@ -330,13 +337,13 @@ test("unreviewed image metadata cannot call the loader or start an approach", as
   asset.review.status = "pending";
   let calls = 0;
   assert.equal(
-    await controller.enterDestination(beijing, async () => {
+    await controller.enterDestination(olympus, async () => {
       calls++;
     }),
     false,
   );
   assert.equal(calls, 0);
-  assert.equal(store.get().mode, "EXPLORATION_DIRECTORY");
+  assert.equal(store.get().mode, "PLANET_REGION_PICKER");
   assert.equal(store.get().locationResourcesReady, false);
 });
 
@@ -346,6 +353,8 @@ test("story, location, city, directory and planet returns follow separate layers
   const pose = body.rotation.clone();
   store.set({ infoVisible: true });
   assert.equal(controller.browse(), true);
+  assert.equal(controller.chooseContinent("asia"), true);
+  assert.equal(controller.chooseCountry("cn"), true);
   store.set({ explorationCityId: "city-beijing" });
   assert.equal(
     await controller.enterDestination(beijing, async () => {}),
@@ -353,21 +362,24 @@ test("story, location, city, directory and planet returns follow separate layers
   );
   finish(controller);
   assert.equal(body.rotation.z, 0);
-  assert.equal(controller.openStory("unrelated-story"), false);
-  assert.equal(controller.openStory("story-beijing-axis-heritage"), true);
+  assert.equal(controller.openHotspot("unrelated-story"), false);
+  assert.equal(controller.openHotspot("beijing-tiananmen"), true);
   assert.equal(controller.return(), true);
   assert.equal(store.get().activeStoryId, null);
-  assert.equal(store.get().mode, "LOCATION_VIEW");
+  assert.equal(store.get().activeHotspotId, null);
+  assert.equal(store.get().mode, "LOCATION_OVERVIEW");
   assert.equal(store.get().destinationId, beijing);
   assert.equal(controller.return(), true);
-  assert.equal(store.get().mode, "EXPLORATION_DIRECTORY");
+  assert.equal(store.get().mode, "EARTH_CITY_PICKER");
   assert.equal(store.get().explorationCityId, "city-beijing");
   assert.deepEqual(body.rotation.toArray(), pose.toArray());
   assert.equal(controller.return(), true);
   assert.equal(store.get().explorationCityId, null);
-  assert.equal(store.get().mode, "EXPLORATION_DIRECTORY");
+  assert.equal(store.get().mode, "EARTH_COUNTRY_PICKER");
   assert.equal(controller.return(), true);
-  assert.equal(store.get().mode, "PLANET_FOCUS");
+  assert.equal(store.get().mode, "EARTH_CONTINENT_PICKER");
+  assert.equal(controller.return(), true);
+  assert.equal(store.get().mode, "PLANET_OVERVIEW");
   assert.equal(store.get().infoVisible, true);
   assert.equal(store.get().selected, "earth");
   assert.equal(controller.return(), true);
@@ -416,7 +428,7 @@ test("a WebGL failure during resource loading rolls back before starting a camer
   store.set({ webglError: true });
   resource.resolve();
   assert.equal(await action, false);
-  assert.equal(store.get().mode, "EXPLORATION_DIRECTORY");
+  assert.equal(store.get().mode, "EARTH_CITY_PICKER");
   assert.equal(store.get().destinationId, null);
   assert.equal(store.get().transitioning, false);
   assert.equal(particles.locationApproach, 0);
@@ -431,7 +443,7 @@ test("skip and ordinary completion cannot report a location view after a WebGL f
   );
   store.set({ webglError: true });
   assert.equal(controller.skipLocationTransition(), false);
-  assert.equal(store.get().mode, "EXPLORATION_DIRECTORY");
+  assert.equal(store.get().mode, "EARTH_CITY_PICKER");
   assert.equal(store.get().destinationId, null);
   store.set({ webglError: false });
   assert.equal(
@@ -440,7 +452,7 @@ test("skip and ordinary completion cannot report a location view after a WebGL f
   );
   store.set({ webglError: true });
   finish(controller);
-  assert.equal(store.get().mode, "EXPLORATION_DIRECTORY");
+  assert.equal(store.get().mode, "EARTH_CITY_PICKER");
   assert.equal(store.get().transitioning, false);
   assert.match(store.get().explorationError, /Scene unavailable/);
 });

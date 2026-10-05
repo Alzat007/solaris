@@ -1,0 +1,44 @@
+{
+  "id": "solaris-immersive-samples-1",
+  "version": "2026-10-04-immersive-samples-1",
+  "siteIds": ["beijing", "mars-olympus-mons", "mars-viking-1"],
+  "hotspotIds": [
+    "beijing-tiananmen",
+    "beijing-great-wall",
+    "beijing-birds-nest",
+    "olympus-summit-caldera",
+    "olympus-volcanic-flank",
+    "viking-1-surface-science"
+  ],
+  "files": [
+    {
+      "path": "exploration/beijing-tiananmen-2008.jpg",
+      "bytes": 170140,
+      "sha256": "9bd5d9eb07ce272447bf763c4257bfbac31c20dd635b36c9bbe7c28d604ea293"
+    },
+    {
+      "path": "exploration/beijing-badaling-2006.jpg",
+      "bytes": 116849,
+      "sha256": "feba659e1a245ac739291c16a9fb68177c3300c06ca43aa165b85189fba07341"
+    },
+    {
+      "path": "exploration/beijing-birds-nest-2020.jpg",
+      "bytes": 193446,
+      "sha256": "2a4409e4b3cc9ecf16fcbd473e8c321d73db3414e3a53a6276d2f9c90b5ce6f7"
+    },
+    {
+      "path": "exploration/olympus-mons-pia00993.jpg",
+      "bytes": 35045,
+      "sha256": "a190196034d30c33e91be67c3dd23358b2ee46b8fa816d6e6448330a30fb0726"
+    },
+    {
+      "path": "exploration/viking-1-pia00381.jpg",
+      "bytes": 166273,
+      "sha256": "cf33909637a4028ff3902a6b2d701c17eeb77829d543968d9b742a35c73d8874"
+    }
+  ],
+  "totalBytes": 681753,
+  "humanReview": "pending",
+  "offlineStatus": "bundled-assets-only",
+  "browserColdStartVerified": false
+}

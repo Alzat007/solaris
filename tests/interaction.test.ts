@@ -36,7 +36,7 @@ test("intro and every camera transition reject conflicting input", () => {
   machine.send("SELECT");
   rejectsNavigation(machine);
   machine.send("TRANSITION_END");
-  assert.equal(machine.state, "PLANET_FOCUS");
+  assert.equal(machine.state, "PLANET_OVERVIEW");
   assert.equal(machine.send("RETURN"), true);
   assert.equal(machine.state, "TRANSITION");
   rejectsNavigation(machine);
@@ -51,7 +51,7 @@ test("point is hover only and never changes app state", () => {
   machine.send("SELECT");
   machine.send("TRANSITION_END");
   machine.send("POINT");
-  assert.equal(machine.state, "PLANET_FOCUS");
+  assert.equal(machine.state, "PLANET_OVERVIEW");
 });
 test("sun uses a locked fly-in before entering its stable interior", () => {
   const machine = ready();

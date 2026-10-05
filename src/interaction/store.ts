@@ -27,6 +27,9 @@ export interface UIState {
   webglError: boolean;
   destinationId: string | null;
   explorationCityId: string | null;
+  explorationContinentId: string | null;
+  explorationCountryId: string | null;
+  activeHotspotId: string | null;
   activeStoryId: string | null;
   explorationError: string;
   language: "zh" | "en";
@@ -52,6 +55,9 @@ let snapshot: UIState = {
   webglError: false,
   destinationId: null,
   explorationCityId: null,
+  explorationContinentId: null,
+  explorationCountryId: null,
+  activeHotspotId: null,
   activeStoryId: null,
   explorationError: "",
   language: "zh",

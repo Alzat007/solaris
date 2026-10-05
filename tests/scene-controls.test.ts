@@ -81,11 +81,13 @@ test("planet data fades in only 400 ms after the camera finishes", (t) => {
   const controller = setup(t);
   controller.selectBody("earth");
   timeline(controller).progress(0.99);
-  rejected(controller);
+  assert.equal(controller.select("mars"), false);
+  assert.equal(controller.info(), false);
+  assert.equal(controller.scale(2), false);
   t.mock.timers.tick(1000);
   assert.equal(store.get().infoVisible, false);
   finish(controller);
-  assert.equal(store.get().mode, "PLANET_FOCUS");
+  assert.equal(store.get().mode, "PLANET_OVERVIEW");
   t.mock.timers.tick(config.INFO_REVEAL_DELAY - 1);
   assert.equal(store.get().infoVisible, false);
   t.mock.timers.tick(1);
@@ -154,7 +156,7 @@ test("zoom clamps bounds and releasing preserves size, selection and automatic i
   assert.equal(controller.endScale(), true);
   assert.equal(particles.targetScale, 0.65);
   assert.equal(store.get().selected, "earth");
-  assert.equal(store.get().mode, "PLANET_FOCUS");
+  assert.equal(store.get().mode, "PLANET_OVERVIEW");
   assert.equal(store.get().infoVisible, true);
 });
 test("pointing and invalid zoom samples cannot alter navigation", (t) => {

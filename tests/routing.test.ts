@@ -229,6 +229,57 @@ test("a held pinch newly entering the camera cannot click after re-entry or rele
     hold([hand("PINCH")], 600);
     assert.deepEqual(calls, []);
   }));
+test("a focused globe can be grabbed with the existing pinch drag without selecting", () =>
+  scenario(({ warm, hold, send, calls }) => {
+    warm();
+    store.set({ mode: "PLANET_OVERVIEW", selected: "earth" });
+    gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
+    hold([hand("PINCH")], 200);
+    for (let i = 1; i < 8; i++) send([hand("PINCH", 0.3 + i * 0.025)]);
+    assert.deepEqual(calls, []);
+    assert.ok(particles.targetRotation > 0);
+    assert.equal(gestureFeedback.get().action, "PINCH_DRAG");
+  }));
+test("a focused grab beginning on another body stays consumed until release", () =>
+  scenario(({ warm, hold, send, calls }) => {
+    warm();
+    store.set({ mode: "PLANET_OVERVIEW", selected: "earth" });
+    gestureTargets.set({ kind: "body", id: "mars", label: "火星" });
+    hold([hand("PINCH")], 200);
+    for (let i = 1; i < 8; i++) send([hand("PINCH", 0.3 + i * 0.025)]);
+    assert.deepEqual(calls, []);
+    assert.equal(particles.targetRotation, 0);
+  }));
+test("body exploration never acquires legacy body selection or rotation", () =>
+  scenario(({ warm, hold, send, calls }) => {
+    warm();
+    store.set({ mode: "BODY_EXPLORE", selected: "earth" });
+    gestureTargets.set({ kind: "body", id: "mars", label: "火星" });
+    hold([hand("POINT")], 400);
+    send([opening(0.4)]);
+    hold([opening()], 150);
+    gestureTargets.set({ kind: "body", id: "earth", label: "地球" });
+    hold([hand("PINCH")], 700);
+    for (let index = 1; index <= 5; index++)
+      send([hand("PINCH", 0.3 + index * 0.06)]);
+    assert.deepEqual(calls, []);
+    assert.equal(particles.dragging, false);
+    assert.equal(particles.targetRotation, 0);
+    assert.equal(particles.targetScale, 1);
+  }));
+test("body exploration never routes an open-hand flick to legacy planet switching", () =>
+  scenario(({ warm, hold, send, calls }) => {
+    warm();
+    store.set({ mode: "BODY_EXPLORE", selected: "earth" });
+    hold([hand("OPEN_PALM", 0.5)], 300);
+    for (let index = 0; index < 5; index++) {
+      const sample = hand("OPEN_PALM", 0.5 + index * 0.05);
+      sample.velocity.x = 1.2;
+      send([sample]);
+    }
+    assert.deepEqual(calls, []);
+    assert.equal(particles.targetRotation, 0);
+  }));
 test("hand loss discards target lock; open-thumb re-entry cannot inherit selection", () =>
   scenario(({ warm, send, hold, calls }) => {
     warm();
@@ -282,7 +333,7 @@ for (const mode of ["SUN_INTERIOR", "COLLAPSE"] as const)
 test("a fist after a locked aim cannot select and only returns after the lock expires", () =>
   scenario(({ warm, send, hold, calls }) => {
     warm();
-    store.set({ mode: "PLANET_FOCUS", selected: "earth" });
+    store.set({ mode: "PLANET_OVERVIEW", selected: "earth" });
     gestureTargets.set({ kind: "body", id: "mars", label: "火星" });
     hold([hand("POINT")], 300);
     hold([opening(0.9, "FIST")], 300);
@@ -352,7 +403,7 @@ test("stationary V arms once, right turns enlarge, left turns shrink and release
 test("V candidate and active dial suppress target selection, drag and fast swipe movement", () =>
   scenario(({ warm, send, hold, calls }) => {
     warm();
-    store.set({ mode: "PLANET_FOCUS", selected: "earth" });
+    store.set({ mode: "PLANET_OVERVIEW", selected: "earth" });
     gestureTargets.set({ kind: "body", id: "mars", label: "火星" });
     for (let i = 0; i < 30; i++) {
       const h = vHand(0, 0.2 + (i % 7) * 0.08);
@@ -380,7 +431,7 @@ test("V candidate and active dial suppress target selection, drag and fast swipe
 test("an owned V is retained when a second hand enters, reorders or tries a fist/pinch", () =>
   scenario(({ warm, send, hold, calls }) => {
     warm();
-    store.set({ mode: "PLANET_FOCUS", selected: "earth" });
+    store.set({ mode: "PLANET_OVERVIEW", selected: "earth" });
     hold([vHand()], 350);
     const base = gestureFeedback.get().zoomBaseAngle;
     hold([hand("FIST", 0.7, "right"), vHand(25)], 750);
@@ -463,14 +514,14 @@ test("target lock delays V capture until its fixed grace expires", () =>
 test("uncertain V confidence or a side-on palm cannot arm or produce a swipe", () =>
   scenario(({ warm, hold, calls }) => {
     warm();
-    store.set({ mode: "PLANET_FOCUS", selected: "earth" });
+    store.set({ mode: "PLANET_OVERVIEW", selected: "earth" });
     hold([{ ...vHand(35), vConfidence: 0.3, velocity: { x: 4, y: 0 } }], 800);
     hold([{ ...vHand(35), palmRollValid: false }], 800);
     assert.deepEqual(calls, []);
     assert.equal(particles.targetScale, 1);
     assert.equal(gestureFeedback.get().zoomMode, "IDLE");
   }));
-for (const mode of ["SUN_INTERIOR", "COLLAPSE"] as const)
+for (const mode of ["SUN_INTERIOR", "COLLAPSE", "BODY_EXPLORE"] as const)
   test(`V cannot zoom in ${mode}`, () =>
     scenario(({ warm, hold, calls }) => {
       warm();
@@ -480,6 +531,21 @@ for (const mode of ["SUN_INTERIOR", "COLLAPSE"] as const)
       assert.deepEqual(calls, []);
       assert.equal(particles.targetScale, 1);
     }));
+test("entering body exploration cancels an already owned legacy V dial", () =>
+  scenario(({ warm, send, hold, calls }) => {
+    warm();
+    hold([vHand()], 350);
+    hold([vHand(30)], 200);
+    assert.equal(gestureFeedback.get().zoomMode, "ZOOM_DIAL_ACTIVE");
+    const scale = particles.targetScale;
+    calls.length = 0;
+    store.set({ mode: "BODY_EXPLORE", selected: "earth" });
+    send([vHand(40)]);
+    hold([vHand(40)], 500);
+    assert.equal(gestureFeedback.get().zoomMode, "IDLE");
+    assert.equal(particles.targetScale, scale);
+    assert.deepEqual(calls, []);
+  }));
 test("a transition cancels an active dial and fresh V must hold again after unlock", () =>
   scenario(({ warm, send, hold }) => {
     warm();
@@ -520,7 +586,7 @@ test("releasing two close pinches as palms does not collapse", () =>
     hold(pair("OPEN_PALM", 0.15), 1300);
     assert.equal(calls.includes("collapse"), false);
   }));
-for (const mode of ["PLANET_FOCUS", "SUN_INTERIOR", "COLLAPSE"] as const)
+for (const mode of ["PLANET_OVERVIEW", "SUN_INTERIOR", "COLLAPSE"] as const)
   test(`a 600ms fist returns from ${mode}, but cancelling halfway does nothing`, () =>
     scenario(({ warm, send, hold, calls }) => {
       warm();
@@ -538,7 +604,7 @@ for (const mode of ["PLANET_FOCUS", "SUN_INTERIOR", "COLLAPSE"] as const)
 test("legacy V and THREE poses do not navigate", () =>
   scenario(({ warm, hold, calls }) => {
     warm();
-    store.set({ mode: "PLANET_FOCUS" });
+    store.set({ mode: "PLANET_OVERVIEW" });
     hold([hand("V_SIGN")], 800);
     hold([hand("THREE")], 800);
     assert.deepEqual(calls, []);
@@ -556,7 +622,7 @@ for (const direction of [-1, 1])
       };
       flick();
       assert.deepEqual(calls, []);
-      store.set({ mode: "PLANET_FOCUS", selected: "earth" });
+      store.set({ mode: "PLANET_OVERVIEW", selected: "earth" });
       hold([hand("OPEN_PALM", 0.5)], 300);
       flick();
       assert.deepEqual(calls, [`swipe:${-direction}`]);
@@ -598,7 +664,7 @@ test("low point confidence interrupts target locking and needs a fresh stable ai
 test("a long frame gap is treated as reconnecting and cannot generate a swipe", () =>
   scenario(({ warm, send, calls }) => {
     warm();
-    store.set({ mode: "PLANET_FOCUS" });
+    store.set({ mode: "PLANET_OVERVIEW" });
     send([hand("OPEN_PALM", 0.2)]);
     const h = hand("OPEN_PALM", 0.8);
     h.velocity.x = 5;
@@ -642,7 +708,7 @@ test("valid tracking never turns an uncertain pinch or fist into an action", () 
     hold([weak], 500);
     assert.equal(gestureFeedback.get().readiness, "READY");
     assert.deepEqual(calls, []);
-    store.set({ mode: "PLANET_FOCUS", selected: "earth" });
+    store.set({ mode: "PLANET_OVERVIEW", selected: "earth" });
     hold([{ ...hand("FIST"), trackingConfidence: 1, confidence: 0.3 }], 800);
     assert.deepEqual(calls, []);
   }));

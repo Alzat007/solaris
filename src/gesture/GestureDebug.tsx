@@ -19,7 +19,7 @@ export function GestureDebug() {
     s.mode === "PLANET_TRANSITION"
       ? "TRANSITION"
       : s.selected
-        ? "PLANET_FOCUS"
+        ? "PLANET_OVERVIEW"
         : s.mode === "SOLAR_SYSTEM" ||
             s.mode === "POINTER" ||
             s.mode === "UNIVERSE_SCALE"

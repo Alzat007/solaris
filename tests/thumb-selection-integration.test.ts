@@ -125,7 +125,7 @@ function setup(t: TestContext, mirror = false) {
     openThumb();
     hold("POINT", 500, { indexPipAngle: 165 });
     finish();
-    assert.equal(store.get().mode, "PLANET_FOCUS");
+    assert.equal(store.get().mode, "PLANET_OVERVIEW");
     assert.equal(store.get().infoVisible, true);
   };
   t.after(() => {
@@ -171,7 +171,7 @@ for (const mirror of [false, true]) {
       s.hold("POINT", 800, { thumbOpening: 1 });
       assert.equal(
         store.get().mode,
-        target.id === "earth" ? "PLANET_FOCUS" : "SUN_INTERIOR",
+        target.id === "earth" ? "PLANET_OVERVIEW" : "SUN_INTERIOR",
       );
       assert.equal(gestureFeedback.get().pulseId, pulse + 1);
     });
@@ -280,7 +280,7 @@ test("a fist after Point lock does not select another planet and may later retur
   s.lock(mars);
   s.hold("FIST", 350);
   assert.equal(store.get().selected, "earth");
-  assert.equal(store.get().mode, "PLANET_FOCUS");
+  assert.equal(store.get().mode, "PLANET_OVERVIEW");
   s.hold("FIST", 900);
   assert.equal(gestureFeedback.get().lastAction, "FIST_BACK");
   assert.equal(store.get().selected, null);
@@ -327,7 +327,7 @@ test("a first-visible fist after mouse navigation still waits 250ms then a fresh
   s.hold("FIST", config.HAND_REENTRY_DELAY);
   assert.equal(gestureFeedback.get().fistProgress, 0);
   s.hold("FIST", config.FIST_HOLD_TIME - 50);
-  assert.equal(store.get().mode, "PLANET_FOCUS");
+  assert.equal(store.get().mode, "PLANET_OVERVIEW");
   s.send("FIST");
   assert.equal(gestureFeedback.get().lastAction, "FIST_BACK");
 });

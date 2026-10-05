@@ -115,7 +115,11 @@ export class PointerFallback {
         : config.MOUSE_DRAG_START_PX)
     )
       this.moved = true;
-    if (this.moved && this.actions.overview()) {
+    if (
+      this.moved &&
+      (this.actions.overview() ||
+        (event.pointerType !== "touch" && this.actions.focused()))
+    ) {
       if (!this.dragging) {
         this.actions.startDrag();
         this.dragging = true;

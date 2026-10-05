@@ -29,7 +29,7 @@ const isOverview = (state: UIState) =>
   (state.mode === "SOLAR_SYSTEM" || state.mode === "POINTER") &&
   state.selected === null;
 const isFocused = (state: UIState, planetId: PlanetId) =>
-  (state.mode === "PLANET_FOCUS" || state.mode === "INFO") &&
+  (state.mode === "PLANET_OVERVIEW" || state.mode === "INFO") &&
   state.selected === planetId;
 const planetName = (planetId: PlanetId) =>
   planets.find((planet) => planet.id === planetId)!.chineseName;

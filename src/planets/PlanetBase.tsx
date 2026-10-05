@@ -34,6 +34,7 @@ export function PlanetBase({
     exitAmount = useRef(0);
   const focusTarget = useMemo(() => new Vector3(), []);
   const desiredScale = useMemo(() => new Vector3(), []);
+  const previousDragRotation = useRef(particles.rotation);
   useLayoutEffect(() => {
     const object = root.current!;
     planetObjects.set(id, object);
@@ -112,6 +113,10 @@ export function PlanetBase({
       desiredScale.set(desired, desired, desired),
       1 - Math.exp(-delta * 6),
     );
+    const dragDelta = particles.rotation - previousDragRotation.current;
+    previousDragRotation.current = particles.rotation;
+    if (body.current && active && ["PLANET_OVERVIEW", "INFO"].includes(mode))
+      body.current.rotation.y += dragDelta;
     if (body.current && !(active && explorationModes.includes(mode)))
       body.current.rotation.y += delta * data.rotationSpeed;
     if (hoverRing.current)

@@ -1,12 +1,12 @@
-import { useEffect } from "react";
-import { Canvas, useThree } from "@react-three/fiber";
+import { useEffect, useRef } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   Bloom,
   EffectComposer,
   Vignette,
   ToneMapping,
 } from "@react-three/postprocessing";
-import { ACESFilmicToneMapping } from "three";
+import { ACESFilmicToneMapping, Group } from "three";
 import gsap from "gsap";
 import { SolarSystem } from "./SolarSystem";
 import { StarField } from "./StarField";
@@ -17,6 +17,12 @@ import { InputField } from "./InputField";
 import { particles } from "../particles/ParticleEngine";
 import { interaction } from "../interaction/InteractionController";
 import { useSolaris, store } from "../interaction/store";
+import {
+  LocalExplorationScene,
+  DescentVeil,
+} from "../exploration/LocalExplorationScene";
+import { descentPhase } from "../exploration/sceneState";
+import { EarthHandoff } from "./EarthHandoff";
 function RendererLifecycle() {
   const { gl } = useThree();
   useEffect(() => {
@@ -42,6 +48,7 @@ function RendererLifecycle() {
 }
 function Intro() {
   useEffect(() => {
+    if (store.get().mode !== "INTRO") return;
     const animation = gsap.to(particles, {
       intro: 1,
       duration: 5.2,
@@ -56,7 +63,12 @@ function Intro() {
 }
 function Scene() {
   const { quality, mode } = useSolaris();
-  const reading = mode === "LOCATION_VIEW";
+  const solar = useRef<Group>(null);
+  useFrame(() => {
+    if (solar.current)
+      solar.current.visible = !descentPhase(particles.locationApproach)
+        .localVisible;
+  });
   return (
     <>
       <color attach="background" args={["#020204"]} />
@@ -66,17 +78,20 @@ function Scene() {
         intensity={1.8}
         color="#fff1d7"
       />
-      <group visible={!reading}>
+      <group ref={solar}>
         <StarField />
         <SolarSystem />
         <SunInterior />
       </group>
+      <LocalExplorationScene />
+      <DescentVeil />
       <CameraController />
+      <EarthHandoff />
       <InputField />
       <Intro />
       <RendererLifecycle />
       <PerformanceManager />
-      {quality !== "LOW" && !reading && (
+      {quality !== "LOW" && mode !== "DESCENT_TRANSITION" && (
         <EffectComposer multisampling={0}>
           <Bloom
             intensity={0.43}
@@ -91,9 +106,10 @@ function Scene() {
     </>
   );
 }
-export function SolarScene() {
+export function SolarScene({ paused = false }: { paused?: boolean }) {
   return (
     <Canvas
+      frameloop={paused ? "never" : "always"}
       camera={{ position: [0, 15, 32], fov: 43, near: 0.1, far: 250 }}
       dpr={window.innerWidth < 700 ? 1 : [1, 1.5]}
       gl={{

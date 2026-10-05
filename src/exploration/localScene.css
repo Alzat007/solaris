@@ -1,0 +1,84 @@
+.atlas-hotspot {
+  position: absolute;
+  pointer-events: auto;
+  max-width: min(260px, calc(100vw - 24px));
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 42px;
+  padding: 8px 12px;
+  background: #081c18dc;
+  border: 1px solid #91dccb80;
+  border-radius: 6px;
+  backdrop-filter: blur(10px);
+  color: #e0fff5;
+  font-size: 14px;
+  line-height: 1.35;
+  white-space: normal;
+  letter-spacing: 0;
+  transition:
+    background 180ms,
+    box-shadow 180ms;
+}
+.atlas-connector {
+  position: absolute;
+  height: 1px;
+  background: #8be6ce90;
+  transform-origin: left center;
+  pointer-events: none;
+}
+.atlas-loading {
+  display: block;
+  width: 200px;
+  padding: 12px;
+  text-align: center;
+  color: #e0fff5;
+  background: #081c18dc;
+  border: 1px solid #91dccb80;
+  border-radius: 6px;
+}
+.atlas-hotspot i {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: #9effd8;
+  box-shadow: 0 0 12px #78ffc7;
+  animation: atlas-pulse 2.4s ease-in-out infinite;
+}
+.atlas-hotspot:hover,
+.atlas-hotspot:focus-visible,
+.atlas-hotspot[data-gesture-hover="true"],
+.atlas-hotspot.selected {
+  background: #234e44ee;
+  border-color: #ffe0a2;
+  box-shadow: 0 0 20px #b5f6e62e;
+  outline: 2px solid #ffe0a2;
+  outline-offset: 4px;
+}
+.atlas-hotspot:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.tv-mode .atlas-hotspot {
+  font-size: 20px;
+  padding: 12px 18px;
+}
+@keyframes atlas-pulse {
+  50% {
+    opacity: 0.55;
+    box-shadow: 0 0 4px #78ffc7;
+  }
+}
+@media (max-width: 699px) {
+  .atlas-hotspot {
+    font-size: 12px;
+    gap: 6px;
+    padding: 7px 9px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atlas-hotspot i {
+    animation: none;
+  }
+}

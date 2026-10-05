@@ -18,7 +18,7 @@ import type { HandFeatures, HandFrame } from "./GestureTypes";
 
 const overview = (mode: string) =>
   mode === "SOLAR_SYSTEM" || mode === "POINTER";
-const focused = (mode: string) => mode === "PLANET_FOCUS" || mode === "INFO";
+const focused = (mode: string) => mode === "PLANET_OVERVIEW" || mode === "INFO";
 const canDial = (mode: string) =>
   overview(mode) ||
   focused(mode) ||
@@ -280,8 +280,8 @@ export class GestureController {
     const locked = interaction.isLocked();
     const fistPresent = first.gesture === "FIST" || second?.gesture === "FIST";
     if (
-      mode === "LOCATION_TRANSITION" &&
-      this.previousMode !== "LOCATION_TRANSITION"
+      mode === "DESCENT_TRANSITION" &&
+      this.previousMode !== "DESCENT_TRANSITION"
     ) {
       this.fist.reset();
       if (this.previousFistPresent && fistPresent) this.fistNeedsRelease = true;
@@ -376,7 +376,7 @@ export class GestureController {
     };
     // The location animation stays locked, but a fresh deliberate fist may
     // cancel it. All selection, zoom, swipe and drag remain disabled.
-    if (mode === "LOCATION_TRANSITION" && locked && ready && cooldownMs === 0) {
+    if (mode === "DESCENT_TRANSITION" && locked && ready && cooldownMs === 0) {
       this.stopNonBackMotion();
       rotation.stop();
       this.updateSelectionMachine(first, null, time, false);
@@ -560,15 +560,19 @@ export class GestureController {
       }
     }
 
-    // Pinch remains a blank-space drag only. It can never select a body or
-    // HUD button, and a hold beginning over a target is consumed until release.
+    // Pinch never selects. In planet overview it can also grab the selected
+    // globe; other bodies and HUD targets retain the existing release guard.
     if (!second) {
       if (p0.justReleased || first.gesture !== "PINCH") {
         if (this.pinchContext === "drag") rotation.end();
         this.pinchContext = null;
       }
       if (p0.justStarted) {
-        this.pinchContext = currentTarget ? "consumed" : "blank";
+        const ownGlobe =
+          focused(mode) &&
+          currentTarget?.kind === "body" &&
+          currentTarget.id === store.get().selected;
+        this.pinchContext = currentTarget && !ownGlobe ? "consumed" : "blank";
         this.pinchOriginX = this.dragLastX = first.pointer.x;
         this.pinchOriginY = first.pointer.y;
         this.dragLastTime = time;
@@ -579,7 +583,7 @@ export class GestureController {
         this.swipe.reset();
         if (
           p0.phase === "PINCH_HOLD" &&
-          overview(mode) &&
+          (overview(mode) || focused(mode)) &&
           (this.pinchContext === "blank" || this.pinchContext === "drag")
         ) {
           if (

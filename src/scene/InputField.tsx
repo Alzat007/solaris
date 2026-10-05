@@ -31,6 +31,23 @@ export function InputField() {
   const pointer = useMemo(() => new Vector2(), []);
   useEffect(() => {
     const canvas = gl.domElement;
+    if (new URLSearchParams(location.search).get("qa") === "1") {
+      Object.assign(window, {
+        __SOLARIS_SCENE_QA: {
+          state: () => ({
+            mode: store.get().mode,
+            selected: store.get().selected,
+          }),
+          target: (id: Parameters<typeof projectPlanetTarget>[0]) =>
+            projectPlanetTarget(
+              id,
+              camera,
+              canvas.clientWidth,
+              canvas.clientHeight,
+            ),
+        },
+      });
+    }
     const unregisterScreen = gestureTargets.registerScreenResolver((target) => {
       if (target.kind === "ui") {
         const element = Array.from(
@@ -73,9 +90,12 @@ export function InputField() {
       return pickPlanet(pointer, camera, rect.width, rect.height);
     };
     const fallback = new PointerFallback({
-      locked: () => interaction.isLocked(),
+      locked: () =>
+        interaction.isLocked() ||
+        store.get().mode === "BODY_EXPLORE" ||
+        explorationModes.includes(store.get().mode),
       overview: () => ["SOLAR_SYSTEM", "POINTER"].includes(store.get().mode),
-      focused: () => ["PLANET_FOCUS", "INFO"].includes(store.get().mode),
+      focused: () => ["PLANET_OVERVIEW", "INFO"].includes(store.get().mode),
       width: () => canvas.getBoundingClientRect().width,
       pick,
       point(x, y) {
@@ -111,6 +131,7 @@ export function InputField() {
         store.set({ hover: null });
     };
     const wheel = (event: WheelEvent) => {
+      if (store.get().mode === "BODY_EXPLORE") return;
       event.preventDefault();
       if (
         interaction.scale(
@@ -121,7 +142,11 @@ export function InputField() {
         interaction.endScale();
     };
     const key = (event: KeyboardEvent) => {
-      if (explorationModes.includes(store.get().mode)) {
+      if (store.get().mode === "BODY_EXPLORE") return;
+      if (
+        explorationModes.includes(store.get().mode) ||
+        ["PLANET_TRANSITION", "TRANSITION"].includes(store.get().mode)
+      ) {
         if (event.code === "Escape" && !event.repeat) {
           event.preventDefault();
           interaction.return();
@@ -149,7 +174,8 @@ export function InputField() {
       if (event.code === "KeyS") interaction.selectBody("sun");
     };
     const unsubscribe = store.subscribe(() => {
-      if (interaction.isLocked()) fallback.cancel();
+      if (interaction.isLocked() || store.get().mode === "BODY_EXPLORE")
+        fallback.cancel();
     });
     canvas.addEventListener("pointerdown", down);
     canvas.addEventListener("pointermove", move);
@@ -161,6 +187,7 @@ export function InputField() {
     window.addEventListener("keydown", key);
     window.addEventListener("blur", cancel);
     return () => {
+      Reflect.deleteProperty(window, "__SOLARIS_SCENE_QA");
       unsubscribe();
       unregisterScreen();
       fallback.cancel();
@@ -179,6 +206,7 @@ export function InputField() {
   }, [camera, gl, pointer]);
   useFrame((_, dt) => {
     const state = store.get();
+    if (state.mode === "BODY_EXPLORE") return;
     const hand = state.tracking === "online" && particles.cursorVisible;
     const on =
       particles.active &&

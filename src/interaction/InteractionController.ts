@@ -12,8 +12,17 @@ import { audio } from "../audio/AudioManager";
 import { gestureConfig as config } from "../gesture/gestureConfig";
 import type { CelestialId } from "../gesture/gestureFeedback";
 import { gestureTargets } from "../gesture/gestureTargets";
-import { assets, destinations } from "../exploration/content";
-import { bodyTransforms, facingRotation } from "../exploration/sceneState";
+import { assets } from "../exploration/content";
+import {
+  getImmersiveSite,
+  validateImmersiveCatalog,
+} from "../exploration/immersiveCatalog";
+import {
+  bodyTransforms,
+  facingRotation,
+  getSiteResourcePaths,
+  pickerModes,
+} from "../exploration/sceneState";
 
 export type ResourceLoader = (
   paths: string[],
@@ -58,6 +67,7 @@ export class InteractionController {
   private infoTimer: ReturnType<typeof setTimeout> | null = null;
   private visited = new Set<PlanetId>();
   private locationEpoch = 0;
+  private planetEpoch = 0;
   private resourceAbort: AbortController | null = null;
   private bodySnapshot: {
     id: PlanetId;
@@ -66,7 +76,34 @@ export class InteractionController {
     z: number;
   } | null = null;
   private directoryInfoVisible = false;
-  private directoryOrigin: InteractionState = "PLANET_FOCUS";
+  private directoryOrigin: InteractionState = "PLANET_OVERVIEW";
+  private planetOrigin: {
+    mode: InteractionState;
+    selected: PlanetId | null;
+    infoVisible: boolean;
+    focus: number;
+    assembly: number;
+    sunInterior: number;
+    collapse: number;
+    explosion: number;
+    burst: number;
+    targetScale: number;
+  } | null = null;
+  private snapshotPlanet() {
+    const origin = store.get();
+    this.planetOrigin = {
+      mode: this.machine.state,
+      selected: origin.selected,
+      infoVisible: origin.infoVisible,
+      focus: particles.focus,
+      assembly: particles.assembly,
+      sunInterior: particles.sunInterior,
+      collapse: particles.collapse,
+      explosion: particles.explosion,
+      burst: particles.burst,
+      targetScale: particles.targetScale,
+    };
+  }
   private restoreLocation() {
     this.locationEpoch++;
     this.resourceAbort?.abort();
@@ -85,6 +122,7 @@ export class InteractionController {
     store.set({
       destinationId: null,
       activeStoryId: null,
+      activeHotspotId: null,
       mode: this.machine.state,
       transitioning: false,
       locationResourcesReady: false,
@@ -95,11 +133,15 @@ export class InteractionController {
       this.isLocked() ||
       store.get().webglError ||
       !store.get().selected ||
-      !this.machine.can("BROWSE")
+      !this.machine.can(
+        store.get().selected === "earth" ? "BROWSE_EARTH" : "BROWSE",
+      )
     )
       return false;
     this.directoryOrigin = this.machine.state;
-    this.machine.send("BROWSE");
+    this.machine.send(
+      store.get().selected === "earth" ? "BROWSE_EARTH" : "BROWSE",
+    );
     this.cancelInfo();
     rotation.stop();
     this.directoryInfoVisible = store.get().infoVisible;
@@ -107,27 +149,70 @@ export class InteractionController {
       mode: this.machine.state,
       infoVisible: false,
       explorationCityId: null,
+      explorationContinentId: null,
+      explorationCountryId: null,
+      activeHotspotId: null,
       destinationId: null,
       activeStoryId: null,
       explorationError: "",
     });
     return true;
   }
-  openStory(id: string | null) {
-    if (this.machine.state !== "LOCATION_VIEW") return false;
-    const destination = destinations.find(
-      (entry) => entry.id === store.get().destinationId,
-    );
-    if (id !== null && !destination?.storyIds.includes(id)) return false;
-    store.set({ activeStoryId: id });
+  chooseContinent(id: string) {
+    if (
+      id !== "asia" ||
+      store.get().selected !== "earth" ||
+      this.isLocked() ||
+      !this.machine.send("PICK_CONTINENT")
+    )
+      return false;
+    store.set({ mode: this.machine.state, explorationContinentId: id });
+    return true;
+  }
+  chooseCountry(id: string) {
+    if (
+      id !== "cn" ||
+      store.get().explorationContinentId !== "asia" ||
+      this.isLocked() ||
+      !this.machine.send("PICK_COUNTRY")
+    )
+      return false;
+    store.set({ mode: this.machine.state, explorationCountryId: id });
+    return true;
+  }
+  chooseCity(id: string, load: ResourceLoader = preloadLocation) {
+    if (id !== "city-beijing" || store.get().explorationCountryId !== "cn")
+      return Promise.resolve(false);
+    return this.enterDestination("beijing", load);
+  }
+  openHotspot(id: string) {
+    if (
+      this.isLocked() ||
+      store.get().webglError ||
+      this.machine.state !== "LOCATION_OVERVIEW"
+    )
+      return false;
+    const site = getImmersiveSite(store.get().destinationId ?? "");
+    if (
+      !site?.hotspots.some((hotspot) => hotspot.id === id) ||
+      !this.machine.send("OPEN_HOTSPOT")
+    )
+      return false;
+    gestureTargets.set(null);
+    store.set({ mode: this.machine.state, activeHotspotId: id });
     return true;
   }
   async enterDestination(id: string, load: ResourceLoader = preloadLocation) {
-    const destination = destinations.find((entry) => entry.id === id);
+    const destination = getImmersiveSite(id);
     if (
       !destination ||
-      destination.status !== "ready" ||
       destination.bodyId !== store.get().selected ||
+      (destination.bodyId === "earth" &&
+        (this.machine.state !== "EARTH_CITY_PICKER" ||
+          store.get().explorationContinentId !== "asia" ||
+          store.get().explorationCountryId !== "cn")) ||
+      (destination.bodyId !== "earth" &&
+        this.machine.state !== "PLANET_REGION_PICKER") ||
       store.get().webglError ||
       this.isLocked() ||
       !this.machine.send("ENTER_LOCATION")
@@ -152,22 +237,29 @@ export class InteractionController {
       explorationCityId: destination.cityId ?? null,
       explorationError: "",
       activeStoryId: null,
+      activeHotspotId: null,
       locationResourcesReady: false,
     });
     try {
-      const resources = destination.assetIds.map((assetId) =>
-        assets.find((asset) => asset.id === assetId),
-      );
+      if (validateImmersiveCatalog([destination]).length)
+        throw new Error("Invalid local content");
+      const base = assets.find((asset) => asset.id === destination.baseAssetId);
       if (
-        resources.some(
-          (asset) => !asset || asset.review.status !== "source-checked",
+        (destination.baseAssetId &&
+          (!base || base.review.status !== "source-checked")) ||
+        destination.hotspots.some(
+          (hotspot) =>
+            hotspot.image &&
+            (!hotspot.image.sourceUrl.startsWith("https://") ||
+              !hotspot.image.license ||
+              !hotspot.image.licenseUrl.startsWith("https://") ||
+              !/^exploration\/[a-z0-9-]+\.(jpg|jpeg|png|webp)$/.test(
+                hotspot.image.path,
+              )),
         )
       )
         throw new Error("Unreviewed resource");
-      await load(
-        resources.map((asset) => asset!.path),
-        this.resourceAbort.signal,
-      );
+      await load(getSiteResourcePaths(destination), this.resourceAbort.signal);
       if (epoch !== this.locationEpoch) return false;
       if (store.get().webglError) throw new Error("Scene unavailable");
       this.resourceAbort = null;
@@ -190,10 +282,10 @@ export class InteractionController {
           store.set({ mode: this.machine.state, transitioning: false });
         },
       });
-      if (body && destination.position) {
+      if (body) {
         const pose = facingRotation(
-          destination.position.latitude,
-          destination.position.longitude,
+          destination.center.latitude,
+          destination.center.longitude,
         );
         this.transition.to(
           body.rotation,
@@ -210,7 +302,7 @@ export class InteractionController {
         particles,
         {
           locationApproach: 1,
-          duration: reduced ? 0.05 : 3.6,
+          duration: reduced ? 0.05 : 6.4,
           ease: "power2.inOut",
         },
         0,
@@ -228,7 +320,7 @@ export class InteractionController {
   }
   skipLocationTransition() {
     if (
-      this.machine.state !== "LOCATION_TRANSITION" ||
+      this.machine.state !== "DESCENT_TRANSITION" ||
       !store.get().locationResourcesReady ||
       !this.transition
     )
@@ -278,15 +370,47 @@ export class InteractionController {
   isLocked() {
     return this.machine.locked || store.get().transitioning;
   }
+  canCancelPlanetTransition() {
+    return (
+      this.machine.state === "PLANET_TRANSITION" ||
+      (this.machine.state === "TRANSITION" && !!this.planetOrigin?.selected)
+    );
+  }
   ready() {
     if (this.machine.send("READY")) this.sync();
+  }
+  enterBodyExplore() {
+    if (
+      store.get().selected !== "earth" ||
+      store.get().webglError ||
+      this.isLocked() ||
+      !this.machine.send("ENTER_BODY_EXPLORE")
+    )
+      return false;
+    this.cancelInfo();
+    rotation.stop();
+    gestureTargets.set(null);
+    store.set({
+      mode: this.machine.state,
+      infoVisible: false,
+      hover: null,
+      heldUniverse: false,
+    });
+    return true;
   }
   selectBody(id: CelestialId) {
     return id === "sun" ? this.enterSun() : this.select(id);
   }
   select(id: PlanetId) {
-    if (!planets.some((planet) => planet.id === id) || !this.begin("SELECT"))
+    if (
+      !planets.some((planet) => planet.id === id) ||
+      this.isLocked() ||
+      !this.machine.can("SELECT")
+    )
       return false;
+    this.snapshotPlanet();
+    if (!this.begin("SELECT")) return false;
+    const epoch = ++this.planetEpoch;
     store.set({ selected: id, welcome: false, help: false });
     const first = !this.visited.has(id);
     this.visited.add(id);
@@ -296,13 +420,15 @@ export class InteractionController {
     this.transition = gsap
       .timeline({
         onComplete: () => {
+          if (epoch !== this.planetEpoch) return;
           this.finish();
           this.infoTimer = setTimeout(() => {
             this.infoTimer = null;
             if (
+              epoch === this.planetEpoch &&
               !this.isLocked() &&
               store.get().selected === id &&
-              ["PLANET_FOCUS", "INFO", "UNIVERSE_SCALE"].includes(
+              ["PLANET_OVERVIEW", "INFO", "UNIVERSE_SCALE"].includes(
                 this.machine.state,
               )
             )
@@ -323,7 +449,7 @@ export class InteractionController {
   next(direction: number) {
     if (
       this.isLocked() ||
-      !["PLANET_FOCUS", "INFO"].includes(this.machine.state) ||
+      !["PLANET_OVERVIEW", "INFO"].includes(this.machine.state) ||
       !store.get().selected ||
       !direction
     )
@@ -343,35 +469,78 @@ export class InteractionController {
       store.set({ help: false });
       return true;
     }
-    if (this.machine.state === "LOCATION_VIEW" && store.get().activeStoryId) {
-      store.set({ activeStoryId: null });
+    if (this.canCancelPlanetTransition() && this.planetOrigin) {
+      this.planetEpoch++;
+      this.transition?.kill();
+      this.cancelInfo();
+      rotation.stop();
+      const origin = this.planetOrigin;
+      this.machine.send("TRANSITION_CANCEL");
+      Object.assign(particles, {
+        focus: origin.focus,
+        assembly: origin.assembly,
+        sunInterior: origin.sunInterior,
+        collapse: origin.collapse,
+        explosion: origin.explosion,
+        burst: origin.burst,
+        targetScale: origin.targetScale,
+      });
+      particles.setState("REST");
+      store.set({
+        mode: origin.mode,
+        selected: origin.selected,
+        infoVisible: origin.infoVisible,
+        transitioning: false,
+      });
       return true;
     }
-    if (["LOCATION_TRANSITION", "LOCATION_VIEW"].includes(this.machine.state)) {
+    if (this.machine.state === "INFO_PANEL_OPEN") {
+      this.machine.send("CLOSE_HOTSPOT");
+      store.set({
+        mode: this.machine.state,
+        activeHotspotId: null,
+        activeStoryId: null,
+      });
+      return true;
+    }
+    if (
+      ["DESCENT_TRANSITION", "LOCATION_OVERVIEW"].includes(this.machine.state)
+    ) {
       this.restoreLocation();
       return true;
     }
-    if (this.machine.state === "EXPLORATION_DIRECTORY") {
-      if (store.get().explorationCityId) {
-        store.set({ explorationCityId: null });
-        return true;
-      }
-      this.machine.send("EXIT_DIRECTORY");
-      if (this.directoryOrigin === "INFO") this.machine.send("INFO");
-      this.bodySnapshot = null;
+    if (pickerModes.includes(this.machine.state)) {
+      const from = this.machine.state;
+      this.machine.send("RETURN");
+      const toPlanet = this.machine.state === "PLANET_OVERVIEW";
+      if (toPlanet && this.directoryOrigin === "INFO")
+        this.machine.send("INFO");
+      if (toPlanet) this.bodySnapshot = null;
       store.set({
         mode: this.machine.state,
-        infoVisible: this.directoryInfoVisible,
+        infoVisible: toPlanet && this.directoryInfoVisible,
+        explorationCityId: null,
+        ...(from === "EARTH_CITY_PICKER" ? { explorationCountryId: null } : {}),
+        ...(from === "EARTH_COUNTRY_PICKER"
+          ? { explorationContinentId: null, explorationCountryId: null }
+          : {}),
         explorationError: "",
       });
       return true;
     }
+    if (this.isLocked() || !this.machine.can("RETURN")) return false;
+    this.snapshotPlanet();
     if (!this.begin("RETURN")) return false;
+    const epoch = ++this.planetEpoch;
     store.set({ selected: null });
     particles.targetScale = 1;
     particles.setState("ASSEMBLE");
     this.transition = gsap
-      .timeline({ onComplete: () => this.finish() })
+      .timeline({
+        onComplete: () => {
+          if (epoch === this.planetEpoch) this.finish();
+        },
+      })
       .to(particles, {
         focus: 0,
         sunInterior: 0,
@@ -392,7 +561,7 @@ export class InteractionController {
   info() {
     if (
       this.isLocked() ||
-      !["PLANET_FOCUS", "INFO"].includes(this.machine.state)
+      !["PLANET_OVERVIEW", "INFO"].includes(this.machine.state)
     )
       return false;
     this.cancelInfo();

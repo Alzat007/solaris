@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   findNextFocusIndex,
   installTvNavigation,
+  isBackKey,
   isTvMode,
   type FocusRect,
 } from "../src/platform/tvNavigation";
@@ -19,6 +20,29 @@ test("TV mode requires an explicit tv=1 query parameter", () => {
   assert.equal(isTvMode("tv=1"), true);
   for (const value of ["", "?tv", "?tv=0", "?tv=true", "?notv=1"])
     assert.equal(isTvMode(value), false);
+});
+
+test("shared Back matching covers browser and existing Android TV keyboard events", () => {
+  for (const key of ["Escape", "GoBack", "BrowserBack"])
+    assert.equal(isBackKey({ key, keyCode: 0 }), true, key);
+  assert.equal(isBackKey({ key: "Unidentified", keyCode: 4 }), true);
+  assert.equal(isBackKey({ key: "", keyCode: 4 }), true);
+});
+
+test("shared Back matching never captures unrelated controls or text-editing keys", () => {
+  for (const [key, keyCode] of [
+    ["Enter", 13],
+    ["Backspace", 8],
+    ["ArrowLeft", 37],
+    ["ArrowRight", 39],
+    ["ArrowUp", 38],
+    ["ArrowDown", 40],
+    ["Tab", 9],
+    [" ", 32],
+    ["Unidentified", 0],
+    ["escape", 0],
+  ] as const)
+    assert.equal(isBackKey({ key, keyCode }), false, key);
 });
 
 test("D-pad spatial navigation selects adjacent controls in a grid", () => {

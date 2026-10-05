@@ -72,7 +72,7 @@ export function HUD() {
             aria-label="返回太阳系"
             data-gesture-id="back-home"
             data-gesture-label="返回太阳系"
-            disabled={busy}
+            disabled={busy && !interaction.canCancelPlanetTransition()}
             onClick={() => {
               interaction.return();
               store.set({ welcome: false });
