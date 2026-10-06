@@ -1,0 +1,1818 @@
+{
+  "retrievedAt": "2026-10-06",
+  "description": "Wikimedia Commons file metadata retained for independent photo copyright/date/subject review; not automatic human approval.",
+  "files": [
+    {
+      "filename": "paris-1.jpg",
+      "title": "Seine River, Paris.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Seine_River,_Paris.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/Seine_River%2C_Paris.jpg/960px-Seine_River%2C_Paris.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Seine_River%2C_Paris.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        5184,
+        3456
+      ],
+      "displayDimensions": [
+        960,
+        640
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2019-04-19 11:21:11",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Seine River, Paris",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Seine River in Paris|Self-published work|Notre-Dame de Paris in 2018",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Seine River with Notre Dame church at distance.",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2018-11-18 18:56:29",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Nadiantara\" title=\"User:Nadiantara\">Nadiantara</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 3.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 3.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/3.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-3.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 158680,
+      "sha256": "422a47b7c77fd92f2b71a8ba8378606f7c944171cb5022ae644bb6ff19008a1a"
+    },
+    {
+      "filename": "paris-2.jpg",
+      "title": "River Seine, Paris.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:River_Seine,_Paris.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/River_Seine%2C_Paris.jpg/960px-River_Seine%2C_Paris.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e5/River_Seine%2C_Paris.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        5760,
+        3840
+      ],
+      "displayDimensions": [
+        960,
+        640
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2018-05-13 20:10:09",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "River Seine, Paris",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Bridges in Paris|Self-published work|Clouds and blue sky in Paris",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Paris, France",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2018-04-15 10:41:24",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Kabusa16\" title=\"User:Kabusa16\">Kabusa16</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 198386,
+      "sha256": "3fa50930ba17c91ddc58e74a30af2107e5cb0cb61938602fdece2d89f5a71143"
+    },
+    {
+      "filename": "shanghai-1.jpg",
+      "title": "File:2010 Shanghai Expo World's Fair - China Pavilion 03.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2010_Shanghai_Expo_World%27s_Fair_-_China_Pavilion_03.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/2010_Shanghai_Expo_World%27s_Fair_-_China_Pavilion_03.jpg/960px-2010_Shanghai_Expo_World%27s_Fair_-_China_Pavilion_03.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c5/2010_Shanghai_Expo_World%27s_Fair_-_China_Pavilion_03.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        4752,
+        3168
+      ],
+      "displayDimensions": [
+        960,
+        640
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2021-04-19 09:38:01",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "2010 Shanghai Expo World's Fair - China Pavilion 03",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "CC-Zero|China Pavilion of Expo 2010|Files with coordinates missing SDC location of creation|Flickr images reviewed by FlickreviewR 2",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "GPSLatitude": {
+          "value": "31.186542",
+          "source": "commons-desc-page"
+        },
+        "GPSLongitude": {
+          "value": "121.489864",
+          "source": "commons-desc-page"
+        },
+        "GPSMapDatum": {
+          "value": "WGS-84",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Shanghai Expo 2010 World's Fair. Complete indexed photo collection at www.WorldHistoryPics.com.",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2010-09-17 08:57:48",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<a rel=\"nofollow\" class=\"external free\" href=\"https://www.flickr.com/photos/101561334@N08/10178321836/\">https://www.flickr.com/photos/101561334@N08/10178321836/</a>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "Gary Lee Todd, Ph.D.",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Zero, Public Domain Dedication",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "false",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 124000,
+      "sha256": "c7dab7aa3191a8777e7624ed59c7bdb7712ea5527b8a8d2a673ec1c0a5d40905"
+    },
+    {
+      "filename": "shanghai-2.jpg",
+      "title": "China Pavilion at Expo 2010.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:China_Pavilion_at_Expo_2010.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/China_Pavilion_at_Expo_2010.jpg/960px-China_Pavilion_at_Expo_2010.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/2/24/China_Pavilion_at_Expo_2010.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        3072,
+        2304
+      ],
+      "displayDimensions": [
+        960,
+        720
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2011-07-01 21:05:46",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "China Pavilion at Expo 2010",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Taken with Nikon Coolpix 7900|China Pavilion of Expo 2010|Self-published work",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Exterior corner view of the China Pavilion at Expo 2010 in Shanghai, China",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2010-12-25",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Windtrain&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Windtrain (page does not exist)\">Windtrain</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 3.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 3.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/3.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-3.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 118121,
+      "sha256": "da8d1bde544da1126d7ffadbba6e60c3fabe59ad10d350f409e6962ae1166f0c"
+    },
+    {
+      "filename": "new-york-1.jpg",
+      "title": "Statue of Liberty frontal 2.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Statue_of_Liberty_frontal_2.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6e/Statue_of_Liberty_frontal_2.jpg/960px-Statue_of_Liberty_frontal_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Statue_of_Liberty_frontal_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        3249,
+        8048
+      ],
+      "displayDimensions": [
+        960,
+        2378
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2008-06-05 23:02:24",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Statue of Liberty frontal 2",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "May 2008 in New York City|Self-published work|Created with Hugin|PD US expired|Featured pictures on Wikipedia, Turkish|Front views of the Statue of Liberty|Files with coordinates missing SDC location of creation|United States photographs taken on 2008-05-28|Statue of Liberty in 2008|Files by User:Dschwen|Upshots of the Statue of Liberty",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "quality",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "GPSLatitude": {
+          "value": "40.688560",
+          "source": "commons-desc-page"
+        },
+        "GPSLongitude": {
+          "value": "-74.044198",
+          "source": "commons-desc-page"
+        },
+        "GPSMapDatum": {
+          "value": "WGS-84",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "View of the Statue of Liberty from Liberty Island",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "Taken on 28 May 2008",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Dschwen\" title=\"User:Dschwen\">Daniel Schwen</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "Public domain",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Public domain",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "false",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Copyrighted": {
+          "value": "False",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "pd",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 469094,
+      "sha256": "962e3ab90be019568eebd26d5a0cb5ef6e50a1804648e1caae346ec9bcb06b35"
+    },
+    {
+      "filename": "new-york-2.jpg",
+      "title": "Liberty Island photo Don Ramey Logan.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Liberty_Island_photo_Don_Ramey_Logan.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/Liberty_Island_photo_Don_Ramey_Logan.jpg/960px-Liberty_Island_photo_Don_Ramey_Logan.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Liberty_Island_photo_Don_Ramey_Logan.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        4800,
+        3200
+      ],
+      "displayDimensions": [
+        960,
+        640
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2022-11-30 00:52:47",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Liberty Island photo Don Ramey Logan",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "December 2014 in New York City|Photographs by Don Ramey Logan|Featured pictures on Wikipedia, English|Autumn in New Jersey|National Register of Historic Places with known IDs|Featured pictures on Wikipedia, Persian|Aerial photographs of the Statue of Liberty and Liberty Island|United States photographs taken on 2014-12-14|Statue of Liberty in 2014|Files with Assessments template missing SDC Commons no value quality assessment|Aerial photographs by Don Ramey Logan|Don Ramey Logan/Featured Pictures",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Liberty Island photo Don Ramey Logan",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "Taken on 14 December 2014, 09:17:16",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<bdi><a href=\"//commons.wikimedia.org/wiki/Category:Photographs_by_Don_Ramey_Logan\" title=\"Category:Photographs by Don Ramey Logan\">Don Ramey Logan</a></bdi>",
+          "source": "commons-desc-page"
+        },
+        "Permission": {
+          "value": "<table style=\"width:100%; clear:both; margin:0.5em auto; border-spacing:8px; background-color:var(--background-color-neutral-subtle,#f7f8ff); border:2px solid #8888aa;color: inherit;\" lang=\"\" dir=\"ltr\" class=\"layouttemplate restrictiontemplate plainlinks\">\n<tbody><tr>\n<td><span aria-hidden=\"true\"><span class=\"mw-default-size skin-invert\" typeof=\"mw:File/Frameless\"><span><img alt=\"\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/CC_some_rights_reserved.svg/120px-CC_some_rights_reserved.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"110\" height=\"44\" style=\"--mw-file-upright: 0.45\" class=\"mw-file-element mw-file-upright\" srcset=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/CC_some_rights_reserved.svg/250px-CC_some_rights_reserved.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"744\" data-file-height=\"300\"></span></span></span><br>\n</td>\n<td>This image is <b>not in the <a href=\"https://en.wikipedia.org/wiki/Public_domain\" class=\"extiw\" title=\"w:Public domain\">public domain</a></b>. If you wish to use it anywhere other than on Wikipedia or <a href=\"https://meta.wikimedia.org/wiki/Wikimedia_projects\" class=\"extiw\" title=\"m:Wikimedia projects\">other Wikimedia projects</a> you are obligated to provide the following details along with it:<br>\n<ul><li>Author: <a rel=\"nofollow\" class=\"external text\" href=\"https://www.imdb.com/name/nm10366764/\">Don Ramey Logan</a></li>\n<li><i><a class=\"mw-selflink-fragment\" href=\"##\">Liberty Island photo Don Ramey Logan.jpg</a></i> from <a href=\"//commons.wikimedia.org/wiki/Main_Page\" title=\"Main Page\">Wikimedia Commons</a><br></li>\n<li>License: <a rel=\"nofollow\" class=\"external text\" href=\"https://creativecommons.org/licenses/by/4.0/deed.en\">Creative Commons Attribution 4.0</a><br></li></ul>\n<p><b>Credit line example:</b> \"<a class=\"mw-selflink-fragment\" href=\"##\">Liberty Island photo Don Ramey Logan.jpg</a> from <a href=\"//commons.wikimedia.org/wiki/Main_Page\" title=\"Main Page\">Wikimedia Commons</a> by <a rel=\"nofollow\" class=\"external text\" href=\"https://www.imdb.com/name/nm10366764/\">Don Ramey Logan</a>, <a rel=\"nofollow\" class=\"external text\" href=\"https://creativecommons.org/licenses/by/4.0/deed.en\">CC-BY 4.0</a>\"<br>\nA statement such as \"From Wikimedia Commons\" or similar is <i>not</i> by itself sufficient. If you do not provide clear attribution to the author and indicate the file name as shown here, you didn't comply with the terms of the file's license and may not use this file. If you are unable or unwilling to provide attribution  you should contact <a rel=\"nofollow\" class=\"external text\" href=\"https://www.imdb.com/name/nm10366764/\">Don Ramey Logan</a> to negotiate a different license.  More of my work can be found in <a href=\"//commons.wikimedia.org/wiki/Category:Photographs_by_Don_Ramey_Logan\" title=\"Category:Photographs by Don Ramey Logan\">Category:Photographs by Don Ramey Logan</a>. There is <a href=\"//commons.wikimedia.org/wiki/User:WPPilot/Credits\" title=\"User:WPPilot/Credits\">more detailed information about licensing</a> available.\n\n</p>\n</td></tr>\n<tr>\n<td>\n</td>\n<td><div style=\"text-align:center\"><div style=\"margin-top:0.75em;\"><b>I. Licence</b></div>\n<div style=\"margin-top:0.5em;\">This photograph is protected by copyright law. However, it may be used for free by anyone, provided it is used in accordance with the license <b>Creative Commons License <a rel=\"nofollow\" class=\"external text\" href=\"https://creativecommons.org/licenses/by-sa/4.0/deed\">“Attribution-ShareAlike 4.0 International”</a></b> (CC BY-SA 4.0). These include, among other things, the naming of the author and the license, as well as the setting of a link to the license text or its complete imprint. The attribution should be done as follows:</div>\n<div style=\"margin-top:0.5em; text-align:center;\"><b>Photograph by Don Ramey Logan</b><br><b>License: Creative Commons Attribution-ShareAlike 4.0 International</b><br></div>\n<div style=\"margin-top:0.5em;\">Please read the text of the license carefully before using the photograph. If you do not agree with the conditions of the license or if you do not understand these conditions, please refrain from using the photograph. If you have any questions regarding the license or the reuse of the image, please contact me before using it. If you do not comply with the terms of the license, you do not acquire any right to use the image. If you need another license to use, please contact the author <b>before</b> using.</div>\n<div style=\"margin-top:0.5em;\">For information about the license see section <a class=\"mw-selflink-fragment\" href=\"#ImgLic\">Licensing</a> or as <a rel=\"nofollow\" class=\"external text\" href=\"https://creativecommons.org/licenses/by-sa/4.0/deed.en\">human-readable summary</a> or as <a rel=\"nofollow\" class=\"external text\" href=\"https://creativecommons.org/licenses/by-sa/4.0/legalcode\">full licence text</a> at Creative Commons. In addition to the above, a link to the source - so this page with the descriptions and license terms - is appreciated. More information or examples of use can be found at <a href=\"//commons.wikimedia.org/wiki/Commons:Reusing_content_outside_Wikimedia\" title=\"Commons:Reusing content outside Wikimedia\">re-use (with example file)</a>. The <a rel=\"nofollow\" class=\"external text\" href=\"https://lizenzhinweisgenerator.de/?lang=en&amp;url=https://commons.wikimedia.org/wiki/File:Liberty_Island_photo_Don_Ramey_Logan.jpg\">Attribution Generator</a> is helpful in licensing matters.</div>\n<div style=\"margin:0.5em auto 1em;text-align:center;\" class=\"plainlinks\"><span class=\"plainlinks\"><a rel=\"nofollow\" class=\"external text\" href=\"https://lizenzhinweisgenerator.de/?lang=en&amp;url=https://commons.wikimedia.org/wiki/File:Liberty_Island_photo_Don_Ramey_Logan.jpg\"><span class=\"submit ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-secondary ui-button-blue\" role=\"button\"><span class=\"ui-button-text\">Generate License <b>Attribution</b></span><span class=\"ui-button-icon-secondary ui-icon ui-icon-extlink\"> </span></span></a></span></div>\n<div style=\"margin-top:0.5em;\"></div>\n<div style=\"margin-top:0.75em;\"><b>II. Fairness</b></div>\n<div style=\"margin-top:0.5em;\">From printed materials and other tangible products that use that work, the user is requested but not obligated to send a copy to the author as a thank you. The mailing address can be requested via the contact options.</div>\n<div style=\"margin-top:0.5em;\">Please note that the author had quite considerable effort to draw up this file. Thus, it is only fair to comply with the conditions of <a href=\"https://en.wikipedia.org/wiki/Free_license\" class=\"extiw\" title=\"en:Free license\">free licenses</a> listed here. In the case of violation of the license conditions, the rights granted hereunder will expire automatically.</div>\n<div style=\"margin-top:0.75em; clear: both;\"><b>III. Disclaimer</b></div>\n<div style=\"margin-top:0.5em;\">Please note the licence does grant you any rights to change, alter, modify, crop or use this file in any manner then as it is depicted herein, unless those changes are described in the attribution, and that the license applies solely for the reuse of the photograph itself. The license doesn't grant you any right regarding the depicted object (eg, copyright or proprietary rights) or the personality rights of the person eventually shown. (See <a href=\"//commons.wikimedia.org/wiki/Commons:L\" class=\"mw-redirect\" title=\"Commons:L\">licences</a> and <a href=\"//commons.wikimedia.org/wiki/Commons:SOSUMI\" class=\"mw-redirect\" title=\"Commons:SOSUMI\">non-copyright restrictions</a>.) I do not grant any warranty that the subsequent use of the photograph is legally possible concerning the object or person shown in the photograph. You are responsible to check and respect these rights in the publication in the respective medium or country.</div>\n<div style=\"margin-top:0.5em;\">The author is not responsible for the accuracy of the information contained herein (description, title, etc.). Likewise, the author assumes no liability for further use. Please note the <a href=\"//commons.wikimedia.org/wiki/Commons:General_disclaimer\" title=\"Commons:General disclaimer\">general disclaimer</a> and please read <a href=\"//commons.wikimedia.org/wiki/Commons:Reusing_content_outside_Wikimedia\" title=\"Commons:Reusing content outside Wikimedia\">reusing content outside Wikimedia</a> too.</div>\n<div style=\"margin-top:0.75em;\"><b>IV. Contact</b></div>\n<div style=\"margin-top:0.5em;\"><b><span typeof=\"mw:File\"><a href=\"//commons.wikimedia.org/wiki/File:UserIconMail.svg\" class=\"mw-file-description\"><img src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/UserIconMail.svg/40px-UserIconMail.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"24\" height=\"24\" class=\"mw-file-element\" srcset=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/UserIconMail.svg/60px-UserIconMail.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"700\" data-file-height=\"700\"></a></span> <a rel=\"nofollow\" class=\"external text\" href=\"mailto:don@logan.com\">E-mail to the author</a></b> or the <a href=\"//commons.wikimedia.org/wiki/User_talk:WPPilot\" title=\"User talk:WPPilot\">author's talk page</a> <small>or the <a rel=\"nofollow\" class=\"external text\" href=\"http://www.mediadev.net/\">author's website</a></small></div></div>\n</td></tr></tbody></table>\n<style data-mw-deduplicate=\"TemplateStyles:r1065912264\">.mw-parser-output .note{background-position:left 7px top 50%;padding:0.5em 0.5em 0.5em 40px;margin:0.5em 0;overflow:hidden;background-color:var(--background-color-base,#fff);color:var(--color-base,#202122);background-repeat:no-repeat;border:1px solid var(--border-color-base,#ddd)}.mw-parser-output .note-inline{display:inline-block;vertical-align:middle}.mw-parser-output .note-info{background-color:var(--background-color-base,#fff);color:var(--color-base,#202122);background-image:url(\"https://upload.wikimedia.org/wikipedia/commons/e/ec/OOjs_UI_icon_information-progressive.svg\");background-size:25px;border:1px solid var(--border-color-progressive,#6485d1);padding-left:40px;min-height:25px}.mw-parser-output .note-reminder{background-color:var(--background-color-warning-subtle,#fdf2d5);color:var(--color-base,#202122);background-image:url(\"https://upload.wikimedia.org/wikipedia/commons/a/a8/OOjs_UI_icon_lightbulb-yellow.svg\");background-size:25px;border:1px solid var(--border-color-content-removed,#ffe49c);min-height:25px}.mw-parser-output .note-warn{background-color:var(--background-color-warning-subtle,#fdf2d5);color:var(--color-base,#202122);background-image:url(\"https://upload.wikimedia.org/wikipedia/commons/3/3b/OOjs_UI_icon_alert-warning.svg\");background-size:25px;border:1px solid var(--border-color-content-removed,#ffe49c);min-height:25px}.mw-parser-output .note-error{background-color:var(--background-color-error-subtle,#ffe9e5);color:var(--color-base,#202122);background-image:url(\"https://upload.wikimedia.org/wikipedia/commons/b/bf/OOjs_UI_icon_notice-destructive.svg\");background-size:25px;border:1px solid var(--border-color-destructive,#f54739);min-height:25px}</style><div role=\"note\" class=\"note note-info\"><figure class=\"mw-halign-right\" typeof=\"mw:File/Frameless\"><a href=\"//commons.wikimedia.org/wiki/File:No_Facebook.svg\" class=\"mw-file-description\"><img src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/No_Facebook.svg/250px-No_Facebook.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"135\" height=\"30\" class=\"mw-file-element\" srcset=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/No_Facebook.svg/330px-No_Facebook.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"64\" data-file-height=\"14\"></a><figcaption></figcaption></figure> Beware that some social media platforms require their users to give the platform a sub-licensable license for any file their users upload. Platforms like Facebook do not recognize Creative Commons licenses and don't adhere to their attribution requirements, so only the copyright holder can provide the permission as described in their terms of service.\n<div class=\"collapsibletemplate collapsed\" style=\"border: none; padding: 0;\">\n<div class=\"collapsibleheader header\" style=\"font-size: 105%; text-align: left;\"><span class=\"headertext\">References</span></div>\n<div class=\"body show-on-commons\"><ul style=\"list-style: none none; margin-left: 0; margin-left:2em; font-size: 105%; margin-top: 0; margin-bottom: 0; line-height: inherit;\"><li style=\"line-height: inherit; margin: 0\"> 1. <a rel=\"nofollow\" class=\"external text\" href=\"https://www.facebook.com/legal/terms\">Facebook Terms of Service</a> (<span class=\"mw-formatted-date\" title=\"2024-01-12\">12 January 2024</span>). \"when you share, post, or upload content that is covered by intellectual property rights (like photos or videos) on or in connection with our Products, you grant us a non-exclusive, transferable, sub-licensable, and worldwide license\"\n </li><li style=\"line-height: inherit; margin: 0\"> 2. <a rel=\"nofollow\" class=\"external text\" href=\"https://help.instagram.com/581066165581870/\">\"Instagram Terms of Service</a> (<span class=\"mw-formatted-date\" title=\"2024-01-12\">12 January 2024</span>). \"When you share, post, or upload content that is covered by intellectual property rights (like photos or videos) on or in connection with our Service, you hereby grant to us a non-exclusive, royalty-free, transferable, sub-licensable, worldwide license\"\n </li><li style=\"line-height: inherit; margin: 0\"> 3. <a rel=\"nofollow\" class=\"external text\" href=\"https://www.tiktok.com/legal/page/eea/terms-of-service/en\">TikTok Terms of Service</a> (<span class=\"mw-formatted-date\" title=\"2024-01-10\">10 January 2024</span>). \"By creating, posting or otherwise making content available on the Platform, you grant to TikTok a: non-exclusive, royalty-free, transferable, sub-licensable and worldwide licence to use your content\"\n </li><li style=\"line-height: inherit; margin: 0\"> 4. <a rel=\"nofollow\" class=\"external text\" href=\"https://snap.com/en-US/terms\">Snapchat Terms of Service</a> (<span class=\"mw-formatted-date\" title=\"2024-01-10\">10 January 2024</span>). \"For all content you submit to the Services, you grant Snap and our affiliates a worldwide, royalty-free, sublicencable, and transferable licence\"\n </li><li style=\"line-height: inherit; margin: 0\"> 5. <a rel=\"nofollow\" class=\"external text\" href=\"https://twitter.com/en/tos\">Twitter Terms of Service</a> (<span class=\"mw-formatted-date\" title=\"2023-09-29\">29 September 2023</span>). \"By submitting, posting or displaying Content on or through the Services, you grant us a worldwide, non-exclusive, royalty-free license (with the right to sublicense)\"\n</li></ul>\n</div></div></div><div class=\"responsive-license-cc layouttemplate licensetpl\" dir=\"ltr\" lang=\"en\"><div class=\"rlicense-icons\"><span class=\"skin-invert\" typeof=\"mw:File\"><span title=\"w:en:Creative Commons\"><img alt=\"w:en:Creative Commons\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/CC_some_rights_reserved.svg/120px-CC_some_rights_reserved.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"90\" height=\"36\" class=\"mw-file-element\" srcset=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/CC_some_rights_reserved.svg/250px-CC_some_rights_reserved.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"744\" data-file-height=\"300\"></span></span><br>\n<span class=\"skin-invert\" typeof=\"mw:File\"><span title=\"attribution\"><img alt=\"attribution\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/Cc-by_new_white.svg/40px-Cc-by_new_white.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"24\" height=\"24\" class=\"mw-file-element\" srcset=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/Cc-by_new_white.svg/60px-Cc-by_new_white.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"64\" data-file-height=\"64\"></span></span></div><div class=\"rlicense-text\"><div class=\"rlicense-declaration\">This file is licensed under the <a href=\"https://en.wikipedia.org/wiki/en:Creative_Commons\" class=\"extiw\" title=\"w:en:Creative Commons\">Creative Commons</a> <a href=\"//creativecommons.org/licenses/by/4.0/deed.en\" class=\"extiw\" title=\"creativecommons:by/4.0/deed.en\">Attribution 4.0 International</a> license.</div><div class=\"rlicense-attr\" style=\"font-weight: bold;\">Attribution: <div style=\"display:inline;font-size:larger;\" class=\"licensetpl_attr\">Photograph by Don Ramey Logan</div></div><div class=\"rlicense-desc\" style=\"text-align:start;\" dir=\"ltr\" lang=\"en\">\n<dl><dd>You are free:\n<ul><li><b>to share</b> – to copy, distribute and transmit the work</li>\n<li><b>to remix</b> – to adapt the work</li></ul></dd>\n<dd>Under the following conditions:\n<ul><li><b>attribution</b> – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.</li></ul></dd></dl>\n</div><span class=\"licensetpl_link\" style=\"display:none;\">https://creativecommons.org/licenses/by/4.0</span><span class=\"licensetpl_short\" style=\"display:none;\">CC BY 4.0 </span><span class=\"licensetpl_long\" style=\"display:none;\">Creative Commons Attribution 4.0 </span><span class=\"licensetpl_link_req\" style=\"display:none;\">true</span><span class=\"licensetpl_attr_req\" style=\"display:none;\">true</span></div></div>",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseShortName": {
+          "value": "CC BY 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Attribution": {
+          "value": "Photograph by Don Ramey Logan",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 196565,
+      "sha256": "f1147283527bf1c6d3dd611b45e8a9e14991d29b36e533f35c5e1f96bc5365db"
+    },
+    {
+      "filename": "washington-dc-1.jpg",
+      "title": "Smithsonian Institution Building (The Castle).JPG",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Smithsonian_Institution_Building_(The_Castle).JPG",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/7/73/Smithsonian_Institution_Building_%28The_Castle%29.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/7/73/Smithsonian_Institution_Building_%28The_Castle%29.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        267,
+        200
+      ],
+      "displayDimensions": [
+        960,
+        719
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2012-09-04 21:35:21",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Smithsonian Institution Building (The Castle)",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "September 2012 in Washington, D.C.|Taken with Canon PowerShot SX210 IS|Smithsonian Institution Building|Self-published work|National Register of Historic Places with known IDs|Images from Wiki Loves Monuments 2012|Images from Wiki Loves Monuments 2012 in the United States|WLM 2012 United States reviewed",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "GPSLatitude": {
+          "value": "38.888611",
+          "source": "commons-desc-page"
+        },
+        "GPSLongitude": {
+          "value": "-77.026389",
+          "source": "commons-desc-page"
+        },
+        "GPSMapDatum": {
+          "value": "WGS-84",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "<a href=\"https://en.wikipedia.org/wiki/Smithsonian_Institution_Building\" class=\"extiw\" title=\"en:Smithsonian Institution Building\">Smithsonian Building</a>",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2012-09-04",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Jorgebellatin&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Jorgebellatin (page does not exist)\">Jorgebellatin</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 3.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 3.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/3.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-3.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 25682,
+      "sha256": "1af4189329cd9524ad1da86cc29e7fd4846840d310a33c90e21937731f7e11e1"
+    },
+    {
+      "filename": "washington-dc-2.jpg",
+      "title": "Washington October 2016-13.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Washington_October_2016-13.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/25/Washington_October_2016-13.jpg/960px-Washington_October_2016-13.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/2/25/Washington_October_2016-13.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        5855,
+        3854
+      ],
+      "displayDimensions": [
+        960,
+        632
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2016-12-04 22:31:20",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Washington October 2016-13",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Smithsonian Institution Building|Self-published work|Photographs by Alvesgaspar",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "quality",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "The Smithsonian Castle in Washington DC",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2016-10-05 13:30:31",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Alvesgaspar\" title=\"User:Alvesgaspar\">Alvesgaspar</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 159851,
+      "sha256": "c8807ba836f2d20ea5e58af326964c0ec9e3a6cc6cc85bf686b2322418139d97"
+    },
+    {
+      "filename": "london-1.jpg",
+      "title": "Tower of London viewed from the River Thames.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tower_of_London_viewed_from_the_River_Thames.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/Tower_of_London_viewed_from_the_River_Thames.jpg/960px-Tower_of_London_viewed_from_the_River_Thames.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Tower_of_London_viewed_from_the_River_Thames.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        3948,
+        2479
+      ],
+      "displayDimensions": [
+        960,
+        603
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2013-07-23 20:59:22",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Tower of London viewed from the River Thames",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Taken with Nikon D90|Self-published work|Featured pictures on Wikipedia, English|Tower of London seen from the South|Featured pictures of castles in England|Files with coordinates missing SDC location of creation (51° N, 1° W)|Tower of London in 2013",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "quality|featured|valued",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "GPSLatitude": {
+          "value": "51.508056",
+          "source": "commons-desc-page"
+        },
+        "GPSLongitude": {
+          "value": "-0.076111",
+          "source": "commons-desc-page"
+        },
+        "GPSMapDatum": {
+          "value": "WGS-84",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "<a href=\"https://en.wikipedia.org/wiki/Tower_of_London\" class=\"extiw\" title=\"en:Tower of London\">Tower of London</a> viewed from the River Thames.",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2013-07-22 12:13:18",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Bob_Collow%C3%A2n\" title=\"User:Bob Collowân\">Bob Collowan</a>",
+          "source": "commons-desc-page"
+        },
+        "Permission": {
+          "value": "<table style=\"margin: 1.5em auto; width:60%; background-color:#CCCCCC; border:2px solid #aaaaaa; padding:1px;\" cellspacing=\"10\">\n\n<tbody><tr>\n<td><b><i>This photo was taken by </i><a href=\"//commons.wikimedia.org/wiki/User:Bob_Collow%C3%A2n\" title=\"User:Bob Collowân\">Bob Collowan</a> </b>\n<p><b>If possible</b>, please credit this with: <b>Bob Collowan/Commons/CC-BY-SA-4.0</b> in the immediate vicinity of the image.\n</p><p>If you use one of my photos outside Wikipedia and Commons, please <span typeof=\"mw:File\"><a href=\"//commons.wikimedia.org/wiki/File:UserIconMail.svg\" class=\"mw-file-description\"><img src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/UserIconMail.svg/40px-UserIconMail.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"24\" height=\"24\" class=\"mw-file-element\" srcset=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/UserIconMail.svg/60px-UserIconMail.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"700\" data-file-height=\"700\"></a></span> <a href=\"//commons.wikimedia.org/wiki/Special:EmailUser/Bob_Collow%C3%A2n\" title=\"Special:EmailUser/Bob Collowân\">email me</a> (account needed) or leave me a short message on <a href=\"//commons.wikimedia.org/wiki/User_talk:Bob_Collow%C3%A2n\" title=\"User talk:Bob Collowân\">my discussion page</a>. It would be greatly appreciated. Do not copy this image illegally by ignoring the terms of the license below, as it is not in the public domain. If you would like special permission to use, license, or purchase the image please contact me to negotiate terms.\n</p>\n<div align=\"center\"><b>Example</b>: <figure class=\"mw-halign-center mw-image-border\" typeof=\"mw:File\"><a href=\"//commons.wikimedia.org/wiki/File:Tower_of_London_viewed_from_the_River_Thames.jpg\" class=\"mw-file-description\"><img src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/Tower_of_London_viewed_from_the_River_Thames.jpg/250px-Tower_of_London_viewed_from_the_River_Thames.jpg?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"200\" height=\"126\" class=\"mw-file-element\" srcset=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/Tower_of_London_viewed_from_the_River_Thames.jpg/500px-Tower_of_London_viewed_from_the_River_Thames.jpg?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"3948\" data-file-height=\"2479\"></a><figcaption></figcaption></figure><span class=\"plainlinks\" style=\"background-color:#DDD\">© Bob Collowan, <a rel=\"nofollow\" class=\"external text\" href=\"https://creativecommons.org/licenses/by-sa/4.0/\">CC-BY-SA-4.0</a>, <a class=\"external text\" data-mw-original-href=\"//commons.wikimedia.org/wiki/File:Tower_of_London_viewed_from_the_River_Thames.jpg\" href=\"https://commons.wikimedia.org/wiki/File:Tower_of_London_viewed_from_the_River_Thames.jpg\">Wikimedia Commons</a></span></div>\n</td></tr></tbody></table>",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 3.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 3.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/3.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-3.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 212433,
+      "sha256": "f7c37182564d066110db204bdabe71c14eb2b01b86cb6f2d0263ee5a350c0d7f"
+    },
+    {
+      "filename": "london-2.jpg",
+      "title": "London, Tower of London, White Tower -- 2016 -- 4679.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:London,_Tower_of_London,_White_Tower_--_2016_--_4679.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/London%2C_Tower_of_London%2C_White_Tower_--_2016_--_4679.jpg/960px-London%2C_Tower_of_London%2C_White_Tower_--_2016_--_4679.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c9/London%2C_Tower_of_London%2C_White_Tower_--_2016_--_4679.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        3356,
+        5034
+      ],
+      "displayDimensions": [
+        960,
+        1440
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2026-02-23 10:22:01",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "London, Tower of London, White Tower -- 2016 -- 4679",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Photographs by Dietmar Rabich/Quality images of the United Kingdom|Taken with Canon EOS 70D|White Tower (Tower of London)|Taken with Canon EF-S 15-85mm F3.5-5.6 IS USM|ISO speed rating 100|Uploaded with VicuñaUploader|Photographs with aspect ratio of 2:3|Self-published work|Exposure time 1/160 sec|London photographs taken on 2016-10-09|Listed buildings in England with known IDs|Photographs by Dietmar Rabich/Quality images|Information field template with formatting|Clouds in London|Turrets (architecture) in the United Kingdom|Buildings with addresses|Photographs by Dietmar Rabich/Quality images of castles|Images by XRay (flat list)|Photographs by Dietmar Rabich/United Kingdom|F-number f/11|Clouds and blue sky in the United Kingdom|Clouds in the United Kingdom in 2016|Roof finials in England|Photographs by Dietmar Rabich/Architectural photography/Towers|Lens focal length 44 mm|Photographs by Dietmar Rabich/Architectural photography/Castles|Photographs by Dietmar Rabich/Quality images of World Heritage Sites|Photographs by Dietmar Rabich/Year/2016|Tower of London in 2016",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "quality",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "GPSLatitude": {
+          "value": "51.508200",
+          "source": "commons-desc-page"
+        },
+        "GPSLongitude": {
+          "value": "-0.076198",
+          "source": "commons-desc-page"
+        },
+        "GPSMapDatum": {
+          "value": "WGS-84",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "White Tower, <a href=\"https://en.wikipedia.org/wiki/Tower_of_London\" class=\"extiw\" title=\"en:Tower of London\">Tower of London</a>, <a href=\"https://en.wikipedia.org/wiki/London\" class=\"extiw\" title=\"en:London\">London</a>, <a href=\"https://en.wikipedia.org/wiki/England\" class=\"extiw\" title=\"en:England\">England</a>, United Kingdom",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "Taken on 9 October 2016, 11:41",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<bdi><a href=\"https://www.wikidata.org/wiki/Q34788025\" class=\"extiw\" title=\"d:Q34788025\"><span title=\"German photographer and mathematician\">Dietmar Rabich</span></a></bdi>",
+          "source": "commons-desc-page"
+        },
+        "Permission": {
+          "value": "<table class=\"layouttemplate navigation-not-searchable\" style=\"margin:.25em;padding:.25em .5em;background-color:var(--background-color-base,#ffffff);color:inherit;border:1px solid var(--background-color-disabled,#eeeeee)\" data-nosnippet=\"\">\n<tbody><tr>\n<td><span typeof=\"mw:File\"><span><img src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/40px-Flag_of_Germany.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"24\" height=\"14\" class=\"mw-file-element\" srcset=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/60px-Flag_of_Germany.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"1000\" data-file-height=\"600\"></span></span>\n</td>\n<td>Dieser Text und viele andere auch sind ebenso in deutscher Sprache verfügbar. Um diese sehen zu können, wähle bitte auf dieser Webseite die Spracheinstellung „Deutsch“.\n</td></tr></tbody></table><div style=\"clear:both;border:1px solid var(--background-color-disabled,#eeeeee);margin:.25em;padding:.25em .5em;background-color:var(--background-color-base,#ffffff);color:inherit;font-size:90%;\" class=\"searchaux\" data-nosnippet=\"\">\n<figure class=\"mw-halign-right\" typeof=\"mw:File\"><a href=\"//commons.wikimedia.org/wiki/File:HSSection_sign.svg\" class=\"mw-file-description\"><img src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/HSSection_sign.svg/120px-HSSection_sign.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"100\" height=\"100\" class=\"mw-file-element\" srcset=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/HSSection_sign.svg/250px-HSSection_sign.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"156\" data-file-height=\"156\"></a><figcaption></figcaption></figure><figure class=\"mw-halign-right\" typeof=\"mw:File\"><a href=\"//commons.wikimedia.org/wiki/File:Cc_by-sa_(1).svg\" class=\"mw-file-description\"><img src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Cc_by-sa_%281%29.svg/120px-Cc_by-sa_%281%29.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"100\" height=\"35\" class=\"mw-file-element\" srcset=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Cc_by-sa_%281%29.svg/250px-Cc_by-sa_%281%29.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"120\" data-file-height=\"42\"></a><figcaption></figcaption></figure><div><b>I. Licence</b></div>\n<div style=\"margin-top:0.5em;\">This photograph is protected by copyright law. However, it may be used for free by anyone, provided it is used in accordance with the license <b>Creative Commons License <a rel=\"nofollow\" class=\"external text\" href=\"https://creativecommons.org/licenses/by-sa/4.0/deed\">“Attribution-ShareAlike 4.0 International”</a></b> (CC BY-SA 4.0). These include, among other things, the naming of the author and the license, as well as the setting of a link to the license text or its complete imprint. The attribution should be done as follows:</div>\n<div style=\"margin-top:0.5em; text-align:center;\"><i><a href=\"//commons.wikimedia.org/wiki/User:XRay\" title=\"User:XRay\">Dietmar Rabich</a> / <a href=\"//commons.wikimedia.org/wiki/Main_Page\" title=\"Main Page\">Wikimedia Commons</a> / <span class=\"plainlinks noprint\"><a class=\"external text\" data-mw-original-href=\"//commons.wikimedia.org/wiki/File:London,_Tower_of_London,_White_Tower_--_2016_--_4679.jpg\" href=\"https://commons.wikimedia.org/wiki/File:London,_Tower_of_London,_White_Tower_--_2016_--_4679.jpg\">“London, Tower of London, White Tower -- 2016 -- 4679”</a></span> / <span class=\"plainlinks noprint\"><a rel=\"nofollow\" class=\"external text\" href=\"https://creativecommons.org/licenses/by-sa/4.0/\">CC BY-SA 4.0</a></span></i></div>\n<div style=\"margin-top:0.5em;\">Please read the text of the license carefully before using the photograph. If you do not agree with the conditions of the license or if you do not understand these conditions, please refrain from using the photo. If you have any questions regarding the license or the reuse of the image, please contact me before using it. If you do not comply with the terms of the license, you do not acquire any right to use the image. If you need another license to use, please contact the author <b>before</b> using.</div>\n<div style=\"margin-top:0.5em;\">For informations about the licence see section <a class=\"mw-selflink-fragment\" href=\"#ImgLic\">Licensing</a> or as <a rel=\"nofollow\" class=\"external text\" href=\"https://creativecommons.org/licenses/by-sa/4.0/deed.en\">human-readable summary</a> or as <a rel=\"nofollow\" class=\"external text\" href=\"https://creativecommons.org/licenses/by-sa/4.0/legalcode\">full licence text</a> at Creative Commons. In addition to the above, a link to the source - so this page with the descriptions and license terms - is appreciated. More information or examples of use can be found at <a href=\"//commons.wikimedia.org/wiki/Commons:Reusing_content_outside_Wikimedia\" title=\"Commons:Reusing content outside Wikimedia\">re-use (with example file)</a>. The <a rel=\"nofollow\" class=\"external text\" href=\"https://lizenzhinweisgenerator.de/?lang=en&amp;url=https://commons.wikimedia.org/wiki/File:London,_Tower_of_London,_White_Tower_--_2016_--_4679.jpg\">Attribution Generator</a> is helpful in licensing matters.</div>\n<div style=\"margin:0.5em auto 1em;text-align:center;\" class=\"plainlinks\"><span class=\"plainlinks\"><a rel=\"nofollow\" class=\"external text\" href=\"https://lizenzhinweisgenerator.de/?lang=en&amp;url=https://commons.wikimedia.org/wiki/File:London,_Tower_of_London,_White_Tower_--_2016_--_4679.jpg\"><span class=\"submit ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-secondary ui-button-blue\" role=\"button\"><span class=\"ui-button-text\">Generate License <b>Attribution</b></span><span class=\"ui-button-icon-secondary ui-icon ui-icon-extlink\"> </span></span></a></span></div>\n<div style=\"margin-top:0.5em;\">As an alternative to the Creative Commons License <i>CC BY-SA 4.0</i>, the <i><a href=\"https://en.wikipedia.org/wiki/Free_Art_License\" class=\"extiw\" title=\"en:Free Art License\">Free Art License</a></i> (<a rel=\"nofollow\" class=\"external text\" href=\"http://artlibre.org/licence/lal/en/\">from version 1.3</a>) may also be used.</div>\n<div style=\"margin-top:0.75em;\"><b>II. Fairness</b></div>\n<div style=\"margin-top:0.5em;\">From printed materials and other tangible products that use that work, the user is asked to send a copy to the author as thank you. However, this is not a condition for the use of the photo, but a voluntary service. The mailing address can be requested via the contact options.</div>\n<div style=\"margin-top:0.5em;\">Please note that the author had quite considerable effort to draw up this file. Thus, it is only fair to comply with the conditions of <a href=\"https://en.wikipedia.org/wiki/Free_license\" class=\"extiw\" title=\"en:Free license\">free licenses</a> listed here. In the case of violation of the license conditions, the rights granted hereunder will expire automatically.</div>\n<div style=\"margin-top:0.75em; clear: both;\"><b>III. Disclaimer</b></div>\n<div style=\"margin-top:0.5em;\">Please note that the rights granted under the license apply exclusively to the photograph itself, but not to the rights of third parties — such as copyrights or property rights in the object depicted or the personal rights of any individuals who may be depicted. (See <a href=\"//commons.wikimedia.org/wiki/Commons:L\" class=\"mw-redirect\" title=\"Commons:L\">licences</a> and <a href=\"//commons.wikimedia.org/wiki/Commons:SOSUMI\" class=\"mw-redirect\" title=\"Commons:SOSUMI\">non-copyright restrictions</a>.) I do not grant any warranty that the subsequent use of the photograph is legally possible concerning the object or person shown in the photograph. You are responsible to check and respect these rights in the publication in the respective medium or country.</div>\n<div style=\"margin-top:0.5em;\">The author is not responsible for the accuracy of the information contained herein (description, title, etc.). Likewise, the author assumes no liability for further use. Please note the <a href=\"//commons.wikimedia.org/wiki/Commons:General_disclaimer\" title=\"Commons:General disclaimer\">general disclaimer</a> and please read <a href=\"//commons.wikimedia.org/wiki/Commons:Reusing_content_outside_Wikimedia\" title=\"Commons:Reusing content outside Wikimedia\">reusing content outside Wikimedia</a> too.</div>\n<div style=\"margin-top:0.75em;\"><b>IV. Contact</b></div>\n<div style=\"margin-top:0.5em;\"><b><span typeof=\"mw:File\"><a href=\"//commons.wikimedia.org/wiki/File:UserIconMail.svg\" class=\"mw-file-description\"><img src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/UserIconMail.svg/40px-UserIconMail.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"24\" height=\"24\" class=\"mw-file-element\" srcset=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/UserIconMail.svg/60px-UserIconMail.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"700\" data-file-height=\"700\"></a></span> <a href=\"//commons.wikimedia.org/wiki/Special:EmailUser/XRay\" title=\"Special:EmailUser/XRay\">E-mail to the author</a></b> or the <a href=\"//commons.wikimedia.org/wiki/User_talk:XRay\" title=\"User talk:XRay\">author's talk page</a> <small>or the <a rel=\"nofollow\" class=\"external text\" href=\"http://www.rabich.de/\">author's website</a></small></div></div>",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Attribution": {
+          "value": "<b><a href=\"//commons.wikimedia.org/wiki/User:XRay\" title=\"User:XRay\">Dietmar Rabich</a></b>",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 371205,
+      "sha256": "87eb584c165018f9c1d5ac2565c248bfba510fb9bab6492e6e47163ccfe732df"
+    },
+    {
+      "filename": "tokyo-1.jpg",
+      "title": "Yoyogi-National-First-Gymnasium-01.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Yoyogi-National-First-Gymnasium-01.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/be/Yoyogi-National-First-Gymnasium-01.jpg/960px-Yoyogi-National-First-Gymnasium-01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/b/be/Yoyogi-National-First-Gymnasium-01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        1200,
+        800
+      ],
+      "displayDimensions": [
+        960,
+        640
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2010-06-04 08:55:57",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Yoyogi-National-First-Gymnasium-01",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "GFDL|CC-BY-SA-3.0,2.5,2.0,1.0|License migration redundant|Self-published work|Images with extracted images|Views of the Yoyogi 1st Gymnasium from the Gorin footbridge",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Yoyogi National Gymnasium (1st gymnasium) in Shibuya, Tokyo.",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2010-05-22",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "Rs1421",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 3.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 3.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/3.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-3.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 124359,
+      "sha256": "4b2a4df7eb397b52fa2702eb1cc07fc223f07f01ad50e7fefbf4f226599ca0cd"
+    },
+    {
+      "filename": "tokyo-2.jpg",
+      "title": "Yoyogi-National-Gymnasium-01.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Yoyogi-National-Gymnasium-01.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1d/Yoyogi-National-Gymnasium-01.jpg/960px-Yoyogi-National-Gymnasium-01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1d/Yoyogi-National-Gymnasium-01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        1600,
+        1067
+      ],
+      "displayDimensions": [
+        960,
+        640
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2012-11-28 13:31:37",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Yoyogi-National-Gymnasium-01",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Yoyogi National Gymnasium|Self-published work|November 2012 in Tokyo",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "国立代々木競技場渋谷側入口。",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2012-11",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "Rs1421",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 3.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 3.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/3.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-3.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 160944,
+      "sha256": "aa774027c758d4a00dfce10db849639cfb10869247f35f5bd1d3b31db36de8be"
+    },
+    {
+      "filename": "seoul-1.jpg",
+      "title": "Injeongjeon Hall 01.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Injeongjeon_Hall_01.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/59/Injeongjeon_Hall_01.jpg/960px-Injeongjeon_Hall_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/5/59/Injeongjeon_Hall_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        4962,
+        3308
+      ],
+      "displayDimensions": [
+        960,
+        640
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2024-01-04 20:57:29",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Injeongjeon Hall 01",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "CC-Zero|Injeongjeon|Self-published work|Files with coordinates missing SDC location of creation",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "quality",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "GPSLatitude": {
+          "value": "37.579458",
+          "source": "commons-desc-page"
+        },
+        "GPSLongitude": {
+          "value": "126.991178",
+          "source": "commons-desc-page"
+        },
+        "GPSMapDatum": {
+          "value": "WGS-84",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Injeongjeon Hall in Changdeokgung Palace Complex, Seoul",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2022-09-27",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "Bernard Gagnon",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Zero, Public Domain Dedication",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "false",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 237863,
+      "sha256": "ce670784134c63f67dd56a10a3aecbf35ac719660927837e5939ef28582634e5"
+    },
+    {
+      "filename": "seoul-2.jpg",
+      "title": "Injeongjeon Hall 04.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Injeongjeon_Hall_04.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/Injeongjeon_Hall_04.jpg/960px-Injeongjeon_Hall_04.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2b/Injeongjeon_Hall_04.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        4164,
+        2776
+      ],
+      "displayDimensions": [
+        960,
+        640
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2024-01-04 20:57:32",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Injeongjeon Hall 04",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "CC-Zero|Injeongjeon|Self-published work|Steles in South Korea|Files with coordinates missing SDC location of creation",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "quality",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "GPSLatitude": {
+          "value": "37.579458",
+          "source": "commons-desc-page"
+        },
+        "GPSLongitude": {
+          "value": "126.991178",
+          "source": "commons-desc-page"
+        },
+        "GPSMapDatum": {
+          "value": "WGS-84",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Steles in Injeongjeon Hall court in Changdeokgung Palace Complex, Seoul",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2022-09-27",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "Bernard Gagnon",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Zero, Public Domain Dedication",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "false",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 257629,
+      "sha256": "2e5e780909e55e5efdd9c72881f68a2e37c941cca1cdd5ee9d5c2fb4a4e426a2"
+    },
+    {
+      "filename": "moscow-1.jpg",
+      "title": "Moscow's Red Square, Moscow, Russia.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow%27s_Red_Square,_Moscow,_Russia.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Moscow%27s_Red_Square%2C_Moscow%2C_Russia.jpg/960px-Moscow%27s_Red_Square%2C_Moscow%2C_Russia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/2/26/Moscow%27s_Red_Square%2C_Moscow%2C_Russia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        4912,
+        3264
+      ],
+      "displayDimensions": [
+        960,
+        638
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2024-01-14 17:00:28",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Moscow's Red Square, Moscow, Russia",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Photos by Vyacheslav Argenberg|Ready for Labour and Defence of Russia|Self-published work|Moscow photographs taken on 2012-05-25|Events on Red Square|Files with coordinates missing SDC location of creation|Red Square in 2012|Clouds and blue sky in Moscow|Photos by Vyacheslav Argenberg in Russia|Photos by Vyacheslav Argenberg in 2012",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "quality",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "GPSLatitude": {
+          "value": "55.754810",
+          "source": "commons-desc-page"
+        },
+        "GPSLongitude": {
+          "value": "37.619270",
+          "source": "commons-desc-page"
+        },
+        "GPSMapDatum": {
+          "value": "WGS-84",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Moscow's Red Square. Sports holiday forum «GTO». Moscow, Russia.",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "Taken on 25 May 2012, 16:23:01",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Argenberg\" title=\"User:Argenberg\">Vyacheslav Argenberg</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Attribution": {
+          "value": "© <a href=\"//commons.wikimedia.org/wiki/User:Argenberg\" title=\"User:Argenberg\">Vyacheslav Argenberg</a>",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 187235,
+      "sha256": "65c0c672c490a87b950df392ea0ccc80fce1051d8f57d9b291e4c91b724d64c8"
+    },
+    {
+      "filename": "moscow-2.jpg",
+      "title": "Red Square in Moscow (general view in 2025).jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red_Square_in_Moscow_(general_view_in_2025).jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Red_Square_in_Moscow_%28general_view_in_2025%29.jpg/960px-Red_Square_in_Moscow_%28general_view_in_2025%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/8/83/Red_Square_in_Moscow_%28general_view_in_2025%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        8205,
+        5206
+      ],
+      "displayDimensions": [
+        960,
+        609
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2025-12-18 17:57:48",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Red Square in Moscow (general view in 2025)",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Self-published work|Red Square in 2025|Clouds and blue sky in Moscow|Photographs of Moscow by Юрий Д.К.|Taken with Nikon Z 8 and Nikkor Z 24-120mm f/4 S|Moscow photographs taken on 2025-09-15|Moscow State Historical Museum from Red Square|Uglovaya Arsenalnaya Tower - remote views|Nikolskaya Tower - remote views|Resurrection Gate in Moscow - remote views",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "quality",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Red Square in Moscow",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "Taken on 15 September 2025, 12:23:33",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:%D0%AE%D1%80%D0%B8%D0%B9_%D0%94.%D0%9A.\" title=\"User:Юрий Д.К.\">Юрий Д.К.</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 155343,
+      "sha256": "d869403ced3175740b866525f918cc0e8c5fe4fdd58441869452866ef3d5c00a"
+    },
+    {
+      "filename": "singapore-1.jpg",
+      "title": "Bandstand and green trees a sunny afternoon with blue sky at Singapore Botanic Gardens.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bandstand_and_green_trees_a_sunny_afternoon_with_blue_sky_at_Singapore_Botanic_Gardens.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8b/Bandstand_and_green_trees_a_sunny_afternoon_with_blue_sky_at_Singapore_Botanic_Gardens.jpg/960px-Bandstand_and_green_trees_a_sunny_afternoon_with_blue_sky_at_Singapore_Botanic_Gardens.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Bandstand_and_green_trees_a_sunny_afternoon_with_blue_sky_at_Singapore_Botanic_Gardens.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        5755,
+        3597
+      ],
+      "displayDimensions": [
+        960,
+        600
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2022-02-08 03:40:46",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Bandstand and green trees a sunny afternoon with blue sky at Singapore Botanic Gardens",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Taken with Canon EOS 5D Mark IV and Canon EF 11-24mm F4L USM|Self-published work|Blue sky in Singapore|Singapore photographs taken on 2018-06-11|Bandstands in Singapore|Gazebos in Singapore|Files with coordinates missing SDC location of creation|Photographs by Basile Morin|Pavilions in the Singapore Botanic Gardens|Published photographs by Basile Morin",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "quality",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "GPSLatitude": {
+          "value": "1.310548",
+          "source": "commons-desc-page"
+        },
+        "GPSLongitude": {
+          "value": "103.816173",
+          "source": "commons-desc-page"
+        },
+        "GPSMapDatum": {
+          "value": "WGS-84",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "<a href=\"https://en.wikipedia.org/wiki/Bandstand\" class=\"extiw\" title=\"en:Bandstand\">Bandstand</a> and green trees a sunny afternoon with blue sky at <a href=\"https://en.wikipedia.org/wiki/Singapore_Botanic_Gardens\" class=\"extiw\" title=\"en:Singapore Botanic Gardens\">Singapore Botanic Gardens</a>.",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2018-06-11 13:42:23",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Basile_Morin\" title=\"User:Basile Morin\">Basile Morin</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 254344,
+      "sha256": "605e17000761281c6e1aa6b1d08c5b56a22425612a416b148ed848c37f061769"
+    },
+    {
+      "filename": "singapore-2.jpg",
+      "title": "Branches of a Ficus kurzii reflecting in the water at Singapore Botanic Gardens.jpg",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Branches_of_a_Ficus_kurzii_reflecting_in_the_water_at_Singapore_Botanic_Gardens.jpg",
+      "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/93/Branches_of_a_Ficus_kurzii_reflecting_in_the_water_at_Singapore_Botanic_Gardens.jpg/960px-Branches_of_a_Ficus_kurzii_reflecting_in_the_water_at_Singapore_Botanic_Gardens.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/9/93/Branches_of_a_Ficus_kurzii_reflecting_in_the_water_at_Singapore_Botanic_Gardens.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "originalDimensions": [
+        6720,
+        4480
+      ],
+      "displayDimensions": [
+        960,
+        640
+      ],
+      "metadata": {
+        "DateTime": {
+          "value": "2018-12-02 03:52:27",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "Branches of a Ficus kurzii reflecting in the water at Singapore Botanic Gardens",
+          "source": "mediawiki-metadata"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Ficus kurzii|Branches|Featured pictures of Singapore|Taken with Canon EOS 5D Mark IV and Canon EF 24-70mm F2.8L II USM|Self-published work|Commons featured widescreen desktop backgrounds|Swan Lake, Singapore Botanic Gardens|Singapore photographs taken on 2018-06-11|Featured pictures on Wikipedia, Persian|Banyans in Singapore|Water reflections in Singapore|Files with coordinates missing SDC location of creation|Reflections in lakes|Featured pictures by Basile Morin|Photographs by Basile Morin|Water reflections of trees|Featured pictures of Rosales|Ficus leaves",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "quality|featured",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "GPSLatitude": {
+          "value": "1.307758",
+          "source": "commons-desc-page"
+        },
+        "GPSLongitude": {
+          "value": "103.815820",
+          "source": "commons-desc-page"
+        },
+        "GPSMapDatum": {
+          "value": "WGS-84",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "ImageDescription": {
+          "value": "Curved branches of a 150 year-old <i>Ficus kurzii</i> (Burmese Banyan) reflecting in the water of the Swan Lake, at <a href=\"https://en.wikipedia.org/wiki/Singapore_Botanic_Gardens\" class=\"extiw\" title=\"en:Singapore Botanic Gardens\">Singapore Botanic Gardens</a>",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "2018-06-11 15:02:10",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+          "source": "commons-desc-page"
+        },
+        "Artist": {
+          "value": "<a href=\"//commons.wikimedia.org/wiki/User:Basile_Morin\" title=\"User:Basile Morin\">Basile Morin</a>",
+          "source": "commons-desc-page"
+        },
+        "LicenseShortName": {
+          "value": "CC BY-SA 4.0",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Creative Commons Attribution-Share Alike 4.0",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "true",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseUrl": {
+          "value": "https://creativecommons.org/licenses/by-sa/4.0",
+          "source": "commons-desc-page"
+        },
+        "Copyrighted": {
+          "value": "True",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "cc-by-sa-4.0",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      },
+      "bytes": 342178,
+      "sha256": "c986247982dba7b50998681b7b1c926f000e4a4ae45cd04adc72691f1e3cdb50"
+    }
+  ]
+}

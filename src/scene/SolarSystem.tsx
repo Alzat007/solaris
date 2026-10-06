@@ -18,9 +18,11 @@ import { rotation } from "../interaction/rotation";
 import { store } from "../interaction/store";
 import { gestureConfig } from "../gesture/gestureConfig";
 import { particles } from "../particles/ParticleEngine";
+import { isPlanetStoryOpen } from "../exploration/planetAtlasState";
 export function SolarSystem() {
   const root = useRef<Group>(null);
   useFrame((_, dt) => {
+    if (isPlanetStoryOpen(store.get())) return;
     rotation.update(dt, store.get().transitioning);
     particles.scale +=
       (particles.targetScale - particles.scale) *

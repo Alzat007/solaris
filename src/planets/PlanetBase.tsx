@@ -3,21 +3,30 @@ import { useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import { Group, Vector3, type Mesh } from "three";
 import { planets, type PlanetId } from "../data/planets";
-import { useSolaris } from "../interaction/store";
+import { store, useSolaris } from "../interaction/store";
 import { particles } from "../particles/ParticleEngine";
 import { PlanetMaterial } from "./PlanetMaterial";
 import { ParticleField } from "../particles/ParticleField";
 import { planetObjects } from "../scene/planetPicking";
 import { gestureFeedback } from "../gesture/gestureFeedback";
 import { bodyTransforms, explorationModes } from "../exploration/sceneState";
+import {
+  getPlanetAtlasRotation,
+  isPlanetAtlasVisible,
+  isPlanetStoryOpen,
+  isPlanetAutoRotating,
+  setPlanetAutoRotate,
+} from "../exploration/planetAtlasState";
 export function PlanetBase({
   id,
   children,
   surface,
+  surfaceChildren,
 }: {
   id: PlanetId;
   children?: ReactNode;
   surface?: ReactNode;
+  surfaceChildren?: ReactNode;
 }) {
   const data = planets.find((p) => p.id === id)!;
   const root = useRef<Group>(null),
@@ -46,6 +55,11 @@ export function PlanetBase({
   }, [id]);
   useFrame(({ clock }, delta) => {
     if (!root.current) return;
+    const state = store.get();
+    // A cancel can update the store before React commits the next frame's props.
+    const active = state.selected === id;
+    const mode = state.mode;
+    if (active && isPlanetStoryOpen(state)) return;
     const angle =
       data.angle +
       clock.elapsedTime * data.orbitSpeed * 0.3 +
@@ -115,9 +129,24 @@ export function PlanetBase({
     );
     const dragDelta = particles.rotation - previousDragRotation.current;
     previousDragRotation.current = particles.rotation;
-    if (body.current && active && ["PLANET_OVERVIEW", "INFO"].includes(mode))
+    const atlas = active && isPlanetAtlasVisible(state);
+    if (body.current && atlas) {
+      const manual = getPlanetAtlasRotation(id).step(body.current, {
+        delta,
+        dragDelta,
+        automatic: isPlanetAutoRotating(state, id),
+        dragging: particles.dragging,
+        paused: false,
+      });
+      if (manual && isPlanetAutoRotating(state, id))
+        setPlanetAutoRotate(id, false);
+    } else if (
+      body.current &&
+      active &&
+      ["PLANET_OVERVIEW", "INFO"].includes(mode)
+    )
       body.current.rotation.y += dragDelta;
-    if (body.current && !(active && explorationModes.includes(mode)))
+    if (body.current && !atlas && !(active && explorationModes.includes(mode)))
       body.current.rotation.y += delta * data.rotationSpeed;
     if (hoverRing.current)
       hoverRing.current.scale.setScalar(
@@ -137,6 +166,7 @@ export function PlanetBase({
             />
           )}
         </mesh>
+        {surfaceChildren}
       </group>
       {children}
       {active && (

@@ -16,6 +16,11 @@ import {
 } from "./planetPicking";
 import { PointerFallback } from "./PointerFallback";
 import { explorationModes } from "../exploration/sceneState";
+import {
+  getPlanetAtlasRotation,
+  isPlanetAtlasVisible,
+  setPlanetAutoRotate,
+} from "../exploration/planetAtlasState";
 export function InputField() {
   const { camera, gl, size } = useThree();
   const tip = useRef<Mesh>(null);
@@ -111,8 +116,18 @@ export function InputField() {
       scale: (value) => interaction.scale(value),
       endScale: () => interaction.endScale(),
       currentScale: () => particles.targetScale,
-      startDrag: () => rotation.start(),
+      startDrag: () => {
+        const state = store.get();
+        if (state.selected && isPlanetAtlasVisible(state))
+          setPlanetAutoRotate(state.selected, false);
+        rotation.start();
+      },
       drag: (dx, dt) => rotation.move(dx, dt),
+      dragVertical: (dy) => {
+        const state = store.get();
+        if (state.selected && isPlanetAtlasVisible(state))
+          getPlanetAtlasRotation(state.selected).dragPitch(dy);
+      },
       endDrag: () => rotation.end(),
     });
     const down = (event: PointerEvent) => {

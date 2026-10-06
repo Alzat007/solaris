@@ -23,6 +23,7 @@ import {
 } from "../exploration/LocalExplorationScene";
 import { descentPhase } from "../exploration/sceneState";
 import { EarthHandoff } from "./EarthHandoff";
+import { EarthAtlasProjector } from "../exploration/EarthAtlasProjector";
 function RendererLifecycle() {
   const { gl } = useThree();
   useEffect(() => {
@@ -87,6 +88,7 @@ function Scene() {
       <DescentVeil />
       <CameraController />
       <EarthHandoff />
+      <EarthAtlasProjector />
       <InputField />
       <Intro />
       <RendererLifecycle />

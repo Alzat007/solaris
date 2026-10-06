@@ -1,4 +1,5 @@
 import snapshot from "../../data/earth-directory-source.json" with { type: "json" };
+import { mergeBilingualLabel } from "./bilingualLabels";
 
 export type CityTag = "capital" | "featured";
 export interface DirectorySource {
@@ -64,7 +65,12 @@ export interface EarthDirectory {
   cities: EarthCity[];
 }
 
-export const earthDirectory: EarthDirectory = snapshot as EarthDirectory;
+export const earthDirectory: EarthDirectory = {
+  ...(snapshot as EarthDirectory),
+  cities: (snapshot as EarthDirectory).cities.map((city) =>
+    mergeBilingualLabel(city),
+  ),
+};
 export const countries = earthDirectory.countries;
 export const cities = earthDirectory.cities;
 

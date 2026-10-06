@@ -19,13 +19,25 @@ import { TextCommandInput } from "./TextCommandInput";
 import { ExplorationPanel } from "./ExplorationPanel";
 import { explorationModes } from "../exploration/sceneState";
 import { isTvMode } from "../platform/tvNavigation";
+import { PlanetAtlasUI } from "../exploration/EarthAtlasUI";
+import { isPlanetAtlasVisible } from "../exploration/planetAtlasState";
+import { bilingualName, uiText } from "../exploration/bilingualLabels";
 export function HUD() {
   const s = useSolaris();
   const camera = useCameraDiagnostics();
   const insideSun = s.mode === "SUN_INTERIOR";
   const exploring = explorationModes.includes(s.mode);
+  const lightEarth = isPlanetAtlasVisible(s);
   const tv = isTvMode(location.search);
   const p = insideSun ? undefined : planetById(s.selected);
+  const bodyName = bilingualName(p?.id ?? "sun", {
+    zh: p?.chineseName ?? "太阳",
+    en: p?.name ?? "",
+  });
+  const homeLabel = uiText("backToSolarSystem", s.language, {
+    zh: "返回太阳系",
+    en: "",
+  });
   const [soundError, setSoundError] = useState("");
   const cameraActive = ["loading", "seeking", "online"].includes(s.tracking);
   const busy =
@@ -59,7 +71,7 @@ export function HUD() {
   }, [s.mode]);
   return (
     <div
-      className={`hud ${s.mode === "INTRO" ? "intro-hud" : ""}${s.tracking === "online" ? " hand-active" : ""}${insideSun ? " sun-interior-hud" : ""}${exploring ? " exploring" : ""}`}
+      className={`hud ${s.mode === "INTRO" ? "intro-hud" : ""}${s.tracking === "online" ? " hand-active" : ""}${insideSun ? " sun-interior-hud" : ""}${exploring ? " exploring" : ""}${lightEarth ? " earth-atlas-open" : ""}`}
     >
       <GestureCursor />
       <ThumbTargetFeedback />
@@ -69,9 +81,9 @@ export function HUD() {
         <div className="brand-block">
           <button
             className="wordmark"
-            aria-label="返回太阳系"
+            aria-label={homeLabel}
             data-gesture-id="back-home"
-            data-gesture-label="返回太阳系"
+            data-gesture-label={homeLabel}
             disabled={busy && !interaction.canCancelPlanetTransition()}
             onClick={() => {
               interaction.return();
@@ -132,7 +144,7 @@ export function HUD() {
               ? "沉浸漫游 / 被光环绕"
               : `${number} / ${p ? "探索行星" : "太阳系的中心"}`}
           </p>
-          <h1>{insideSun ? "太阳内部" : p?.chineseName || "太阳"}</h1>
+          <h1>{insideSun ? "太阳内部" : bodyName[s.language]}</h1>
           <p className="object-subtitle">
             {insideSun
               ? "四周皆是星火，每一粒光都在流动。"
@@ -149,7 +161,7 @@ export function HUD() {
               返回太阳系 <span>握拳 / Esc</span>
             </button>
           )}
-          {p && (
+          {p && !lightEarth && (
             <button
               className="text-action explore-entry"
               data-gesture-id="browse-destinations"
@@ -161,7 +173,7 @@ export function HUD() {
               <span>→</span>
             </button>
           )}
-          {p && (
+          {p && !lightEarth && (
             <button
               className="text-action"
               data-gesture-id="toggle-info"
@@ -257,8 +269,9 @@ export function HUD() {
         </button>
       )}
       {s.heldUniverse && <div className="held-universe">宇宙，尽在掌中</div>}
-      {!insideSun && !exploring && <PlanetInfo />}
-      <ExplorationPanel />
+      {!insideSun && !exploring && !lightEarth && <PlanetInfo />}
+      {!lightEarth && <ExplorationPanel />}
+      <PlanetAtlasUI />
       <footer>
         <div className="footer-top">
           <div className="location">
@@ -276,7 +289,7 @@ export function HUD() {
               </small>
             </span>
           </div>
-          <TextCommandInput />
+          {!lightEarth && <TextCommandInput />}
           <GestureHint />
         </div>
         <nav className="planet-nav" aria-label="选择星球">

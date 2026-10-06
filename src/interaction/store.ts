@@ -34,6 +34,8 @@ export interface UIState {
   explorationError: string;
   language: "zh" | "en";
   locationResourcesReady: boolean;
+  earthAutoRotate: boolean;
+  planetAutoRotate: Partial<Record<PlanetId, boolean>>;
 }
 let snapshot: UIState = {
   mode: "INTRO",
@@ -62,6 +64,8 @@ let snapshot: UIState = {
   explorationError: "",
   language: "zh",
   locationResourcesReady: false,
+  earthAutoRotate: true,
+  planetAutoRotate: {},
 };
 const listeners = new Set<() => void>();
 export const store = {

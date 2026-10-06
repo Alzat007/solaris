@@ -183,6 +183,14 @@ export function installTvNavigation(
       active?.isContentEditable;
     const direction = directions[event.key];
     if (direction) {
+      // A story dialog owns vertical reading; horizontal D-pad still moves focus.
+      if (
+        (direction === "up" || direction === "down") &&
+        active
+          ?.closest("[data-tv-scroll-keys]")
+          ?.getAttribute?.("data-tv-scroll-keys") === "vertical"
+      )
+        return;
       // Native select popups do not consistently handle D-pad keys in TV WebViews.
       if (
         select &&

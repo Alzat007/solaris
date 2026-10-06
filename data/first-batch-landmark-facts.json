@@ -1,0 +1,176 @@
+{
+  "beijing-tiananmen": ["https://whc.unesco.org/document/204904"],
+  "beijing-forbidden-city": [
+    "https://www.dpm.org.cn/subject_600/index.html",
+    "https://www.dpm.org.cn/explore/building/236454.html"
+  ],
+  "beijing-great-wall": [
+    "https://whc.unesco.org/en/list/438",
+    "https://whc.unesco.org/document/162535"
+  ],
+  "beijing-birds-nest": ["https://www.n-s.cn/aboutindex.html"],
+  "beijing-temple-heaven": [
+    "https://whc.unesco.org/en/list/881",
+    "https://www.beijing.gov.cn/renwen/rwzyd/qgzdwwbhdw/tt/202210/t20221027_2845910.html"
+  ],
+  "shanghai-bund": ["https://www.shanghai.gov.cn/huangpu/index.html"],
+  "shanghai-oriental-pearl": [
+    "https://english.shanghai.gov.cn/en-ScenicSpots/20231205/19a5f5184eca45728fd57a4d4c8efc61.html"
+  ],
+  "shanghai-tower": [
+    "https://www.shanghaitower.com/news_2/33.html",
+    "https://en.shio.gov.cn/TrueCMS/shxwbgs/wxdtt/content/e3fad178-4821-4ba3-a7c4-c96fb91b8e99.htm"
+  ],
+  "shanghai-yu-garden": [
+    "https://www.shanghai.gov.cn/citywalk/20260625/3a8ac74e088f4d468d9c3434b0b43d94.html",
+    "https://www.shda.gov.cn/dawh/csjy/202509/t20250919_75917.html",
+    "https://www.fosun.com/Upload/File/202509/5564a0b3e9634004964bddc7f753027d.pdf",
+    "https://www.yugarden.com.cn/Page/WxyGarden/introduce-detail6.html"
+  ],
+  "shenzhen-ping-an": [
+    "https://www.kpf.com/project/ping-an-finance-centre",
+    "https://www.kpf.com/news/ping-an-finance-centre-ctbuh-awards-2019"
+  ],
+  "shenzhen-bay": [
+    "https://pnr.sz.gov.cn/xxgk/ztzl/rdzt/lmsz/szxd/hdxw/content/post_10705453.html",
+    "https://pnr.sz.gov.cn/gkmlpt/content/12/12270/post_12270862.html"
+  ],
+  "shenzhen-huaqiangbei": [
+    "https://pnr.sz.gov.cn/luohu/zwdt/content/post_11381407.html"
+  ],
+  "shenzhen-qianhai": [
+    "https://qh.sz.gov.cn/sygnan/qhzx/zthd_1/sghz/hzdt/content/post_11092341.html",
+    "https://www.sz.gov.cn/zfgb/2010/gb696/content/post_4985677.html"
+  ],
+  "hangzhou-west-lake": [
+    "https://whc.unesco.org/en/list/1334",
+    "https://whc.unesco.org/en/news/767"
+  ],
+  "hangzhou-lingyin": [
+    "https://wgly.hangzhou.gov.cn/art/2023/12/1/art_1229734028_58951314.html"
+  ],
+  "hangzhou-asian-games": [
+    "https://www.hangzhou2022.cn/En/presscenter/spotnews/latestnews/202208/t20220815_51696.shtml",
+    "https://www.hangzhou2022.cn/shipin/202309/P020230923303193986151.pdf"
+  ],
+  "hong-kong-victoria-harbour": [
+    "https://www.discoverhongkong.com/eng/place-to-go/travel.guide-victoria-harbour.html"
+  ],
+  "hong-kong-victoria-peak": [
+    "https://www.discoverhongkong.com/eng/place-to-go/travel.guide-the-peak.html"
+  ],
+  "hong-kong-central": [
+    "https://www.discoverhongkong.com/uk/explore/culture/tai-kwun-heritage-and-art.html"
+  ],
+  "hong-kong-convention-centre": ["https://www.hkcec.com/en/image-gallery"],
+  "taipei-101": [
+    "https://www.taipei-101.com.tw/asset/files/101%E4%B8%AD%E9%AB%98%E5%B9%B4%E7%B4%9A%E5%AD%B8%E7%BF%92%E5%96%AE_new.pdf",
+    "https://ws.taipei-101.com.tw/upload/charity/20240108/ad62ac5bd03445a0a2c87cfa2b9a2515/ad62ac5bd03445a0a2c87cfa2b9a2515.pdf"
+  ],
+  "taipei-palace-museum": [
+    "https://www.npm.gov.tw/Articles.aspx?l=1&sno=03012532",
+    "https://digitalarchive.npm.gov.tw/Collection/Detail/425?dep=P"
+  ],
+  "taipei-chiang-kai-shek": [
+    "https://www.cksmh.gov.tw/cp.aspx?Create=1&n=5882"
+  ],
+  "tokyo-tower": ["https://gallery.tokyotower.co.jp/en/index.html"],
+  "tokyo-sensoji": [
+    "https://www.senso-ji.jp/english/",
+    "https://www.senso-ji.jp/guide/guide04.html",
+    "https://www.senso-ji.jp/annual_event/06.html"
+  ],
+  "tokyo-shibuya": [
+    "https://www.gotokyo.org/en/spot/78/index.html",
+    "https://www.gotokyo.org/book/wp-content/uploads/2024/03/2403_shibuydaymap_low_EN.pdf"
+  ],
+  "tokyo-station": [
+    "https://www.jreast.co.jp/e/investor/ar/2013/pdf/ar_2013_all.pdf",
+    "https://www.jreast.co.jp/e/environment/pdf_2013/all.pdf"
+  ],
+  "kyoto-kiyomizu": [
+    "https://www.kiyomizudera.or.jp/history.php",
+    "https://whc.unesco.org/en/list/688"
+  ],
+  "kyoto-kinkakuji": [
+    "https://www.shokoku-ji.jp/en/kinkakuji/about/",
+    "https://www.shokoku-ji.jp/en/kinkakuji/guide/",
+    "https://ja.kyoto.travel/tourism/single02.php?category_id=9&tourism_id=2251"
+  ],
+  "kyoto-fushimi-inari": ["https://inari.jp/en/"],
+  "seoul-gyeongbokgung": [
+    "https://english.visitseoul.net/PalaceArea/Gyeongbokgung-GyeongbokPalace/ENN000608"
+  ],
+  "seoul-namsan-tower": [
+    "https://www.nseoultower.co.kr/eng/global/intro.asp",
+    "https://english.visitseoul.net/attractions/Namsan%20Seoul%20Tower%20/ENP000036"
+  ],
+  "seoul-gwanghwamun": [
+    "https://english.visitkorea.or.kr/svc/contents/contentsView.do?vcontsId=110592",
+    "https://english.visitseoul.net/PalaceArea/Gyeongbokgung-GyeongbokPalace/ENN000608"
+  ],
+  "singapore-merlion": [
+    "https://www.visitsingapore.com/neighbourhood/featured-neighbourhood/marina-bay/merlion-park/"
+  ],
+  "singapore-marina-bay-sands": [
+    "https://www.marinabaysands.com/company-information/about.html"
+  ],
+  "singapore-gardens-bay": [
+    "https://www.gardensbythebay.com.sg/en/about-us/our-gardens-story.html",
+    "https://www.gardensbythebay.com.sg/en/things-to-do/attractions/flower-dome.html",
+    "https://www.gardensbythebay.com.sg/en/things-to-do/attractions/supertree-grove.html"
+  ],
+  "new-york-liberty": [
+    "https://www.nps.gov/stli/learn/historyculture/index.htm"
+  ],
+  "new-york-times-square": [
+    "https://www.timessquarenyc.org/times-square-alliance/about-the-alliance"
+  ],
+  "new-york-central-park": ["https://www.centralparknyc.org/about"],
+  "new-york-empire-state": ["https://www.esbnyc.com/about/architecture-design"],
+  "washington-white-house": [
+    "https://www.nps.gov/whho/planyourvisit/park-brochure.htm"
+  ],
+  "washington-capitol": [
+    "https://www.aoc.gov/explore-capitol-campus/buildings-grounds/capitol-building",
+    "https://www.visitthecapitol.gov/explore/the-capitol"
+  ],
+  "washington-lincoln": [
+    "https://www.nps.gov/linc/learn/historyculture/index.htm"
+  ],
+  "washington-monument": [
+    "https://www.nps.gov/wamo/learn/historyculture/index.htm"
+  ],
+  "paris-eiffel": ["https://www.toureiffel.paris/en/the-monument/history"],
+  "paris-louvre": [
+    "https://www.louvre.fr/en/explore/the-palace",
+    "https://www.louvre.fr/en/explore/the-palace/sun-and-gold"
+  ],
+  "paris-arc-triomphe": [
+    "https://www.paris-arc-de-triomphe.fr/en/discover/the-sculpted-groups"
+  ],
+  "paris-notre-dame": [
+    "https://www.notredamedeparis.fr/en/understand/architecture/",
+    "https://www.notredamedeparis.fr/en/understand/architecture/exterior-architecture/"
+  ],
+  "london-big-ben": [
+    "https://www.parliament.uk/about/living-heritage/building/palace/big-ben/facts-figures/"
+  ],
+  "london-buckingham": ["https://www.rct.uk/visit/buckingham-palace"],
+  "london-eye": ["https://www.londoneye.com/about-us/"],
+  "london-tower-bridge": ["https://www.towerbridge.org.uk/stories/history"],
+  "moscow-red-square": ["https://whc.unesco.org/en/list/545/"],
+  "moscow-kremlin": ["https://whc.unesco.org/en/list/545/"],
+  "moscow-saint-basil": ["https://en.shm.ru/museum/hvb/"],
+  "saint-petersburg-winter-palace": [
+    "https://www.hermitagemuseum.org/panorama/pano_1/?floorNum=2&lng=en",
+    "https://whc.unesco.org/en/list/540/"
+  ],
+  "saint-petersburg-peter-paul": [
+    "https://www.spbmuseum.ru/themuseum/museum_complex/peterpaul_fortress/ppk.php"
+  ],
+  "saint-petersburg-neva": [
+    "https://visit-petersburg.ru/en/route/tp-182-naberezhnye-peterburga/",
+    "https://visit-petersburg.ru/en/route/paradnyy-peterburg-s-vykhodom-v-finskiy-zaliv/"
+  ]
+}

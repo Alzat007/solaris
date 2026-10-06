@@ -91,8 +91,23 @@ body {
   gap: 8px;
 }
 .lab-destination {
-  width: 90px;
+  width: 42px;
   gap: 7px;
+}
+.lab-city-select {
+  max-width: 160px;
+  min-width: 100px;
+  height: 42px;
+  padding: 0 8px;
+  border: 1px solid #435156;
+  border-radius: 6px;
+  background: #1a2428;
+  color: #f5f7f7;
+  font: inherit;
+}
+.lab-city-select:focus-visible {
+  outline: 3px solid #ffe08a;
+  outline-offset: 3px;
 }
 .lab-flight {
   position: absolute;
@@ -196,8 +211,21 @@ body {
     height: 40px;
   }
   .lab-destination {
-    width: 62px;
+    width: 36px;
     gap: 4px;
+  }
+  .lab-city-select {
+    min-width: 0;
+    width: 90px;
+    height: 40px;
+  }
+  .lab-tools {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  .lab-flight,
+  .lab-data-error {
+    top: 165px;
   }
   .lab-flight {
     top: 125px;

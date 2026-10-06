@@ -5,10 +5,12 @@ import { interaction } from "../interaction/InteractionController";
 import { store } from "../interaction/store";
 import { particles } from "../particles/ParticleEngine";
 import { captureEarthView, earthViewHandoff } from "./earthViewHandoff";
+import { usesLightEarth } from "../exploration/earthAtlasState";
 
 export function EarthHandoff() {
   const { camera, size } = useThree();
   useFrame(() => {
+    if (usesLightEarth()) return;
     const state = store.get();
     if (
       state.mode !== "PLANET_OVERVIEW" ||

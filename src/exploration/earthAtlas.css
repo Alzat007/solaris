@@ -1,0 +1,307 @@
+.earth-atlas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  letter-spacing: 0;
+}
+.hud.earth-atlas-open .object-title,
+.hud.earth-atlas-open .edge-label {
+  display: none;
+}
+.earth-atlas-tools {
+  position: absolute;
+  z-index: 12;
+  top: 106px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  padding: 8px 12px;
+  background: rgba(12, 20, 26, 0.62);
+  border: 1px solid rgba(237, 247, 255, 0.17);
+  border-radius: 8px;
+  backdrop-filter: blur(18px);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.09);
+  color: #edf5f5;
+  pointer-events: auto;
+}
+.earth-atlas-heading {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 0 8px 0 2px;
+}
+.earth-batch-picker {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+}
+.earth-atlas-tools .earth-batch-picker select {
+  width: 148px;
+  min-width: 0;
+  max-width: calc(50% - 2px);
+}
+.earth-atlas-label:disabled {
+  color: #a9b8ba;
+  cursor: default;
+  opacity: 0.6;
+}
+.earth-atlas-heading strong {
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.earth-atlas-tools select {
+  min-width: 154px;
+  max-width: 240px;
+  width: 192px;
+  height: 44px;
+  padding: 0 8px;
+  border: 0;
+  border-bottom: 1px solid #91aaa277;
+  color: #eaf4f1;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  pointer-events: auto;
+}
+.earth-atlas-tools option,
+.earth-atlas-tools optgroup {
+  color: #17232a;
+  background: #f4f8f7;
+}
+.earth-atlas-controls,
+.earth-atlas-nudges {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.earth-atlas-nudges {
+  padding-left: 8px;
+  border-left: 1px solid #ffffff26;
+}
+.earth-atlas-tools button {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #dce9e7;
+  cursor: pointer;
+}
+.earth-atlas-tools button[aria-pressed="true"] {
+  color: #f0daab;
+  background: rgba(203, 177, 110, 0.09);
+}
+.earth-atlas-tools button:hover {
+  background: #e4f5ee17;
+}
+.earth-atlas-tools button:focus-visible,
+.earth-atlas-tools select:focus-visible {
+  outline: 2px solid #a6f1d9;
+  outline-offset: 2px;
+}
+.earth-atlas-markers,
+.earth-atlas-leaders {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.earth-atlas-leaders .capital-point {
+  fill: #cde6ec;
+  opacity: 0.62;
+}
+.earth-atlas-leaders .featured-point {
+  fill: #f4dda8;
+  filter: drop-shadow(0 0 3px #e6c98c);
+}
+.earth-atlas-leaders polyline {
+  fill: none;
+  stroke: #d8e9ef;
+  stroke-width: 0.8;
+  opacity: 0.64;
+}
+.earth-atlas-leaders .anchor-ring {
+  fill: #c6e5ee0d;
+  stroke: #d7e5e7;
+  stroke-width: 1;
+  opacity: 0.82;
+}
+.earth-atlas-leaders .focused polyline,
+.earth-atlas-leaders .focused .anchor-ring {
+  stroke: #a8f5d8;
+  stroke-width: 1.4;
+  opacity: 1;
+  filter: drop-shadow(0 0 4px #91e5c677);
+}
+.earth-atlas-anchor {
+  position: absolute;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.earth-atlas-label {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 12px;
+  border: 0;
+  border-bottom: 1px solid #d5e1e55c;
+  border-radius: 0;
+  color: #eaf2f3;
+  background: linear-gradient(
+    90deg,
+    rgba(12, 19, 22, 0.66),
+    rgba(12, 19, 22, 0.25)
+  );
+  text-shadow: 0 1px 5px #050c13;
+  font: inherit;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-align: left;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.earth-atlas-label span:first-child {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+}
+.earth-atlas-label.featured {
+  border-bottom-color: #ebd5a275;
+}
+.earth-atlas-label-index {
+  color: #e3d2ae;
+  font-size: 18px;
+}
+.earth-atlas-label:hover,
+.earth-atlas-label.focused,
+.earth-atlas-label:focus-visible {
+  border-bottom-color: #a8f5d8;
+  color: #a8f5d8;
+  background: rgba(15, 31, 32, 0.84);
+  outline: 1px solid #a8f5d84d;
+  outline-offset: 0;
+}
+.earth-atlas-credits {
+  position: absolute;
+  left: 24px;
+  bottom: 128px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: #bacdce;
+  opacity: 0.8;
+  font-size: 10px;
+}
+.earth-atlas-credits .error {
+  color: #f6bda9;
+  opacity: 1;
+}
+.earth-atlas-source-links {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  pointer-events: auto;
+}
+.earth-atlas-source-links a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+.tv-mode .earth-atlas-label {
+  font-size: 18px;
+  line-height: 1.2;
+}
+.tv-mode .earth-atlas-heading strong {
+  font-size: 22px;
+}
+.tv-mode .earth-atlas-tools select {
+  font-size: 18px;
+  width: 238px;
+}
+@media (max-width: 950px) {
+  .earth-atlas-tools {
+    gap: 4px;
+    top: 94px;
+  }
+  .earth-atlas-tools select {
+    width: 154px;
+  }
+  .earth-atlas-nudges {
+    padding-left: 4px;
+  }
+}
+@media (max-width: 700px) {
+  .earth-atlas-tools {
+    top: 82px;
+    width: calc(100% - 24px);
+    max-width: none;
+    padding: 6px;
+    gap: 2px 4px;
+    justify-content: space-between;
+  }
+  .earth-atlas-heading {
+    padding: 0 4px;
+  }
+  .earth-atlas-tools select {
+    flex: 1;
+    width: 160px;
+    max-width: none;
+    min-width: 140px;
+  }
+  .earth-atlas-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .earth-atlas-nudges {
+    width: 100%;
+    border-left: 0;
+    padding-left: 0;
+    justify-content: center;
+    border-top: 1px solid #ffffff15;
+  }
+  .earth-atlas-credits {
+    bottom: 154px;
+    left: 12px;
+    font-size: 9px;
+  }
+  .earth-atlas-label {
+    font-size: 12px;
+    padding: 0 9px;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .earth-atlas-leaders .focused .anchor-ring {
+    animation: atlas-ring 2.4s ease-in-out infinite;
+  }
+  @keyframes atlas-ring {
+    50% {
+      opacity: 0.45;
+      stroke-width: 2.3;
+    }
+  }
+}

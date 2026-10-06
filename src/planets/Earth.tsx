@@ -9,6 +9,12 @@ import { useSolaris } from "../interaction/store";
 import atmosphereVert from "../shaders/atmosphere.vert?raw";
 import atmosphereFrag from "../shaders/atmosphere.frag?raw";
 import { noise } from "../shaders/noise";
+import { CountryOutlineLayer } from "../exploration/CountryOutlineLayer";
+import { isEarthAtlasVisible } from "../exploration/earthAtlasState";
+import {
+  earthAtlasView,
+  useEarthAtlasView,
+} from "../exploration/earthAtlasProjection";
 function EarthSurface() {
   const [day, night] = useTexture([
     `${import.meta.env.BASE_URL}textures/earth-day.jpg`,
@@ -44,6 +50,8 @@ function EarthSurface() {
   );
 }
 export function Earth() {
+  const state = useSolaris();
+  const atlas = useEarthAtlasView();
   const moon = useRef<Group>(null),
     { selected } = useSolaris();
   const uniforms = useMemo(
@@ -65,7 +73,16 @@ export function Earth() {
     uniforms.uOpacity.value = selected === "earth" ? 0.2 : 0.15;
   });
   return (
-    <PlanetBase id="earth" surface={<EarthSurface />}>
+    <PlanetBase
+      id="earth"
+      surface={<EarthSurface />}
+      surfaceChildren={
+        <CountryOutlineLayer
+          visible={isEarthAtlasVisible(state) && atlas.showBoundaries}
+          onStatus={(countries) => earthAtlasView.set({ countries })}
+        />
+      }
+    >
       <mesh scale={1.018}>
         <sphereGeometry args={[1, 48, 32]} />
         <shaderMaterial

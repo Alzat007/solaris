@@ -5,6 +5,8 @@ import {
   EARTH_ION_ASSETS,
   earthProviderConfig,
   loadEarthProvider,
+  safeEarthError,
+  SafeEarthProviderError,
 } from "../src/globeLab/earthProvider";
 
 test("local mode remains default even with an available token", () => {
@@ -145,6 +147,229 @@ test("already canceled loading does not request any provider", async () => {
       controller.signal,
     ),
     /已取消/,
+  );
+  assert.equal(calls, 0);
+});
+
+test("ion configuration uses default asset IDs and accepts explicit positive IDs", () => {
+  assert.deepEqual(
+    earthProviderConfig("?data=ion", {
+      VITE_CESIUM_ION_READ_TOKEN: " synthetic-token ",
+    }),
+    {
+      mode: "ion",
+      accessToken: "synthetic-token",
+      assetIds: { terrain: 1, imagery: 3830183 },
+    },
+  );
+  assert.deepEqual(
+    earthProviderConfig("?data=ion", {
+      VITE_CESIUM_ION_READ_TOKEN: "synthetic-token",
+      VITE_CESIUM_TERRAIN_ASSET_ID: " 101 ",
+      VITE_CESIUM_IMAGERY_ASSET_ID: "202",
+    }),
+    {
+      mode: "ion",
+      accessToken: "synthetic-token",
+      assetIds: { terrain: 101, imagery: 202 },
+    },
+  );
+});
+
+test("invalid asset IDs fail safely and local mode never evaluates ion configuration", () => {
+  for (const value of [
+    "0",
+    "-1",
+    "1.5",
+    "1e3",
+    "01",
+    "Infinity",
+    "9007199254740992",
+    "secret-url",
+  ]) {
+    assert.throws(
+      () =>
+        earthProviderConfig("?data=ion", {
+          VITE_CESIUM_ION_READ_TOKEN: "synthetic-token",
+          VITE_CESIUM_IMAGERY_ASSET_ID: value,
+        }),
+      (error: Error) =>
+        /正整数/.test(error.message) && !error.message.includes(value),
+    );
+  }
+  assert.deepEqual(
+    earthProviderConfig("?data=local", {
+      VITE_CESIUM_TERRAIN_ASSET_ID: "not-an-id",
+    }),
+    { mode: "local" },
+  );
+});
+
+test("explicit configured assets are reused without global credentials or fallback", async () => {
+  const calls: [string, number][] = [];
+  const result = await loadEarthProvider(
+    {
+      mode: "ion",
+      accessToken: "synthetic-token",
+      assetIds: { terrain: 101, imagery: 202 },
+    },
+    "/",
+    {
+      local: async () => {
+        throw new Error("no fallback");
+      },
+      terrain: async (id) => {
+        calls.push(["terrain", id]);
+        return {} as never;
+      },
+      imagery: async (id) => {
+        calls.push(["imagery", id]);
+        return {} as never;
+      },
+    },
+  );
+  assert.deepEqual(calls, [
+    ["terrain", 101],
+    ["imagery", 202],
+  ]);
+  assert.match(result.coverage, /提供器已初始化/);
+  assert.match(result.coverage, /精度待实测/);
+});
+
+test("factory errors retain only sanitized stage and nested HTTP status", async () => {
+  for (const stage of ["terrain", "imagery"] as const) {
+    const secret = "synthetic-secret-query-value";
+    const sdkError = {
+      message: `https://example.invalid/?token=${secret}`,
+      error: { statusCode: 403, response: secret, headers: { token: secret } },
+    };
+    let imageryCalls = 0;
+    await assert.rejects(
+      loadEarthProvider({ mode: "ion", accessToken: secret }, "/", {
+        local: async () => {
+          throw new Error("no fallback");
+        },
+        terrain: async () => {
+          if (stage === "terrain") throw sdkError;
+          return {} as never;
+        },
+        imagery: async () => {
+          imageryCalls++;
+          throw sdkError;
+        },
+      }),
+      (error: unknown) => {
+        assert.ok(error instanceof SafeEarthProviderError);
+        assert.equal(error.stage, stage);
+        assert.equal(error.statusCode, 403);
+        assert.equal(error.code, "HTTP_ERROR");
+        assert.ok(!String(error).includes(secret));
+        assert.ok(!JSON.stringify(error).includes(secret));
+        assert.equal("cause" in error, false);
+        assert.equal("response" in error, false);
+        assert.equal("headers" in error, false);
+        assert.ok(!error.message.includes("缺少权限"));
+        return true;
+      },
+    );
+    assert.equal(imageryCalls, stage === "terrain" ? 0 : 1);
+  }
+});
+
+test("safe errors traverse bounded nested errors without reading raw messages or accessors", () => {
+  let rawReads = 0;
+  const nested: Record<string, unknown> = { statusCode: 429 };
+  nested.error = nested;
+  Object.defineProperty(nested, "message", {
+    get: () => {
+      rawReads++;
+      throw new Error("secret");
+    },
+  });
+  Object.defineProperty(nested, "response", {
+    get: () => {
+      rawReads++;
+      throw new Error("secret");
+    },
+  });
+  const safe = safeEarthError({ cause: { originalError: nested } }, "imagery");
+  assert.equal(safe.statusCode, 429);
+  assert.equal(safe.code, "HTTP_ERROR");
+  assert.equal(rawReads, 0);
+  for (const statusCode of ["403", -1, 0, 999, NaN]) {
+    const ignored = safeEarthError({ statusCode }, "terrain");
+    assert.equal(ignored.statusCode, undefined);
+    assert.equal(ignored.code, "REQUEST_FAILED");
+  }
+});
+
+test("local factory failure is sanitized and labeled as imagery rather than ion success", async () => {
+  await assert.rejects(
+    loadEarthProvider({ mode: "local" }, "/", {
+      local: async () => {
+        throw { error: { statusCode: 404 }, message: "secret-url" };
+      },
+      terrain: async () => ({}) as never,
+      imagery: async () => ({}) as never,
+    }),
+    (error: unknown) =>
+      error instanceof SafeEarthProviderError &&
+      error.stage === "imagery" &&
+      error.statusCode === 404 &&
+      !error.message.includes("secret-url"),
+  );
+});
+
+test("canceled failed initialization is reported as canceled without starting imagery", async () => {
+  const controller = new AbortController();
+  let rejectTerrain!: (error: unknown) => void;
+  let imageryCalls = 0;
+  const loading = loadEarthProvider(
+    { mode: "ion", accessToken: "synthetic-token" },
+    "/",
+    {
+      local: async () => ({}) as never,
+      terrain: () =>
+        new Promise<never>((_, reject) => {
+          rejectTerrain = reject;
+        }),
+      imagery: async () => {
+        imageryCalls++;
+        return {} as never;
+      },
+    },
+    controller.signal,
+  );
+  controller.abort();
+  rejectTerrain({ statusCode: 403, message: "secret" });
+  await assert.rejects(
+    loading,
+    (error: unknown) =>
+      error instanceof SafeEarthProviderError &&
+      error.code === "CANCELED" &&
+      error.stage === "terrain" &&
+      error.statusCode === undefined,
+  );
+  assert.equal(imageryCalls, 0);
+});
+
+test("invalid programmatic asset IDs do not start factories", async () => {
+  let calls = 0;
+  const request = async () => {
+    calls++;
+    return {} as never;
+  };
+  await assert.rejects(
+    loadEarthProvider(
+      {
+        mode: "ion",
+        accessToken: "unused",
+        assetIds: { terrain: -1, imagery: 2 },
+      },
+      "/",
+      { local: request, terrain: request, imagery: request },
+    ),
+    /正整数/,
   );
   assert.equal(calls, 0);
 });

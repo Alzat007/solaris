@@ -1,12 +1,33 @@
 export interface HotspotScaleLimits {
   showBelow: number;
   hideAbove: number;
+  showAbove?: number;
+  hideBelow?: number;
 }
 
 export const DEFAULT_HOTSPOT_SCALE: HotspotScaleLimits = {
   showBelow: 140,
   hideAbove: 200,
 };
+
+export const EARTH_LABEL_SCALES = {
+  ion: {
+    story: DEFAULT_HOTSPOT_SCALE,
+    city: { showBelow: 6000, hideAbove: 8000, showAbove: 230, hideBelow: 200 },
+  },
+  local: {
+    story: { showBelow: 1000, hideAbove: 1300 },
+    city: {
+      showBelow: 6000,
+      hideAbove: 8000,
+      showAbove: 1500,
+      hideBelow: 1300,
+    },
+  },
+} satisfies Record<
+  "ion" | "local",
+  Record<"story" | "city", HotspotScaleLimits>
+>;
 
 export function exceedsHotspotDragThreshold(
   start: { x: number; y: number },
@@ -30,6 +51,22 @@ export function nextHotspotVisibility(
     limits.hideAbove <= limits.showBelow
   )
     return false;
+  if (limits.showAbove !== undefined || limits.hideBelow !== undefined) {
+    if (
+      !Number.isFinite(limits.showAbove) ||
+      !Number.isFinite(limits.hideBelow) ||
+      limits.hideBelow! < 0 ||
+      limits.showAbove! <= limits.hideBelow! ||
+      limits.showAbove! >= limits.showBelow
+    )
+      return false;
+    if (
+      visible
+        ? metersPerPixel <= limits.hideBelow!
+        : metersPerPixel < limits.showAbove!
+    )
+      return false;
+  }
   return visible
     ? metersPerPixel < limits.hideAbove
     : metersPerPixel <= limits.showBelow;

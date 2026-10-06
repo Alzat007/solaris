@@ -12,6 +12,13 @@ import { audio } from "../audio/AudioManager";
 import { gestureConfig as config } from "../gesture/gestureConfig";
 import type { CelestialId } from "../gesture/gestureFeedback";
 import { gestureTargets } from "../gesture/gestureTargets";
+import { getPlanetAnnotation, getPlanetStory } from "../exploration/planetAtlasCatalog";
+import {
+  getPlanetAtlasRotation,
+  isPlanetAtlasVisible,
+  setPlanetAutoRotate,
+} from "../exploration/planetAtlasState";
+import { usesLightEarth } from "../exploration/earthAtlasState";
 import { assets } from "../exploration/content";
 import {
   getImmersiveSite,
@@ -88,6 +95,7 @@ export class InteractionController {
     explosion: number;
     burst: number;
     targetScale: number;
+    bodyRotation?: { x: number; y: number; z: number };
   } | null = null;
   private snapshotPlanet() {
     const origin = store.get();
@@ -102,6 +110,17 @@ export class InteractionController {
       explosion: particles.explosion,
       burst: particles.burst,
       targetScale: particles.targetScale,
+      ...(origin.selected &&
+      isPlanetAtlasVisible(origin) &&
+      bodyTransforms.get(origin.selected)
+        ? {
+            bodyRotation: {
+              x: bodyTransforms.get(origin.selected)!.rotation.x,
+              y: bodyTransforms.get(origin.selected)!.rotation.y,
+              z: bodyTransforms.get(origin.selected)!.rotation.z,
+            },
+          }
+        : {}),
     };
   }
   private restoreLocation() {
@@ -200,6 +219,39 @@ export class InteractionController {
       return false;
     gestureTargets.set(null);
     store.set({ mode: this.machine.state, activeHotspotId: id });
+    return true;
+  }
+  openCityStory(id: string) {
+    if (store.get().selected !== "earth") return false;
+    return this.openPlanetStory(id);
+  }
+  openPlanetStory(id: string) {
+    const bodyId = store.get().selected;
+    if (
+      !bodyId ||
+      (bodyId === "earth" && !usesLightEarth()) ||
+      store.get().webglError ||
+      this.isLocked() ||
+      !getPlanetAnnotation(bodyId, id) ||
+      !getPlanetStory(bodyId, id) ||
+      !this.machine.send("OPEN_HOTSPOT")
+    )
+      return false;
+    this.cancelInfo();
+    getPlanetAtlasRotation(bodyId).discardPending();
+    rotation.stop();
+    particles.targetRotation = particles.rotation;
+    particles.targetScale = particles.scale;
+    particles.targetAnchor.copy(particles.anchor);
+    gestureTargets.set(null);
+    store.set({
+      mode: this.machine.state,
+      activeStoryId: id,
+      activeHotspotId: null,
+      infoVisible: false,
+      help: false,
+    });
+    setPlanetAutoRotate(bodyId, false);
     return true;
   }
   async enterDestination(id: string, load: ResourceLoader = preloadLocation) {
@@ -486,6 +538,11 @@ export class InteractionController {
         targetScale: origin.targetScale,
       });
       particles.setState("REST");
+      if (origin.bodyRotation && origin.selected) {
+        getPlanetAtlasRotation(origin.selected).discardPending();
+        const { x, y, z } = origin.bodyRotation;
+        bodyTransforms.get(origin.selected)?.rotation.set(x, y, z);
+      }
       store.set({
         mode: origin.mode,
         selected: origin.selected,
@@ -640,6 +697,9 @@ export class InteractionController {
     );
     particles.zoomIntensity = 1;
     store.set({ mode: this.machine.state, heldUniverse: held });
+    const state = store.get();
+    if (state.selected && isPlanetAtlasVisible(state))
+      setPlanetAutoRotate(state.selected, false);
     return true;
   }
   endScale() {

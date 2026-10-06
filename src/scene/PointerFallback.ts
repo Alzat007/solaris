@@ -31,6 +31,7 @@ interface FallbackActions {
   currentScale(): number;
   startDrag(): void;
   drag(dx: number, dt: number): void;
+  dragVertical?(dy: number): void;
   endDrag(): void;
 }
 /** One shared pointer sequence owns selection, rotation or zoom until all
@@ -87,6 +88,7 @@ export class PointerFallback {
     const contact = this.contacts.get(event.pointerId);
     if (!contact) return;
     const dx = event.clientX - contact.x;
+    const dy = event.clientY - contact.y;
     const dt = Math.max(
       config.POINTER_MIN_FRAME_SECONDS,
       (event.timeStamp - contact.lastAt) / 1000,
@@ -125,6 +127,7 @@ export class PointerFallback {
         this.dragging = true;
       }
       this.actions.drag(dx / Math.max(1, this.actions.width()), dt);
+      this.actions.dragVertical?.(dy / Math.max(1, this.actions.width()));
     }
   }
   up(event: PointerSample) {

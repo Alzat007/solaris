@@ -1,0 +1,3308 @@
+[
+  {
+    "id": "beijing-tiananmen",
+    "cityId": "city-beijing",
+    "name": {
+      "zh": "天安门",
+      "en": "Tiananmen"
+    },
+    "article": "Tiananmen",
+    "topic": {
+      "zh": "北京中轴线的城楼与城市空间。",
+      "en": "A gate on Beijing's Central Axis and its urban setting."
+    },
+    "entityId": "Q83973",
+    "latitude": 39.90735412,
+    "longitude": 116.39122009,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q83973",
+      "https://en.wikipedia.org/wiki/Tiananmen"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/beijing-tiananmen-1.jpg",
+        "filename": "20200110 Tiananmen-3.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:20200110_Tiananmen-3.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/20200110_Tiananmen-3.jpg/1280px-20200110_Tiananmen-3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Balon Greyjoy",
+        "date": "10 January 2020, 11:37",
+        "license": "CC0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "description": "A view of Tiananmen in Beijing.",
+        "width": 1280,
+        "height": 853,
+        "bytes": 313296,
+        "sha256": "5b7dfcf695d40750c10bfb0f63fbec65ec5ae78a608a3c17cf1319c034df1380",
+        "sourceSha1": "d1f0d694ffbcda0d51f8e9e0be7aff75073df9fa",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/beijing-tiananmen-2.jpg",
+        "filename": "天安门夜景.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%E5%A4%A9%E5%AE%89%E9%97%A8%E5%A4%9C%E6%99%AF.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/%E5%A4%A9%E5%AE%89%E9%97%A8%E5%A4%9C%E6%99%AF.jpg/1280px-%E5%A4%A9%E5%AE%89%E9%97%A8%E5%A4%9C%E6%99%AF.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Charlie fong冯成",
+        "date": "2009-01",
+        "license": "Public domain",
+        "licenseUrl": "https://commons.wikimedia.org/wiki/Commons:Licensing",
+        "description": "The night view of Tiananmen",
+        "width": 1280,
+        "height": 698,
+        "bytes": 209336,
+        "sha256": "07dab6874de1ac0ab0778f347c7663766a2a3cf62c8e3018eddd9781282f1aa9",
+        "sourceSha1": "b0248570585d0decebe520d89f5ea1d1b2cd0008",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "beijing-forbidden-city",
+    "cityId": "city-beijing",
+    "name": {
+      "zh": "故宫",
+      "en": "Forbidden City"
+    },
+    "article": "Forbidden City",
+    "topic": {
+      "zh": "北京的宫殿建筑群，现由故宫博物院管理；从布局认识传统建筑与文化保护。",
+      "en": "Beijing's palace complex, administered by the Palace Museum; explore traditional architecture and conservation."
+    },
+    "entityId": "Q80290",
+    "latitude": 39.91583333333333,
+    "longitude": 116.39083333333333,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q80290",
+      "https://en.wikipedia.org/wiki/Forbidden_City"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/beijing-forbidden-city-1.jpg",
+        "filename": "The Forbidden City - View from Coal Hill.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_Forbidden_City_-_View_from_Coal_Hill.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/The_Forbidden_City_-_View_from_Coal_Hill.jpg/1280px-The_Forbidden_City_-_View_from_Coal_Hill.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Pixelflake",
+        "date": "2012-02-03",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "A (HDR-) photograph shot from the Jingshan Park (aka Coal Hill or Prospect Hill).",
+        "width": 1280,
+        "height": 640,
+        "bytes": 135586,
+        "sha256": "921e1da0e56c33c392f2a1553698917c72bb6e1b8b3868c11ccb3031fe7e8492",
+        "sourceSha1": "7de57265c85be839714817f5916616654ed6e50e",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/beijing-forbidden-city-2.jpg",
+        "filename": "Hall of Supreme Harmony (20241127120000).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hall_of_Supreme_Harmony_(20241127120000).jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/Hall_of_Supreme_Harmony_%2820241127120000%29.jpg/1280px-Hall_of_Supreme_Harmony_%2820241127120000%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "N509FZ",
+        "date": "2024-11-27 12:00:00",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "12:00 sharp!",
+        "width": 1280,
+        "height": 853,
+        "bytes": 349442,
+        "sha256": "de7dfbcbb9e3b3c20884abf8f754523eb28b3a0b3813ad8046628510bbeed9b6",
+        "sourceSha1": "98f52f3c3cf06ac721dc62b83d1f1f35345a3dbf",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "beijing-great-wall",
+    "cityId": "city-beijing",
+    "name": {
+      "zh": "长城 · 八达岭",
+      "en": "Great Wall · Badaling"
+    },
+    "article": "Badaling",
+    "topic": {
+      "zh": "长城在北京的代表性段落，墙体与山地共同构成文化景观。",
+      "en": "A representative Great Wall section in Beijing, where walls and mountain terrain form a cultural landscape."
+    },
+    "entityId": "Q798826",
+    "latitude": 40.35428,
+    "longitude": 116.00649,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q798826",
+      "https://en.wikipedia.org/wiki/Badaling"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/beijing-great-wall-1.jpg",
+        "filename": "Peking Grosse Mauer-20071019-RM-115708.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Peking_Grosse_Mauer-20071019-RM-115708.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/57/Peking_Grosse_Mauer-20071019-RM-115708.jpg/1280px-Peking_Grosse_Mauer-20071019-RM-115708.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Reinhold Möller",
+        "date": "2007-10-19",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Section of the Great Wall at Badaling",
+        "width": 1280,
+        "height": 960,
+        "bytes": 528288,
+        "sha256": "186e253f1f4310682d1b8bd8562b192c87bfe6c4d32c901b54df9a07c06dab9c",
+        "sourceSha1": "f8115cde2998dd385c4e2b4b4568fda1446a1fe5",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/beijing-great-wall-2.jpg",
+        "filename": "GreatWall Badaling.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:GreatWall_Badaling.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c4/GreatWall_Badaling.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "author": "DF08 at English Wikipedia",
+        "date": "30 October 2004 (original upload date)",
+        "license": "Public domain",
+        "licenseUrl": "https://commons.wikimedia.org/wiki/Commons:Licensing",
+        "description": "The Great Wall at Badaling, Beijing, China. DF08 2002 image.",
+        "width": 640,
+        "height": 480,
+        "bytes": 114096,
+        "sha256": "57ec9415dd523a53062334b22eb2493547c3de8972a7d06b1c18de78a38c9e29",
+        "sourceSha1": "7ed47fa2bf53855c1c10963bca1d8811d14cbbed",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "beijing-birds-nest",
+    "cityId": "city-beijing",
+    "name": {
+      "zh": "鸟巢 · 国家体育场",
+      "en": "Bird's Nest · National Stadium"
+    },
+    "article": "Beijing National Stadium",
+    "topic": {
+      "zh": "北京国家体育场，以交织钢结构外观闻名，也是国际体育交流场所。",
+      "en": "Beijing's National Stadium is recognized by its interwoven steel exterior and its role in international sport."
+    },
+    "entityId": "Q133525",
+    "latitude": 39.991544,
+    "longitude": 116.390478,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q133525",
+      "https://en.wikipedia.org/wiki/Beijing_National_Stadium"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/beijing-birds-nest-1.jpg",
+        "filename": "Beijing China Beijing-National-Stadium-01.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Beijing_China_Beijing-National-Stadium-01.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/25/Beijing_China_Beijing-National-Stadium-01.jpg/1280px-Beijing_China_Beijing-National-Stadium-01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Photo by CEphoto, Uwe Aranas or alternatively © CEphoto, Uwe Aranas",
+        "date": "2009-06-02",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Beijing, China: National Stadium, also known als \"birds nest\"",
+        "width": 1280,
+        "height": 578,
+        "bytes": 247279,
+        "sha256": "3485e59ee1c56c90937a7c6819e2d847866be5ef7556922c0526691b2a727ce3",
+        "sourceSha1": "5f337ea0218110369d7e9bba4c91626023bb38ed",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/beijing-birds-nest-2.jpg",
+        "filename": "Beijing National Stadium from the Central Axis (20220905140702).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Beijing_National_Stadium_from_the_Central_Axis_(20220905140702).jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/Beijing_National_Stadium_from_the_Central_Axis_%2820220905140702%29.jpg/1280px-Beijing_National_Stadium_from_the_Central_Axis_%2820220905140702%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "N509FZ",
+        "date": "2022-09-05 14:07:02",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "The limits of 70mm.",
+        "width": 1280,
+        "height": 853,
+        "bytes": 273843,
+        "sha256": "0989fee00e3daac2653962563b870158e6305849e377f1a1b5c08afd7df0d2ed",
+        "sourceSha1": "b7d3cee7aea0500d97b23d031caa83fddce43535",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "beijing-temple-heaven",
+    "cityId": "city-beijing",
+    "name": {
+      "zh": "天坛",
+      "en": "Temple of Heaven"
+    },
+    "article": "Temple of Heaven",
+    "topic": {
+      "zh": "北京的坛庙建筑群，从轴线、圆形建筑与园林认识传统空间设计。",
+      "en": "A Beijing ceremonial complex whose axes, circular buildings and grounds reveal traditional spatial design."
+    },
+    "entityId": "Q125445",
+    "latitude": 39.8822,
+    "longitude": 116.4066,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q125445",
+      "https://en.wikipedia.org/wiki/Temple_of_Heaven"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/beijing-temple-heaven-1.jpg",
+        "filename": "Temple of Heaven 20160323 01.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Temple_of_Heaven_20160323_01.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/Temple_of_Heaven_20160323_01.jpg/1280px-Temple_of_Heaven_20160323_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Shujianyang",
+        "date": "2016-03-23 02:10:09",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Temple of Heaven - Hall of Prayer for Good Harvests",
+        "width": 1280,
+        "height": 852,
+        "bytes": 266157,
+        "sha256": "2fc286bc7adbb62cae6f96bdeb70786b34ae38f6f5a4fd5353c3548ec7e09eaa",
+        "sourceSha1": "e461b4867445b8f11a16cee586bcfe6342c9f275",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/beijing-temple-heaven-2.jpg",
+        "filename": "Temple of Heaven, Beijing, China - 010 edit.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Temple_of_Heaven,_Beijing,_China_-_010_edit.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0a/Temple_of_Heaven%2C_Beijing%2C_China_-_010_edit.jpg/1280px-Temple_of_Heaven%2C_Beijing%2C_China_-_010_edit.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Maros M r a z (Maros)",
+        "date": "2007-08",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "description": "Temple of Heaven, Beijing, China, edit by Thegreenj",
+        "width": 1280,
+        "height": 276,
+        "bytes": 94068,
+        "sha256": "3a432dfefe76c5fa7cc2b96119c82a4f983d9db0648aee4d1e5ea2009e9d9915",
+        "sourceSha1": "c5a9b8c6e8322513adef77b836b290292efd4d3c",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "shanghai-bund",
+    "cityId": "city-shanghai",
+    "name": {
+      "zh": "外滩",
+      "en": "The Bund"
+    },
+    "article": "The Bund",
+    "topic": {
+      "zh": "黄浦江畔的历史滨水街区，展现城市建筑与公共空间的关系。",
+      "en": "A historic Huangpu River waterfront illustrating relationships between architecture and public space."
+    },
+    "entityId": "Q125474",
+    "latitude": 31.238027777778,
+    "longitude": 121.48613888889,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q125474",
+      "https://en.wikipedia.org/wiki/The_Bund"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/shanghai-bund-1.jpg",
+        "filename": "The Bund 2.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_Bund_2.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/The_Bund_2.jpg/1280px-The_Bund_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "钉钉",
+        "date": "2022-08-28",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "The Bund",
+        "width": 1280,
+        "height": 960,
+        "bytes": 278001,
+        "sha256": "99e612841c7b20143b4d803e55ba97861ae216b6a34e55e6d79342e66f12863c",
+        "sourceSha1": "2c16934e44c110f6b73f38946af258292649d797",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/shanghai-bund-2.jpg",
+        "filename": "Promenade du Bund.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Promenade_du_Bund.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Promenade_du_Bund.jpg/1280px-Promenade_du_Bund.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Georgio",
+        "date": "2007-04",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "description": "Promenade du Bund à Shanghai",
+        "width": 1280,
+        "height": 851,
+        "bytes": 405142,
+        "sha256": "7cad10c9a2d89259a90e679649f46ad94762cea030e4345750ca9e981b9d6b78",
+        "sourceSha1": "fd9ec6fdd9ab676c0f30c1031d3c3184d390560d",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "shanghai-oriental-pearl",
+    "cityId": "city-shanghai",
+    "name": {
+      "zh": "东方明珠",
+      "en": "Oriental Pearl Tower"
+    },
+    "article": "Oriental Pearl Tower",
+    "topic": {
+      "zh": "上海浦东的广播电视塔，球体与塔柱形成鲜明的城市地标。",
+      "en": "A Pudong broadcasting tower whose spheres and columns form a distinctive Shanghai landmark."
+    },
+    "entityId": "Q223207",
+    "latitude": 31.241669444444,
+    "longitude": 121.49471666667,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q223207",
+      "https://en.wikipedia.org/wiki/Oriental_Pearl_Tower"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/shanghai-oriental-pearl-1.jpg",
+        "filename": "Oriental Pearl Tower 20251126.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Oriental_Pearl_Tower_20251126.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Oriental_Pearl_Tower_20251126.jpg/960px-Oriental_Pearl_Tower_20251126.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "This Photo was taken by Supanut Arunoprayote. Feel free to use any of my images, but please mention me as the author and may send me a message. (สามารถใช้ภาพได้อิสระ แต่กรุณาใส่เครดิตผู้ถ่ายและอาจส่งข้อความบอกกล่าวด้วย) Please do not upload an updated image here without consultation with the Author. The author would like to make corrections only at his own source. This ensures that the changes are preserved.Please if you think that any changes should be required, please inform the author.Otherwise you can upload a new image with a new name. Please use one of the templates derivative or extract.",
+        "date": "2025-11-26 15:31:45",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "description": "Lujiazui Roundabout and Oriental Pearl Tower in the background.",
+        "width": 960,
+        "height": 2007,
+        "bytes": 318443,
+        "sha256": "f8f8511e53ee6c13f1d34128db1d279a67cf66155870c41c9a3acb33f2144d40",
+        "sourceSha1": "8d2e97489c00e6662e999810e3cfb69ee626fb76",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/shanghai-oriental-pearl-2.jpg",
+        "filename": "Oriental Pearl Tower 2012.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Oriental_Pearl_Tower_2012.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fc/Oriental_Pearl_Tower_2012.jpg/960px-Oriental_Pearl_Tower_2012.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Dottie Day",
+        "date": "2012-03-27 14:14:09",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "description": "The Oriental Pearl Tower in Shanghai, taken in early 2012.",
+        "width": 960,
+        "height": 1440,
+        "bytes": 194538,
+        "sha256": "cdc51dcb4e1608f4a87a4b2a2daf1b28294ab546d98b8972cd9f680047fd07e7",
+        "sourceSha1": "e876f7edef78ea736e37b87223f84b4f9c890686",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "shanghai-tower",
+    "cityId": "city-shanghai",
+    "name": {
+      "zh": "上海中心",
+      "en": "Shanghai Tower"
+    },
+    "article": "Shanghai Tower",
+    "topic": {
+      "zh": "陆家嘴的超高层建筑，从旋转外形认识高层建筑设计。",
+      "en": "A Lujiazui skyscraper whose twisting form offers a perspective on tall-building design."
+    },
+    "entityId": "Q18547",
+    "latitude": 31.2355,
+    "longitude": 121.501,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q18547",
+      "https://en.wikipedia.org/wiki/Shanghai_Tower"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/shanghai-tower-1.jpg",
+        "filename": "20191114 Shanghai Tower (2).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:20191114_Shanghai_Tower_(2).jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/20191114_Shanghai_Tower_%282%29.jpg/960px-20191114_Shanghai_Tower_%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Balon Greyjoy",
+        "date": "14 November 2019, 15:07",
+        "license": "CC0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "description": "Shanghai Tower in 2019.",
+        "width": 960,
+        "height": 1973,
+        "bytes": 362958,
+        "sha256": "055b5ecdab79dcadf8b14db91f29fb39bca123a2f8def8615cb8a59db464bf80",
+        "sourceSha1": "077d8e110c671430f3b533230eea5d3527a189ba",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/shanghai-tower-2.jpg",
+        "filename": "Shanghai Tower construction Jan 2011.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Shanghai_Tower_construction_Jan_2011.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/8/82/Shanghai_Tower_construction_Jan_2011.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "author": "Marshall Strabala",
+        "date": "Taken on 7 January 2011, 02:47:56",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "description": "Construction of the en:Shanghai Tower supertall skyscraper in China in early 2011.",
+        "width": 768,
+        "height": 881,
+        "bytes": 833333,
+        "sha256": "61a6a9a5bc681c907e96632fc952b17294957859ac5209c42295e5070393c902",
+        "sourceSha1": "f02c903fcd21582911d1990554000f1776e950d1",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "shanghai-yu-garden",
+    "cityId": "city-shanghai",
+    "name": {
+      "zh": "豫园",
+      "en": "Yu Garden"
+    },
+    "article": "Yu Garden",
+    "topic": {
+      "zh": "上海的古典园林，以建筑、岩石、水面与植物组织游览空间。",
+      "en": "A classical Shanghai garden organizing visitor space through buildings, rocks, water and vegetation."
+    },
+    "entityId": "Q1328025",
+    "latitude": 31.22916667,
+    "longitude": 121.4875,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q1328025",
+      "https://en.wikipedia.org/wiki/Yu_Garden"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/shanghai-yu-garden-1.jpg",
+        "filename": "Yu Garden Shanghai November 2017 006.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Yu_Garden_Shanghai_November_2017_006.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b5/Yu_Garden_Shanghai_November_2017_006.jpg/1280px-Yu_Garden_Shanghai_November_2017_006.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "King of Hearts",
+        "date": "2017-11-20 13:12",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Yu Garden, Shanghai, China.",
+        "width": 1280,
+        "height": 853,
+        "bytes": 520334,
+        "sha256": "0908e17333d82d365eb0bd53cb18e74f53b0c601cf816b6a5463aa35d9b3358f",
+        "sourceSha1": "619458ff091c7b18fd838e31504690fa24e37b17",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/shanghai-yu-garden-2.jpg",
+        "filename": "Yu Garden Shanghai November 2017 010.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Yu_Garden_Shanghai_November_2017_010.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/Yu_Garden_Shanghai_November_2017_010.jpg/1280px-Yu_Garden_Shanghai_November_2017_010.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "King of Hearts",
+        "date": "2017-11-20 13:36",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Ancient Opera Stage, Yu Garden, Shanghai, China.",
+        "width": 1280,
+        "height": 960,
+        "bytes": 375106,
+        "sha256": "bcd9a39453e0cddc0458b22a302dae69eb20327d87933ac418474bab4241ad3f",
+        "sourceSha1": "7da817d5b44f7b04a3372e994dc83e1a5d5625db",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "shenzhen-ping-an",
+    "cityId": "city-shenzhen",
+    "name": {
+      "zh": "平安金融中心",
+      "en": "Ping An Finance Centre"
+    },
+    "article": "Ping An Finance Centre",
+    "topic": {
+      "zh": "深圳福田的超高层建筑，展示现代城市高层结构。",
+      "en": "A Futian skyscraper illustrating the structure of a modern high-rise city."
+    },
+    "entityId": "Q1077308",
+    "latitude": 22.536666666667,
+    "longitude": 114.05027777778,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q1077308",
+      "https://en.wikipedia.org/wiki/Ping_An_Finance_Centre"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/shenzhen-ping-an-1.jpg",
+        "filename": "Pingan International Finance Center2020.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pingan_International_Finance_Center2020.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0d/Pingan_International_Finance_Center2020.jpg/960px-Pingan_International_Finance_Center2020.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Charlie fong",
+        "date": "2021-01-01 15:21:42",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "​深圳平安金融中心，深圳最高建筑物（599.2米），福田区地标建筑之一。",
+        "width": 960,
+        "height": 1706,
+        "bytes": 366488,
+        "sha256": "a3b3d1f617a0b95f8568b0a276b6291a87b38280242586ab9e7ddfa31a9d7085",
+        "sourceSha1": "500a65f020b7a41158a32d956e146bc1f8421910",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/shenzhen-ping-an-2.jpg",
+        "filename": "PING AN FINANCE CENTER, SHENZHEN.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:PING_AN_FINANCE_CENTER,_SHENZHEN.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/PING_AN_FINANCE_CENTER%2C_SHENZHEN.jpg/960px-PING_AN_FINANCE_CENTER%2C_SHENZHEN.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Dinkun Chen",
+        "date": "2023-03-24 11:13:32",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "PING AN FINANCE CENTER, SHENZHEN",
+        "width": 960,
+        "height": 1439,
+        "bytes": 327840,
+        "sha256": "aea92fe51bfa02e63a4c2c1724baf16bb60f2efe6ae126c8a287494e6db046f0",
+        "sourceSha1": "771700470371176d069a5616fa4e7f601c4b6874",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "shenzhen-bay",
+    "cityId": "city-shenzhen",
+    "name": {
+      "zh": "深圳湾",
+      "en": "Shenzhen Bay"
+    },
+    "article": "Deep Bay, China",
+    "topic": {
+      "zh": "深圳与香港之间的海湾，也称后海湾；从海岸认识湿地与城市水环境。",
+      "en": "The bay between Shenzhen and Hong Kong, also known as Deep Bay; explore coasts, wetlands and urban water environments."
+    },
+    "entityId": "Q5250082",
+    "latitude": 22.4992,
+    "longitude": 113.9701,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q5250082",
+      "https://en.wikipedia.org/wiki/Deep_Bay%2C_China"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/shenzhen-bay-1.jpg",
+        "filename": "Deep Bay 2011.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Deep_Bay_2011.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Deep_Bay_2011.jpg/1280px-Deep_Bay_2011.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Wing1990hk",
+        "date": "2011-08-08",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+        "description": "Deep Bay",
+        "width": 1280,
+        "height": 826,
+        "bytes": 216206,
+        "sha256": "ba4522a749f62492d42c6a56131e28fdb24ba4e1a767b5706ce550062af2d608",
+        "sourceSha1": "358963252be6e9d0e8f3160547c07bb19a166753",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/shenzhen-bay-2.jpg",
+        "filename": "Deep Bay,China-Night view.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Deep_Bay,China-Night_view.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/Deep_Bay%2CChina-Night_view.jpg/1280px-Deep_Bay%2CChina-Night_view.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "星耀晨曦",
+        "date": "2017-02-01 18:48:20",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "​深圳湾，可以看到华润总部大厦",
+        "width": 1280,
+        "height": 960,
+        "bytes": 169299,
+        "sha256": "f5df79bbf8a04ab554cb3a3abe71134aef3f49e930f6c6f344637e57e9471b3f",
+        "sourceSha1": "719df3146b435430cdcebd2ee5b371864f023c88",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "shenzhen-huaqiangbei",
+    "cityId": "city-shenzhen",
+    "name": {
+      "zh": "华强北",
+      "en": "Huaqiangbei"
+    },
+    "article": "Huaqiangbei",
+    "topic": {
+      "zh": "深圳的电子产业商业街区，连接电子元件、制造与创新。",
+      "en": "An electronics commercial district connecting components, manufacturing and innovation in Shenzhen."
+    },
+    "entityId": "Q983005",
+    "latitude": 22.5457,
+    "longitude": 114.087,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q983005",
+      "https://en.wikipedia.org/wiki/Huaqiangbei"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/shenzhen-huaqiangbei-1.jpg",
+        "filename": "Huaqiangbei&Shennan Cross2021.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Huaqiangbei%26Shennan_Cross2021.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/34/Huaqiangbei%26Shennan_Cross2021.jpg/960px-Huaqiangbei%26Shennan_Cross2021.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Charlie fong",
+        "date": "2021-02-08 14:59:04",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Huaqiangbei area is a major electronics manufacturing hub, and sprawling electronics marketplaces. The right Skyscraper is SEG Plaza",
+        "width": 960,
+        "height": 1280,
+        "bytes": 393400,
+        "sha256": "590fe4e475592fe72c98b9053b3f023ff23fbc09cde41d4b051ceb5ff4bdc5b5",
+        "sourceSha1": "ab2f67f061475430fc034de5284626ec5c59dafb",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/shenzhen-huaqiangbei-2.jpg",
+        "filename": "Entrance of Huaqiangbei, 2017.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Entrance_of_Huaqiangbei,_2017.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/Entrance_of_Huaqiangbei%2C_2017.jpg/1280px-Entrance_of_Huaqiangbei%2C_2017.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "千里走单骑",
+        "date": "7 February 2017 (according to Exif data)",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "华强北步行街入口 寶華大廈",
+        "width": 1280,
+        "height": 960,
+        "bytes": 382309,
+        "sha256": "ecbda08b9bfac8e7c0216f0ebf87e515c9bf809915d869ec6463ddd8bc38b648",
+        "sourceSha1": "eaa9b26f7c749164a0e2c601d7dce2e6d0887515",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "shenzhen-qianhai",
+    "cityId": "city-shenzhen",
+    "name": {
+      "zh": "前海",
+      "en": "Qianhai"
+    },
+    "article": "Qianhai",
+    "topic": {
+      "zh": "深圳的滨海发展区域，可从城市空间观察服务产业与基础设施。",
+      "en": "A coastal development area in Shenzhen, offering a perspective on service industries and infrastructure."
+    },
+    "entityId": "Q10898930",
+    "latitude": 22.51888888888889,
+    "longitude": 113.89916666666667,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q10898930",
+      "https://en.wikipedia.org/wiki/Qianhai"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/shenzhen-qianhai-1.jpg",
+        "filename": "Qianhai 1.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Qianhai_1.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/Qianhai_1.jpg/1280px-Qianhai_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Minghong",
+        "date": "2017-10-02 10:27:26",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Qianhai",
+        "width": 1280,
+        "height": 851,
+        "bytes": 261457,
+        "sha256": "c52c59be60d9c0df3fc3b36cb053a5fc834ef485256bb683db3f8f085d69e775",
+        "sourceSha1": "b97a3b645d7611082374d68db63a85cd4c31d41b",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/shenzhen-qianhai-2.jpg",
+        "filename": "QianHaiDepotResidence.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:QianHaiDepotResidence.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/2/20/QianHaiDepotResidence.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "author": "Jpoon",
+        "date": "2014-11",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "前海车辆段上蓋保障房",
+        "width": 960,
+        "height": 720,
+        "bytes": 92798,
+        "sha256": "6b76715f87a040371a57b1e746bf46af2a39e316e0d7d4fb58adfff7b8176263",
+        "sourceSha1": "8e2553ea6e18c0f62ec0f65da3332b9240cba750",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "hangzhou-west-lake",
+    "cityId": "city-hangzhou",
+    "name": {
+      "zh": "西湖",
+      "en": "West Lake"
+    },
+    "article": "West Lake",
+    "topic": {
+      "zh": "杭州的湖泊与文化景观，湖面、堤岸和园林共同构成城市公共空间。",
+      "en": "Hangzhou's lake and cultural landscape, where water, causeways and gardens form public space."
+    },
+    "entityId": "Q502371",
+    "latitude": 30.2375,
+    "longitude": 120.14083333333,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q502371",
+      "https://en.wikipedia.org/wiki/West_Lake"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/hangzhou-west-lake-1.jpg",
+        "filename": "West Lake, Hangzhou 2025.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:West_Lake,_Hangzhou_2025.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/17/West_Lake%2C_Hangzhou_2025.jpg/1280px-West_Lake%2C_Hangzhou_2025.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Takashishin",
+        "date": "2025-07-06 18:07:38",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "description": "​西湖三潭印月与雷峰塔",
+        "width": 1280,
+        "height": 960,
+        "bytes": 301092,
+        "sha256": "e7ac2af78892db82e2ca0df6f610972d634ee82d972d323629946c4844af46aa",
+        "sourceSha1": "d8e32572d3b10d9989338eb59fb6a4a539b2f03a",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/hangzhou-west-lake-2.jpg",
+        "filename": "West Lake - Hangzhou, China.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:West_Lake_-_Hangzhou,_China.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/West_Lake_-_Hangzhou%2C_China.jpg/1280px-West_Lake_-_Hangzhou%2C_China.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Louisa Salazar",
+        "date": "2009-05-20",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Leifeng Pagoda as seen from West Lake in Hangzhou, China.",
+        "width": 1280,
+        "height": 853,
+        "bytes": 302087,
+        "sha256": "62af7bba594bc20c81d51b68f31f6c5ad6341445e4291ad7e20d89014497a78c",
+        "sourceSha1": "356c7a5764b3d47077a07d83908bc97235c6d8f1",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "hangzhou-lingyin",
+    "cityId": "city-hangzhou",
+    "name": {
+      "zh": "灵隐寺",
+      "en": "Lingyin Temple"
+    },
+    "article": "Lingyin Temple",
+    "topic": {
+      "zh": "杭州山地中的佛教寺院，从建筑与周围景观认识文化传承。",
+      "en": "A Buddhist temple in Hangzhou's hills, connecting architecture, landscape and cultural continuity."
+    },
+    "entityId": "Q1070228",
+    "latitude": 30.24277778,
+    "longitude": 120.09666667,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q1070228",
+      "https://en.wikipedia.org/wiki/Lingyin_Temple"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/hangzhou-lingyin-1.jpg",
+        "filename": "Lingyin Temple, Hangzhou 20161003.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lingyin_Temple,_Hangzhou_20161003.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Lingyin_Temple%2C_Hangzhou_20161003.jpg/1280px-Lingyin_Temple%2C_Hangzhou_20161003.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Tyg728",
+        "date": "2016-10-03 17:26:05",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "​灵隐寺药师殿，供奉“东方三圣”（药师佛与日光菩萨、月光菩萨）。",
+        "width": 1280,
+        "height": 800,
+        "bytes": 430741,
+        "sha256": "c9e639b40c1231bed8a27f4eeaf8277492518be9499584946f3f45e509587c35",
+        "sourceSha1": "9fa02fdab01220d975c271938543c833c2449937",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/hangzhou-lingyin-2.jpg",
+        "filename": "Lingyin si.JPG",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lingyin_si.JPG",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Lingyin_si.JPG/960px-Lingyin_si.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Denis Yuen",
+        "date": "June 2006 (7 June 2006 (according to Exif data))",
+        "license": "CC BY-SA 2.5",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+        "description": "Lingyin Si temple in Huangzhou",
+        "width": 960,
+        "height": 1280,
+        "bytes": 395720,
+        "sha256": "edf076fe710fff448b9762f946690354c3563b9fb56967f995dea18abebadacb",
+        "sourceSha1": "e23fbbd10046508e9713310fe40d91c3c0e8466a",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "hangzhou-asian-games",
+    "cityId": "city-hangzhou",
+    "name": {
+      "zh": "亚运地标 · 奥体中心",
+      "en": "Asian Games · Olympic Sports Centre"
+    },
+    "article": "Hangzhou Olympic Sports Expo Center",
+    "topic": {
+      "zh": "杭州奥体中心是杭州亚运会相关场馆；本入口选其体育场代表体育建筑与交流。",
+      "en": "Hangzhou Olympic Sports Centre is associated with the Hangzhou Asian Games; this entry uses its stadium to explore sports architecture and exchange."
+    },
+    "entityId": "Q5648127",
+    "latitude": 30.2317,
+    "longitude": 120.22443,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q5648127",
+      "https://en.wikipedia.org/wiki/Hangzhou_Olympic_Expo_Center"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/hangzhou-asian-games-1.jpg",
+        "filename": "Hangzhou Olympic Sports Expo Center under construction2021.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hangzhou_Olympic_Sports_Expo_Center_under_construction2021.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/Hangzhou_Olympic_Sports_Expo_Center_under_construction2021.jpg/1280px-Hangzhou_Olympic_Sports_Expo_Center_under_construction2021.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Charlie fong",
+        "date": "2021-01-21 13:12:33",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Hangzhou Olympic Sports Expo Center is under construction, the Stadium and the Tennis Center have already completed. The Qianjiang New City is on the other side of the Qiantang River.",
+        "width": 1280,
+        "height": 720,
+        "bytes": 308394,
+        "sha256": "0392780a1f70fceb7343b25c5a9017ffb37909dd4c8bcc7a77f6aab2c13bb1ff",
+        "sourceSha1": "5374bf23501590c6e311189de48d2bfb2c18f18d",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/hangzhou-asian-games-2.jpg",
+        "filename": "Hangzhou Olympic Sports Expo Center 3.JPG",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hangzhou_Olympic_Sports_Expo_Center_3.JPG",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/Hangzhou_Olympic_Sports_Expo_Center_3.JPG/1280px-Hangzhou_Olympic_Sports_Expo_Center_3.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Huandy618",
+        "date": "2012-10-03 15:42:23",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "The main stadium",
+        "width": 1280,
+        "height": 960,
+        "bytes": 187760,
+        "sha256": "4a777a737a35f79244cbe6beeb1a49f99de70c619da4c050db90c32b30fc5f50",
+        "sourceSha1": "111ecf50ac268f2a6404e0a54c1b99cf5a373040",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "hong-kong-victoria-harbour",
+    "cityId": "city-hong-kong",
+    "name": {
+      "zh": "维多利亚港",
+      "en": "Victoria Harbour"
+    },
+    "article": "Victoria Harbour",
+    "topic": {
+      "zh": "香港的港湾，航运、岸线与城市天际线共同形成滨水景观。",
+      "en": "Hong Kong's harbour connects shipping, coastlines and the city's waterfront skyline."
+    },
+    "entityId": "Q155643",
+    "latitude": 22.29,
+    "longitude": 114.17,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q155643",
+      "https://en.wikipedia.org/wiki/Victoria_Harbour"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/hong-kong-victoria-harbour-1.jpg",
+        "filename": "International Commerce Centre on Victoria Harbour.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:International_Commerce_Centre_on_Victoria_Harbour.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/International_Commerce_Centre_on_Victoria_Harbour.jpg/1280px-International_Commerce_Centre_on_Victoria_Harbour.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Wilfredor",
+        "date": "2013-06-16 20:29:40",
+        "license": "CC0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "description": "Hong Kong Victoria Harbour. International Commerce Centre (ICC)",
+        "width": 1280,
+        "height": 748,
+        "bytes": 174493,
+        "sha256": "ac4dfe2ad3a43cd33e29f81f61f611d300d08adf915d987a2be61e16bcb3a93b",
+        "sourceSha1": "da37518d52e3230c5479b439e909c4ac16454401",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/hong-kong-victoria-harbour-2.jpg",
+        "filename": "HK YTM 西九龍文化區 West Kowloon Cultural District M+ Plus Museum 天台花園 roof garden view Victoria Harbour July 2022 Px3 13.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:HK_YTM_%E8%A5%BF%E4%B9%9D%E9%BE%8D%E6%96%87%E5%8C%96%E5%8D%80_West_Kowloon_Cultural_District_M%2B_Plus_Museum_%E5%A4%A9%E5%8F%B0%E8%8A%B1%E5%9C%92_roof_garden_view_Victoria_Harbour_July_2022_Px3_13.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/84/HK_YTM_%E8%A5%BF%E4%B9%9D%E9%BE%8D%E6%96%87%E5%8C%96%E5%8D%80_West_Kowloon_Cultural_District_M%2B_Plus_Museum_%E5%A4%A9%E5%8F%B0%E8%8A%B1%E5%9C%92_roof_garden_view_Victoria_Harbour_July_2022_Px3_13.jpg/1280px-HK_YTM_%E8%A5%BF%E4%B9%9D%E9%BE%8D%E6%96%87%E5%8C%96%E5%8D%80_West_Kowloon_Cultural_District_M%2B_Plus_Museum_%E5%A4%A9%E5%8F%B0%E8%8A%B1%E5%9C%92_roof_garden_view_Victoria_Harbour_July_2022_Px3_13.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Bkemaoe HOMA",
+        "date": "2022-07-13 18:10:59",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "HK YTM 九龍西 West Kowloon Cultural District M+ Plus Museum in July 2022",
+        "width": 1280,
+        "height": 960,
+        "bytes": 392205,
+        "sha256": "18f67cfb26b628c20fdbd52e341beb31ae7361bc448bb46449843e2820c9b7b8",
+        "sourceSha1": "18e53c07ee1381a7923a7e3fb72c3935da00a31a",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "hong-kong-victoria-peak",
+    "cityId": "city-hong-kong",
+    "name": {
+      "zh": "太平山",
+      "en": "Victoria Peak"
+    },
+    "article": "Victoria Peak",
+    "topic": {
+      "zh": "香港岛的山峰，从高处可以认识港湾与城市地形的关系。",
+      "en": "A Hong Kong Island peak offering a perspective on the relationship between harbour and urban terrain."
+    },
+    "entityId": "Q17541",
+    "latitude": 22.275469444444,
+    "longitude": 114.14382777778,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q17541",
+      "https://en.wikipedia.org/wiki/Victoria_Peak"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/hong-kong-victoria-peak-1.jpg",
+        "filename": "High West and Victoria Peak from Victoria Gap (crop1).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:High_West_and_Victoria_Peak_from_Victoria_Gap_(crop1).jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/High_West_and_Victoria_Peak_from_Victoria_Gap_%28crop1%29.jpg/1280px-High_West_and_Victoria_Peak_from_Victoria_Gap_%28crop1%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Daniel Case",
+        "date": "2013-08-05",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "High West and Victoria Peak from Victoria Gap, Hong Kong",
+        "width": 1280,
+        "height": 960,
+        "bytes": 445959,
+        "sha256": "8a34f63d228adecd35206e472bf2c789eee8531d5bf8258bf3e64d73e16b4790",
+        "sourceSha1": "26ca2a0cb154bbe034f88649288772693b6f9655",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/hong-kong-victoria-peak-2.jpg",
+        "filename": "US Navy 070727-N-8868D-030 The evening skyline of Hong Kong as viewed from Victoria Peak. Victoria Peak was one of many places, attractions and tours that Sailors from the Nimitz-class aircraft carrier USS John C. Stennis (CVN.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:US_Navy_070727-N-8868D-030_The_evening_skyline_of_Hong_Kong_as_viewed_from_Victoria_Peak._Victoria_Peak_was_one_of_many_places,_attractions_and_tours_that_Sailors_from_the_Nimitz-class_aircraft_carrier_USS_John_C._Stennis_(CVN.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/US_Navy_070727-N-8868D-030_The_evening_skyline_of_Hong_Kong_as_viewed_from_Victoria_Peak._Victoria_Peak_was_one_of_many_places%2C_attractions_and_tours_that_Sailors_from_the_Nimitz-class_aircraft_carrier_USS_John_C._Stennis_%28CVN.jpg/1280px-thumbnail.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "U.S. Navy photo by Ensign Chad Dulac",
+        "date": "Taken on 27 July 2007",
+        "license": "Public domain",
+        "licenseUrl": "https://commons.wikimedia.org/wiki/Commons:Licensing",
+        "description": "HONG KONG (July 27, 2007) - The evening skyline of Hong Kong as viewed from Victoria Peak. Victoria Peak was one of many places, attractions and tours that Sailors from the Nimitz-class aircraft carrier USS John C. Stennis (CVN 74) took part in while in Hong Kong. The John C. Stennis Carrier Strike Group is on a scheduled deployment to promote peace, regional cooperation and stability. U.S. Navy photo by Ensign Chad Dulac (RELEASED)",
+        "width": 1280,
+        "height": 834,
+        "bytes": 291190,
+        "sha256": "3d8434950a3f391096b8aec8bca84037ddccfa8706f75a86f9eec932466747b3",
+        "sourceSha1": "8ad66f3c815394d794f2cfff605835f71f6cf30a",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "hong-kong-central",
+    "cityId": "city-hong-kong",
+    "name": {
+      "zh": "中环",
+      "en": "Central"
+    },
+    "article": "Central, Hong Kong",
+    "topic": {
+      "zh": "香港岛的城市中心区，现代建筑、道路与滨水空间相互连接。",
+      "en": "A central Hong Kong Island district linking modern buildings, streets and waterfront spaces."
+    },
+    "entityId": "Q14767",
+    "latitude": 22.281944444444,
+    "longitude": 114.15805555556,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q14767",
+      "https://en.wikipedia.org/wiki/Central%2C_Hong_Kong"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/hong-kong-central-1.jpg",
+        "filename": "Hong Kong Island Skyline 2009.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hong_Kong_Island_Skyline_2009.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Hong_Kong_Island_Skyline_2009.jpg/1280px-Hong_Kong_Island_Skyline_2009.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "WiNG",
+        "date": "2009-06-20",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Skyline of Central District in Hong Kong, which viewed from Tsim Sha Tsui, on the opposite side of Victoria Harbour",
+        "width": 1280,
+        "height": 720,
+        "bytes": 272525,
+        "sha256": "3aa3f159c8938cff18567ea6a42e3933cc1c101516350ca6775e9f669031a8ed",
+        "sourceSha1": "188d92e317904561397eaf9468fe543330c73101",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/hong-kong-central-2.jpg",
+        "filename": "AIA Central Skyscraper, Central, Hong Kong SAR, China (Ank Kumar, Infosys Limited) 09.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:AIA_Central_Skyscraper,_Central,_Hong_Kong_SAR,_China_(Ank_Kumar,_Infosys_Limited)_09.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/AIA_Central_Skyscraper%2C_Central%2C_Hong_Kong_SAR%2C_China_%28Ank_Kumar%2C_Infosys_Limited%29_09.jpg/1280px-AIA_Central_Skyscraper%2C_Central%2C_Hong_Kong_SAR%2C_China_%28Ank_Kumar%2C_Infosys_Limited%29_09.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Ank Kumar",
+        "date": "2016-05-15 18:36:07",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "AIA Central is a 37-storey grade A high rise office building located in the core business area of Central, Hong Kong SAR, China. It was completed in 2005. AIA Group Limited, known as AIA (友邦保險), is a Hong Kong based multinational insurance and finance corporation, established in 1919.",
+        "width": 1280,
+        "height": 853,
+        "bytes": 214081,
+        "sha256": "ca043e2ce106b9c38af030685230af5ece619391302b80b63c720d92c93ed83a",
+        "sourceSha1": "1a40721ec376b6a66eb86bd6acb8d267f19b07f8",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "hong-kong-convention-centre",
+    "cityId": "city-hong-kong",
+    "name": {
+      "zh": "会展中心",
+      "en": "Convention and Exhibition Centre"
+    },
+    "article": "Hong Kong Convention and Exhibition Centre",
+    "topic": {
+      "zh": "湾仔海旁的展览会议场馆，其弧形屋顶与海港形成醒目轮廓。",
+      "en": "A Wan Chai waterfront exhibition and conference venue whose curved roof forms a recognizable harbour silhouette."
+    },
+    "entityId": "Q597725",
+    "latitude": 22.283661111111,
+    "longitude": 114.17284722222,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q597725",
+      "https://en.wikipedia.org/wiki/Hong_Kong_Convention_and_Exhibition_Centre"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/hong-kong-convention-centre-1.jpg",
+        "filename": "HKCEC.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:HKCEC.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/HKCEC.jpg/1280px-HKCEC.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Baycrest",
+        "date": "2008-08",
+        "license": "CC BY-SA 2.5",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+        "description": "Hong Kong Convention and Exhibition Centre (HKCEC)",
+        "width": 1280,
+        "height": 960,
+        "bytes": 357430,
+        "sha256": "68bbad455023fdda95bd792fae7479ed2b48027f6ee5114622adcf729271752c",
+        "sourceSha1": "b19c4270bac3da18b643f40f6ed1e07e3ce3e01e",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/hong-kong-convention-centre-2.jpg",
+        "filename": "Hong Kong Convention and Exhibition Centre 200907.JPG",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hong_Kong_Convention_and_Exhibition_Centre_200907.JPG",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/Hong_Kong_Convention_and_Exhibition_Centre_200907.JPG/1280px-Hong_Kong_Convention_and_Exhibition_Centre_200907.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Pp20120912",
+        "date": "2009-07-27",
+        "license": "Public domain",
+        "licenseUrl": "https://commons.wikimedia.org/wiki/Commons:Licensing",
+        "description": "​擴建後的灣仔會展中庭",
+        "width": 1280,
+        "height": 960,
+        "bytes": 277083,
+        "sha256": "8153bbdf3e26964358c70ab2fe29044fff0321f88803a51dbe82eea6dbfff1ea",
+        "sourceSha1": "f3cb46f494cf04bce573faddee294fe5663e63c0",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "taipei-101",
+    "cityId": "city-taipei",
+    "name": {
+      "zh": "台北101",
+      "en": "Taipei 101"
+    },
+    "article": "Taipei 101",
+    "topic": {
+      "zh": "台北的超高层建筑，从层叠外形与结构设计认识现代工程。",
+      "en": "A Taipei skyscraper whose tiered form and structural design introduce modern engineering."
+    },
+    "entityId": "Q83101",
+    "latitude": 25.03361111111111,
+    "longitude": 121.56472222222222,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q83101",
+      "https://en.wikipedia.org/wiki/Taipei_101"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/taipei-101-1.jpg",
+        "filename": "Taipei 101 from Xiangshan 20250731.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Taipei_101_from_Xiangshan_20250731.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Taipei_101_from_Xiangshan_20250731.jpg/960px-Taipei_101_from_Xiangshan_20250731.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "User:Sinsyuan",
+        "date": "2025-07-31 13:01:29",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "​從象山看台北101，2025年7月31日攝",
+        "width": 960,
+        "height": 1705,
+        "bytes": 322503,
+        "sha256": "7c563cfbc19e59e92e78a3fc65c5d423b2b67029214308bbd1338aa96d4a04b1",
+        "sourceSha1": "fe81ba0b65832d81939b72751e53788c3c6599d8",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/taipei-101-2.jpg",
+        "filename": "Taipei 101 at night 2.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Taipei_101_at_night_2.jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Taipei_101_at_night_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "author": "Meow",
+        "date": "2004-12-31",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "description": "This is a rare picture of Taipei 101 which was fully lit. Taipei 101 is currently the second tallest building on the world.",
+        "width": 495,
+        "height": 989,
+        "bytes": 216381,
+        "sha256": "1c466b42b2f3be04bf90eeb86a0e3fa5f581f7b824d942d07c2483c265657184",
+        "sourceSha1": "5962f30fe235a7598d791c50ebfbf4982d8a4905",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "taipei-palace-museum",
+    "cityId": "city-taipei",
+    "name": {
+      "zh": "故宫博物院",
+      "en": "National Palace Museum"
+    },
+    "article": "National Palace Museum",
+    "topic": {
+      "zh": "台北的博物馆，以文物收藏与展示连接艺术学习和文化保护；不与北京故宫混同。",
+      "en": "A Taipei museum connecting collections, art education and conservation; it is distinct from Beijing's Palace Museum."
+    },
+    "entityId": "Q540668",
+    "latitude": 25.102222222222224,
+    "longitude": 121.54861111111111,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q540668",
+      "https://en.wikipedia.org/wiki/National_Palace_Museum"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/taipei-palace-museum-1.jpg",
+        "filename": "NationalPalace MuseumFrontView.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:NationalPalace_MuseumFrontView.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/NationalPalace_MuseumFrontView.jpg/1280px-NationalPalace_MuseumFrontView.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Peellden",
+        "date": "2007-12-16",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+        "description": "National Palace Museum, Taiwan.",
+        "width": 1280,
+        "height": 851,
+        "bytes": 333501,
+        "sha256": "4a908390ee626f16423225fde3b50f15767d01e61958aac99886c990072679ba",
+        "sourceSha1": "8ac75bddf1d7cf3e80a5210c3c60d36261f8494e",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/taipei-palace-museum-2.jpg",
+        "filename": "Main Building, National Palace Museum 20240224.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Main_Building,_National_Palace_Museum_20240224.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Main_Building%2C_National_Palace_Museum_20240224.jpg/1280px-Main_Building%2C_National_Palace_Museum_20240224.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Suicasmo",
+        "date": "2024-02-24 10:23:09",
+        "license": "CC0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "description": "Main Building, National Palace Museum",
+        "width": 1280,
+        "height": 853,
+        "bytes": 277841,
+        "sha256": "daece347a169cb9b8eb50b1609ea99696477e6060fb3db03d8786a35a5e95827",
+        "sourceSha1": "aa1a7ad22c135f4f357cc4ba8d905540f83e3526",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "taipei-chiang-kai-shek",
+    "cityId": "city-taipei",
+    "name": {
+      "zh": "中正纪念堂",
+      "en": "Chiang Kai-shek Memorial Hall"
+    },
+    "article": "Chiang Kai-shek Memorial Hall",
+    "topic": {
+      "zh": "台北的纪念建筑与广场，本条目关注建筑形式和公共空间，不作政治人物评价。",
+      "en": "A Taipei memorial building and square; this entry focuses on architecture and public space rather than political appraisal."
+    },
+    "entityId": "Q540794",
+    "latitude": 25.034444444444443,
+    "longitude": 121.52166666666666,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q540794",
+      "https://en.wikipedia.org/wiki/Chiang_Kai-shek_Memorial_Hall"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/taipei-chiang-kai-shek-1.jpg",
+        "filename": "Chiang Kai-shek memorial amk.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chiang_Kai-shek_memorial_amk.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Chiang_Kai-shek_memorial_amk.jpg/1280px-Chiang_Kai-shek_memorial_amk.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "AngMoKio",
+        "date": "2008-10-16 09:56",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Chiang Kai-shek Memorial Hall in Taipei, Taiwan",
+        "width": 1280,
+        "height": 853,
+        "bytes": 280653,
+        "sha256": "16604ca2a1480d354a342660c0d52e73798dc1cd0f47e3843918d1e7618ee5bf",
+        "sourceSha1": "b4acb1baf563699ea92ff786e4448aa1630db8d4",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/taipei-chiang-kai-shek-2.jpg",
+        "filename": "Chiang Kai-shek Memorial Hall 2009 amk.JPG",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chiang_Kai-shek_Memorial_Hall_2009_amk.JPG",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/Chiang_Kai-shek_Memorial_Hall_2009_amk.JPG/1280px-Chiang_Kai-shek_Memorial_Hall_2009_amk.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "AngMoKio",
+        "date": "2009-08-31",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Chiang Kai-shek Memorial Hall, Taipei, Taiwan.",
+        "width": 1280,
+        "height": 816,
+        "bytes": 262271,
+        "sha256": "3084efec4f5dce888275a76ef4762e068cd810fcd3da03e408474f849dc4efde",
+        "sourceSha1": "3eef366f39cc765d38667d13190623503b460a26",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "tokyo-tower",
+    "cityId": "city-tokyo",
+    "name": {
+      "zh": "东京塔",
+      "en": "Tokyo Tower"
+    },
+    "article": "Tokyo Tower",
+    "topic": {
+      "zh": "东京的广播通信塔，红白色钢结构成为城市识别标志。",
+      "en": "A Tokyo broadcasting and communications tower recognized by its red-and-white steel structure."
+    },
+    "entityId": "Q183536",
+    "latitude": 35.658611111111114,
+    "longitude": 139.74555555555557,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q183536",
+      "https://en.wikipedia.org/wiki/Tokyo_Tower"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/tokyo-tower-1.jpg",
+        "filename": "Tokyo Tower 2023.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tokyo_Tower_2023.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/Tokyo_Tower_2023.jpg/960px-Tokyo_Tower_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Akonnchiroll",
+        "date": "2023-05-16 17:46:27",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Tokyo Tower in 2023",
+        "width": 960,
+        "height": 1280,
+        "bytes": 381361,
+        "sha256": "6ffc1531e44a05195cc9cc8a09c7b4f73258604d695e7ba476dc229990aa0ed1",
+        "sourceSha1": "43a782109fa11f5ff593ef2a089215ee8d13b548",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/tokyo-tower-2.jpg",
+        "filename": "Tokyo Tower during daytime.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tokyo_Tower_during_daytime.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/65/Tokyo_Tower_during_daytime.jpg/960px-Tokyo_Tower_during_daytime.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Laitr Keiows",
+        "date": "2011-01-07",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Tokyo Tower during daytime. Vertical panoramic image of 5 frames.",
+        "width": 960,
+        "height": 2254,
+        "bytes": 742127,
+        "sha256": "2d63db178e26537e475e828c1f09287cb7d1ae375659ecc345262f535230b338",
+        "sourceSha1": "4ee0d91eb552b1b29bd7377647c07bb4d73f7dfd",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "tokyo-sensoji",
+    "cityId": "city-tokyo",
+    "name": {
+      "zh": "浅草寺",
+      "en": "Senso-ji"
+    },
+    "article": "Sensō-ji",
+    "topic": {
+      "zh": "东京浅草的佛教寺院，寺门与参道展示传统建筑和城市文化。",
+      "en": "A Buddhist temple in Asakusa, Tokyo, where gates and approach streets illustrate traditional architecture and urban culture."
+    },
+    "entityId": "Q615183",
+    "latitude": 35.714555555556,
+    "longitude": 139.79663888889,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q615183",
+      "https://en.wikipedia.org/wiki/Sens%C5%8D-ji"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/tokyo-sensoji-1.jpg",
+        "filename": "Sensoji 2023.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sensoji_2023.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/43/Sensoji_2023.jpg/1280px-Sensoji_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Akonnchiroll",
+        "date": "4 November 2023, 14:37:40",
+        "license": "CC0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "description": "Sensoji Main Hall in November 2023",
+        "width": 1280,
+        "height": 914,
+        "bytes": 382637,
+        "sha256": "6aa15d6e2b893296e024f5013062647537f319ff6f3a3e194ae6a95a82cfc657",
+        "sourceSha1": "ea7d6feac8ecee3e4fb88420f8bed56f2fd0e836",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/tokyo-sensoji-2.jpg",
+        "filename": "Five-storied Pagoda of Sensoji Temple in Tokyo, 20240821 1616 5263.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Five-storied_Pagoda_of_Sensoji_Temple_in_Tokyo,_20240821_1616_5263.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Five-storied_Pagoda_of_Sensoji_Temple_in_Tokyo%2C_20240821_1616_5263.jpg/960px-Five-storied_Pagoda_of_Sensoji_Temple_in_Tokyo%2C_20240821_1616_5263.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Jakub Hałun",
+        "date": "2024-08-21 16:16:35",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "description": "Five-storied Pagoda of Sensoji Temple in Tokyo",
+        "width": 960,
+        "height": 1445,
+        "bytes": 447232,
+        "sha256": "54e4866a4a248207509bf556f76f54f6f4bdfc9686b78ad2d1742612177d4ff9",
+        "sourceSha1": "f1aa973753eac44874d21cf1e5e2c91c8c4ef059",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "tokyo-shibuya",
+    "cityId": "city-tokyo",
+    "name": {
+      "zh": "涩谷 · 十字路口",
+      "en": "Shibuya · Scramble Crossing"
+    },
+    "article": "Shibuya Crossing",
+    "topic": {
+      "zh": "以涩谷站附近的步行交叉口代表涩谷，观察人流与城市交通空间。",
+      "en": "The pedestrian crossing near Shibuya Station represents Shibuya here, illustrating pedestrian flows and urban transport space."
+    },
+    "entityId": "Q21083961",
+    "latitude": 35.659502777778,
+    "longitude": 139.70054444444,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q21083961",
+      "https://en.wikipedia.org/wiki/Shibuya_Crossing"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/tokyo-shibuya-1.jpg",
+        "filename": "Shibuya Crossing, Aerial.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Shibuya_Crossing,_Aerial.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Shibuya_Crossing%2C_Aerial.jpg/1280px-Shibuya_Crossing%2C_Aerial.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "David Kernan",
+        "date": "4 December 2023, 17:11:24",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "description": "Shibuya Scramble Square, taken from a near by building.",
+        "width": 1280,
+        "height": 720,
+        "bytes": 456331,
+        "sha256": "3869ac37f53d1fa5d80fdcded67ea3b2bbf80041fd2a9087bc6bcd14936be3c4",
+        "sourceSha1": "3abb12c212e38c662a406c48dd9a526c881404f3",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/tokyo-shibuya-2.jpg",
+        "filename": "Tokyo Shibuya Scramble Crossing 2018-10-09.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tokyo_Shibuya_Scramble_Crossing_2018-10-09.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/Tokyo_Shibuya_Scramble_Crossing_2018-10-09.jpg/1280px-Tokyo_Shibuya_Scramble_Crossing_2018-10-09.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Benh LIEU SONG (Flickr)",
+        "date": "2018-10-09 10:49",
+        "license": "CC BY-SA 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+        "description": "Pedestrians crossing perhaps the most famous scramble intersection in the world, in Shibuya, Tokyo, Japan. Taken from Hachikō square.",
+        "width": 1280,
+        "height": 853,
+        "bytes": 341941,
+        "sha256": "0e3a6e4cc1ced14cf7ce79f96fc3ec8258beaa9fed670ee650769e9b0ebf7fe1",
+        "sourceSha1": "34345c4afafe22c20716f5f6946d88fa7a8a6190",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "tokyo-station",
+    "cityId": "city-tokyo",
+    "name": {
+      "zh": "东京站",
+      "en": "Tokyo Station"
+    },
+    "article": "Tokyo Station",
+    "topic": {
+      "zh": "东京的重要铁路枢纽，丸之内站房连接历史建筑与现代交通。",
+      "en": "A major Tokyo railway hub whose Marunouchi building links historic architecture and modern transport."
+    },
+    "entityId": "Q283196",
+    "latitude": 35.680833333333,
+    "longitude": 139.76694444444,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q283196",
+      "https://en.wikipedia.org/wiki/Tokyo_Station"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/tokyo-station-1.jpg",
+        "filename": "Tokyo-STA Marunouchi-Entrance 2023.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tokyo-STA_Marunouchi-Entrance_2023.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1d/Tokyo-STA_Marunouchi-Entrance_2023.jpg/1280px-Tokyo-STA_Marunouchi-Entrance_2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "MaedaAkihiko",
+        "date": "2023-06-29",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Marunouchi exit station building of JR Tokyo Station and skyscrapers in Chiyoda Ward as of June 2023.",
+        "width": 1280,
+        "height": 853,
+        "bytes": 357711,
+        "sha256": "50fccce5d30df99f798a03567fa6f23a8817e8daac1fb78aedfbcb3df9f19265",
+        "sourceSha1": "954e95ae69986e6c0d4bbc884dca904590f89738",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/tokyo-station-2.jpg",
+        "filename": "Tokyo-Station-2005-7-21 4.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tokyo-Station-2005-7-21_4.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Tokyo-Station-2005-7-21_4.jpg/1280px-Tokyo-Station-2005-7-21_4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "User:Araisyohei",
+        "date": "2005-07-21",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Tokaido Shinkansen platforms 16 & 17 of Tokyo Station",
+        "width": 1280,
+        "height": 960,
+        "bytes": 364481,
+        "sha256": "3770cbefe147ac5362910fa49f2bc166d553f084fee3496f5072d5055436c0b8",
+        "sourceSha1": "52d315c63273d5818f2610be44012e02aeaa83b8",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "kyoto-kiyomizu",
+    "cityId": "city-kyoto",
+    "name": {
+      "zh": "清水寺",
+      "en": "Kiyomizu-dera"
+    },
+    "article": "Kiyomizu-dera",
+    "topic": {
+      "zh": "京都山坡上的佛教寺院，木构建筑与地形形成独特空间。",
+      "en": "A Buddhist temple on Kyoto's hillsides, where timber architecture and terrain form a distinctive setting."
+    },
+    "entityId": "Q221716",
+    "latitude": 34.994830555556,
+    "longitude": 135.78500277778,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q221716",
+      "https://en.wikipedia.org/wiki/Kiyomizu-dera"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/kyoto-kiyomizu-1.jpg",
+        "filename": "Kiyomizu.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kiyomizu.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3c/Kiyomizu.jpg/1280px-Kiyomizu.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Jordy Meow",
+        "date": "2012-07-30 13:13:14",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Kiyomizu-dera.",
+        "width": 1280,
+        "height": 854,
+        "bytes": 359805,
+        "sha256": "874da94eada73f45273171eeb6258b0a42e01497661df3c2c000e3335635a10a",
+        "sourceSha1": "4bfd0fada27fec953553ffe9d06a267985ed66f5",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/kyoto-kiyomizu-2.jpg",
+        "filename": "Kiyomizu-dera, Kyoto, November 2016 -02.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kiyomizu-dera,_Kyoto,_November_2016_-02.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ae/Kiyomizu-dera%2C_Kyoto%2C_November_2016_-02.jpg/1280px-Kiyomizu-dera%2C_Kyoto%2C_November_2016_-02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Martin Falbisoner",
+        "date": "2016-11-16 14:09:27",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Kiyomizu-dera, Kyoto, Japan, part of UNESCO World Heritage Site Ref. Number 688.",
+        "width": 1280,
+        "height": 845,
+        "bytes": 447524,
+        "sha256": "6d2b7cc72b30a5d7007156d542dd27b48db97bc8db39bc398cd61b15bb206c84",
+        "sourceSha1": "991d4dbc772b5dc63f6f8c359f8548752a25d250",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "kyoto-kinkakuji",
+    "cityId": "city-kyoto",
+    "name": {
+      "zh": "金阁寺",
+      "en": "Kinkaku-ji"
+    },
+    "article": "Kinkaku-ji",
+    "topic": {
+      "zh": "京都的寺院，以金色楼阁与池塘园林景观闻名。",
+      "en": "A Kyoto temple recognized by its golden pavilion and pond garden landscape."
+    },
+    "entityId": "Q270983",
+    "latitude": 35.0395,
+    "longitude": 135.7285,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q270983",
+      "https://en.wikipedia.org/wiki/Kinkaku-ji"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/kyoto-kinkakuji-1.jpg",
+        "filename": "Golden Pavilion Kinkaku-ji water mirror 2024.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Golden_Pavilion_Kinkaku-ji_water_mirror_2024.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Golden_Pavilion_Kinkaku-ji_water_mirror_2024.jpg/960px-Golden_Pavilion_Kinkaku-ji_water_mirror_2024.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Nacaru",
+        "date": "2024-02-24 02:59:21",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "A picture of the golden pavilion at the Kinkaku-ji in 2024, with its structure mirrored on the water",
+        "width": 960,
+        "height": 1440,
+        "bytes": 345165,
+        "sha256": "2c11434d7fd8c09b209800c0a6b123f5656b2d5001771c65be546cc1aa6d2249",
+        "sourceSha1": "b181bd4f5796b034bc387cf491a316d1f0b37b64",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/kyoto-kinkakuji-2.jpg",
+        "filename": "Water reflection of Kinkaku-ji Temple a sunny day, Kyoto, Japan.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Water_reflection_of_Kinkaku-ji_Temple_a_sunny_day,_Kyoto,_Japan.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Water_reflection_of_Kinkaku-ji_Temple_a_sunny_day%2C_Kyoto%2C_Japan.jpg/1280px-Water_reflection_of_Kinkaku-ji_Temple_a_sunny_day%2C_Kyoto%2C_Japan.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Basile Morin",
+        "date": "Taken on 13 June 2019, 09:03:32",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Wide-frame view and water reflection of Kinkaku-ji Temple, a sunny day, Kyoto, Japan.",
+        "width": 1280,
+        "height": 720,
+        "bytes": 325794,
+        "sha256": "7457b184d339a0731a9af6e18811114c76980cbb4f309680851a0162689ab227",
+        "sourceSha1": "f856634120ea50bd7bb65d66d199c41197a6428e",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "kyoto-fushimi-inari",
+    "cityId": "city-kyoto",
+    "name": {
+      "zh": "伏见稻荷",
+      "en": "Fushimi Inari Taisha"
+    },
+    "article": "Fushimi Inari-taisha",
+    "topic": {
+      "zh": "京都的神社，成列鸟居与山地参道展示信仰空间与传统建筑。",
+      "en": "A Kyoto shrine whose rows of torii gates and hillside paths illustrate traditional architecture and sacred space."
+    },
+    "entityId": "Q714828",
+    "latitude": 34.967202,
+    "longitude": 135.773386,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q714828",
+      "https://en.wikipedia.org/wiki/Fushimi_Inari-taisha"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/kyoto-fushimi-inari-1.jpg",
+        "filename": "Torii path with lantern at Fushimi Inari Taisha Shrine, Kyoto, Japan.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Torii_path_with_lantern_at_Fushimi_Inari_Taisha_Shrine,_Kyoto,_Japan.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Torii_path_with_lantern_at_Fushimi_Inari_Taisha_Shrine%2C_Kyoto%2C_Japan.jpg/1280px-Torii_path_with_lantern_at_Fushimi_Inari_Taisha_Shrine%2C_Kyoto%2C_Japan.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Basile Morin",
+        "date": "10 June 2019 07:37:27",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Torii path with a hanging lantern at Fushimi Inari Taisha Shrine Senbontorii, Kyoto, Japan.",
+        "width": 1280,
+        "height": 853,
+        "bytes": 358178,
+        "sha256": "d58034bbcdf83a0c5368c64c687c07bb5e6790b3372cda3578656356e8aa5f06",
+        "sourceSha1": "4d22d4ec063fd420a9d66833f6e7aef9d245a121",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/kyoto-fushimi-inari-2.jpg",
+        "filename": "Fushimiinari-taisha, naihaiden-1.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fushimiinari-taisha,_naihaiden-1.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Fushimiinari-taisha%2C_naihaiden-1.jpg/1280px-Fushimiinari-taisha%2C_naihaiden-1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Saigen Jiro",
+        "date": "2020-04-19 14:41:14",
+        "license": "CC0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "description": "伏見稲荷大社 内拝殿",
+        "width": 1280,
+        "height": 848,
+        "bytes": 440166,
+        "sha256": "8726c0f1cf75092a15cd181bd13a139afa99cd076652659dee28d850a5e04596",
+        "sourceSha1": "540d071704fabe6f3da4e5db00d101376e034adb",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "seoul-gyeongbokgung",
+    "cityId": "city-seoul",
+    "name": {
+      "zh": "景福宫",
+      "en": "Gyeongbokgung"
+    },
+    "article": "Gyeongbokgung",
+    "topic": {
+      "zh": "首尔的宫殿建筑群，从庭院与轴线认识传统空间规划。",
+      "en": "A Seoul palace complex whose courts and axes introduce traditional spatial planning."
+    },
+    "entityId": "Q482485",
+    "latitude": 37.5798841,
+    "longitude": 126.9767996,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q482485",
+      "https://en.wikipedia.org/wiki/Gyeongbokgung"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/seoul-gyeongbokgung-1.jpg",
+        "filename": "Gyeonghoeru (Royal Banquet Hall) at Gyeongbokgung Palace, Seoul.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gyeonghoeru_(Royal_Banquet_Hall)_at_Gyeongbokgung_Palace,_Seoul.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5d/Gyeonghoeru_%28Royal_Banquet_Hall%29_at_Gyeongbokgung_Palace%2C_Seoul.jpg/1280px-Gyeonghoeru_%28Royal_Banquet_Hall%29_at_Gyeongbokgung_Palace%2C_Seoul.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "© Frank Schulenburg",
+        "date": "Taken on 5 November 2018, 12:59:48",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Royal Banquet Hall Gyeonghoeru (경회루) at Gyeongbokgung Palace (경복궁), Seoul",
+        "width": 1280,
+        "height": 853,
+        "bytes": 268949,
+        "sha256": "7b85a8d6a2866950140d3abcbccb884f942e5ede6b5407d0b6b32e4ad68fad31",
+        "sourceSha1": "16c2381eb4b5debec07cd48f90d03afc91fe08f3",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/seoul-gyeongbokgung-2.jpg",
+        "filename": "Water reflection of Hyangwonjeong Pavilion at Gyeongbokgung Palace in Seoul.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Water_reflection_of_Hyangwonjeong_Pavilion_at_Gyeongbokgung_Palace_in_Seoul.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/Water_reflection_of_Hyangwonjeong_Pavilion_at_Gyeongbokgung_Palace_in_Seoul.jpg/960px-Water_reflection_of_Hyangwonjeong_Pavilion_at_Gyeongbokgung_Palace_in_Seoul.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Basile Morin",
+        "date": "2024-06-05 09:59:06",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Pond water reflection of Hyangwonjeong Pavilion at Gyeongbokgung Palace with blue sky, in Seoul, South Korea. This unusual hexagon-shaped structure is estimated to have been built in the late 1860s during the reign of King Gojong. The pavilion was leaning to one side, so it was being disassembled and restored.",
+        "width": 960,
+        "height": 1440,
+        "bytes": 461246,
+        "sha256": "954db74783dcf042d5a24e2ef9efd4cb1175953dc41e98cd439d435adbfa10e1",
+        "sourceSha1": "800cc06d0c0ec85238d21ec0d05ca073bd76bf3b",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "seoul-namsan-tower",
+    "cityId": "city-seoul",
+    "name": {
+      "zh": "南山塔",
+      "en": "N Seoul Tower"
+    },
+    "article": "N Seoul Tower",
+    "topic": {
+      "zh": "南山上的通信和观景塔，连接首尔山地与城市景观。",
+      "en": "A communications and observation tower on Namsan, connecting Seoul's hills with its urban landscape."
+    },
+    "entityId": "Q69134",
+    "latitude": 37.551216,
+    "longitude": 126.988276,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q69134",
+      "https://en.wikipedia.org/wiki/Namsan_Seoul_Tower"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/seoul-namsan-tower-1.jpg",
+        "filename": "Mt. Namsan viewed from Seonbawi Rock on Mt. Inwangsan, Seoul.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mt._Namsan_viewed_from_Seonbawi_Rock_on_Mt._Inwangsan,_Seoul.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9b/Mt._Namsan_viewed_from_Seonbawi_Rock_on_Mt._Inwangsan%2C_Seoul.jpg/1280px-Mt._Namsan_viewed_from_Seonbawi_Rock_on_Mt._Inwangsan%2C_Seoul.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Yefims",
+        "date": "2015-03-02",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Mt. Namsan viewed from Seonbawi Rock on Mt. Inwangsan, Seoul",
+        "width": 1280,
+        "height": 960,
+        "bytes": 360628,
+        "sha256": "d757fd37b089044fb9ded030ef6e3d96ba16bd8e245f5b22aee31c3db98d8972",
+        "sourceSha1": "1b1af0e9227446711c9632d5180bac7a7da13233",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/seoul-namsan-tower-2.jpg",
+        "filename": "Seoul City Core from N-Seoul Tower (5464351080).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Seoul_City_Core_from_N-Seoul_Tower_(5464351080).jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Seoul_City_Core_from_N-Seoul_Tower_%285464351080%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "author": "InSapphoWeTrust from Los Angeles, California, USA",
+        "date": "2008-09-26 13:18",
+        "license": "CC BY-SA 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+        "description": "Looking north-northwest into the city core. Visible landmarks include the city council, City Hall, Lotte Department Store, and the Presidential Blue House. National Geographic, for its March 1969 issue, had taken a photo of downtown Seoul from this vantage point (though at the foot of the tower, as the tower was not complete until later in 1969). There were virtually no buildings taller than 10 stories in that photo, and aside from the Blue House (much smaller then than now), the city is practically unrecognizable. The grandest building in the 1969 view, the Central Government Building (formerly Japanese Governor-General Building), was demolished in 1995, and even if it remained standing, it would be very obscured by new skyscrapers in this view.",
+        "width": 1000,
+        "height": 750,
+        "bytes": 494525,
+        "sha256": "36018c5bb011440a8e2ea378c0ffd0a11114f34d91c330d5ff4fadec73100620",
+        "sourceSha1": "7faf26bcd923d502ef7956d8b9865624b51d9bdc",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "seoul-gwanghwamun",
+    "cityId": "city-seoul",
+    "name": {
+      "zh": "光化门",
+      "en": "Gwanghwamun"
+    },
+    "article": "Gwanghwamun",
+    "topic": {
+      "zh": "景福宫的主要宫门，是理解首尔传统城市轴线的地标。",
+      "en": "Gyeongbokgung's principal gate, a landmark for understanding Seoul's traditional urban axes."
+    },
+    "entityId": "Q485034",
+    "latitude": 37.57604444,
+    "longitude": 126.97701944,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q485034",
+      "https://en.wikipedia.org/wiki/Gwanghwamun"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/seoul-gwanghwamun-1.jpg",
+        "filename": "Gwanghwamun 20240413.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gwanghwamun_20240413.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/Gwanghwamun_20240413.jpg/1280px-Gwanghwamun_20240413.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "*Youngjin",
+        "date": "2024-04-13 14:55:02",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Gwanghwamun, and woldae which restored in 2024",
+        "width": 1280,
+        "height": 853,
+        "bytes": 241117,
+        "sha256": "c8404e7d72b0cb2d43ff53ee2bc39d6f66c011be70439a64dcb930ba0bd9d0c7",
+        "sourceSha1": "754d9c1b7434d09f4868cdebdafd955157af37e4",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/seoul-gwanghwamun-2.jpg",
+        "filename": "Gwanghwamun Close Up of Roof and Title.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gwanghwamun_Close_Up_of_Roof_and_Title.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/70/Gwanghwamun_Close_Up_of_Roof_and_Title.jpg/1280px-Gwanghwamun_Close_Up_of_Roof_and_Title.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Huntsmanleader",
+        "date": "2023-12-20 23:26:44",
+        "license": "CC0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "description": "Gwanghwamun gate font and words",
+        "width": 1280,
+        "height": 960,
+        "bytes": 468500,
+        "sha256": "e110927d2a45ab2ea51d764f97e0b56926173bbe67c27ce29e9a25ddc62b5bb3",
+        "sourceSha1": "7814251c4768c681dfc2f5c58d96409efc085a1d",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "singapore-merlion",
+    "cityId": "city-singapore",
+    "name": {
+      "zh": "鱼尾狮",
+      "en": "Merlion"
+    },
+    "article": "Merlion Park",
+    "topic": {
+      "zh": "新加坡滨水公园中的鱼尾狮雕塑，连接城市象征与公共景观。",
+      "en": "The Merlion sculpture in Singapore's waterfront park connects a city symbol with public landscape."
+    },
+    "entityId": "Q6819812",
+    "latitude": 1.28683,
+    "longitude": 103.855,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q6819812",
+      "https://en.wikipedia.org/wiki/Merlion_Park"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/singapore-merlion-1.jpg",
+        "filename": "Singapore Merlion BCT.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Singapore_Merlion_BCT.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/81/Singapore_Merlion_BCT.jpg/1280px-Singapore_Merlion_BCT.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Bjørn Christian Tørrissen",
+        "date": "2008-11-07",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "A statue in Merlion Park near the Central Business District in downtown Singapore. The merlion is a fictional creature that is half lion and half mermaid (the fishy part, obviously). The big merlion has a small \"cub\" that can be seen in the background to the right of the big statue in this photo.",
+        "width": 1280,
+        "height": 977,
+        "bytes": 482577,
+        "sha256": "418cac81852482e297c4a86f652f902f4a960d04d2f9f314a6461773df5b52e6",
+        "sourceSha1": "5649149b81282931e8b1e31b5902bdd69c8ded8c",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/singapore-merlion-2.jpg",
+        "filename": "Merlion, Merlion Park, Singapore - 20130315-03.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Merlion,_Merlion_Park,_Singapore_-_20130315-03.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3a/Merlion%2C_Merlion_Park%2C_Singapore_-_20130315-03.jpg/1280px-Merlion%2C_Merlion_Park%2C_Singapore_-_20130315-03.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Smuconlaw.",
+        "date": "2013-03-15 21:38",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "The Merlion statue at Merlion Park, Singapore.",
+        "width": 1280,
+        "height": 857,
+        "bytes": 236952,
+        "sha256": "83f31bb83c62b4392a84dbfddc1ae06940d87ab527330dd2785a358c75bbd871",
+        "sourceSha1": "beaaae95816b85fea3e04d47fb071689ae2a3700",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "singapore-marina-bay-sands",
+    "cityId": "city-singapore",
+    "name": {
+      "zh": "滨海湾金沙",
+      "en": "Marina Bay Sands"
+    },
+    "article": "Marina Bay Sands",
+    "topic": {
+      "zh": "滨海湾的综合建筑群，三座塔楼与屋顶平台形成醒目轮廓。",
+      "en": "A Marina Bay complex recognized by three towers and a connecting rooftop platform."
+    },
+    "entityId": "Q548679",
+    "latitude": 1.2825,
+    "longitude": 103.86,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q548679",
+      "https://en.wikipedia.org/wiki/Marina_Bay_Sands"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/singapore-marina-bay-sands-1.jpg",
+        "filename": "Marina Bay Sands (I).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Marina_Bay_Sands_(I).jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/Marina_Bay_Sands_%28I%29.jpg/1280px-Marina_Bay_Sands_%28I%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "This Photo was taken by Supanut Arunoprayote. Feel free to use any of my images, but please mention me as the author and may send me a message. (สามารถใช้ภาพได้อิสระ แต่กรุณาใส่เครดิตผู้ถ่ายและอาจส่งข้อความบอกกล่าวด้วย) Please do not upload an updated image here without consultation with the Author. The author would like to make corrections only at his own source. This ensures that the changes are preserved.Please if you think that any changes should be required, please inform the author.Otherwise you can upload a new image with a new name. Please use one of the templates derivative or extract.",
+        "date": "2020-01-18 17:30:07",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "description": "The elevation view from the west of Marina Bay Sands, Singapore",
+        "width": 1280,
+        "height": 853,
+        "bytes": 271525,
+        "sha256": "ee45e86e602d4086b488bf282a3343c005a917f928f9c64cd6888cad35b4c2b3",
+        "sourceSha1": "6c322acacb85976ed674dcc0bee9fc5659ca358b",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/singapore-marina-bay-sands-2.jpg",
+        "filename": "Marina Bay Sands Hotel 3 (31345110894).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Marina_Bay_Sands_Hotel_3_(31345110894).jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/Marina_Bay_Sands_Hotel_3_%2831345110894%29.jpg/1280px-Marina_Bay_Sands_Hotel_3_%2831345110894%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Tony Hisgett from Birmingham, UK",
+        "date": "2016-12-12 18:41",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "description": "Marina Bay Sands Hotel 3",
+        "width": 1280,
+        "height": 795,
+        "bytes": 243798,
+        "sha256": "b5989d9f63d63ca5b6df7989ae4369098c7e76613673296636a1794b4f5e8295",
+        "sourceSha1": "96c0f54192cd75859b5bbcfe85bfd0e6f6d0b427",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "singapore-gardens-bay",
+    "cityId": "city-singapore",
+    "name": {
+      "zh": "滨海湾花园",
+      "en": "Gardens by the Bay"
+    },
+    "article": "Gardens by the Bay",
+    "topic": {
+      "zh": "新加坡的滨水花园，通过植物展示与温室介绍园艺和环境知识。",
+      "en": "A Singapore waterfront garden using plant displays and conservatories to introduce horticulture and environmental learning."
+    },
+    "entityId": "Q630135",
+    "latitude": 1.283319,
+    "longitude": 103.86527,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q630135",
+      "https://en.wikipedia.org/wiki/Gardens_by_the_Bay"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/singapore-gardens-bay-1.jpg",
+        "filename": "Supertree Grove, Gardens by the Bay, Singapore - 20120712-02.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Supertree_Grove,_Gardens_by_the_Bay,_Singapore_-_20120712-02.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5d/Supertree_Grove%2C_Gardens_by_the_Bay%2C_Singapore_-_20120712-02.jpg/1280px-Supertree_Grove%2C_Gardens_by_the_Bay%2C_Singapore_-_20120712-02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Shiny Things.",
+        "date": "2012-07-12 16:08:38",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "description": "The \"supertrees\" tower over Gardens by the Bay, Singapore. The tallest one even has a restaurant in it. An elevated walkway spans around the trees for visitors.",
+        "width": 1280,
+        "height": 853,
+        "bytes": 444131,
+        "sha256": "f380f8b5b2676992a920182e9ef98cd75b68ebc4853bfe95145c671428cc40d1",
+        "sourceSha1": "bc80f7573cfe71307f3bc68ca7ffb147d58235a3",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/singapore-gardens-bay-2.jpg",
+        "filename": "2016 Singapur, Gardens by the Bay, Wewnątrz Kwiatowej Kopuły (01).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:2016_Singapur,_Gardens_by_the_Bay,_Wewn%C4%85trz_Kwiatowej_Kopu%C5%82y_(01).jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/2016_Singapur%2C_Gardens_by_the_Bay%2C_Wewn%C4%85trz_Kwiatowej_Kopu%C5%82y_%2801%29.jpg/1280px-2016_Singapur%2C_Gardens_by_the_Bay%2C_Wewn%C4%85trz_Kwiatowej_Kopu%C5%82y_%2801%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Photo: Marcin Konsek / Wikimedia Commons",
+        "date": "2016-02-09 11:31",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Inside Flower Dome, Bay South Garden, Gardens by the Bay. Central Region, Singapore.",
+        "width": 1280,
+        "height": 868,
+        "bytes": 535545,
+        "sha256": "4e68de08f76279e41ffa6863158401e7efc9c9549d4528a0a03e2d2271efd301",
+        "sourceSha1": "5bd0d7e62bffecf3bc760bf380e281413a8e50ea",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "new-york-liberty",
+    "cityId": "city-new-york",
+    "name": {
+      "zh": "自由女神像",
+      "en": "Statue of Liberty"
+    },
+    "article": "Statue of Liberty",
+    "topic": {
+      "zh": "纽约港的纪念雕像，艺术、结构工程与跨文化交流共同构成其教育价值。",
+      "en": "A New York Harbour monument connecting art, structural engineering and cross-cultural exchange."
+    },
+    "entityId": "Q9202",
+    "latitude": 40.689209166667,
+    "longitude": -74.044425277778,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q9202",
+      "https://en.wikipedia.org/wiki/Statue_of_Liberty"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/new-york-liberty-1.jpg",
+        "filename": "Front view of Statue of Liberty (cropped).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Front_view_of_Statue_of_Liberty_(cropped).jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/89/Front_view_of_Statue_of_Liberty_%28cropped%29.jpg/960px-Front_view_of_Statue_of_Liberty_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "AskALotl",
+        "date": "Taken on 2 June 2024, 13:08:19",
+        "license": "CC0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "description": "The Statue of Liberty as seen from the front in 2024, with pedestal and base visible.",
+        "width": 960,
+        "height": 1471,
+        "bytes": 138325,
+        "sha256": "aca05c9c1b19f727efb5e7c2a096a09eb296a48db0bfb0af353ccd950a64d498",
+        "sourceSha1": "e54ef8ff49539ca46f93ed19314246d5c834f4da",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/new-york-liberty-2.jpg",
+        "filename": "Statue of Liberty and a sightseeing boat, Liberty Island, New York.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Statue_of_Liberty_and_a_sightseeing_boat,_Liberty_Island,_New_York.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/93/Statue_of_Liberty_and_a_sightseeing_boat%2C_Liberty_Island%2C_New_York.jpg/1280px-Statue_of_Liberty_and_a_sightseeing_boat%2C_Liberty_Island%2C_New_York.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Christian David",
+        "date": "2026-04-17 11:40:56",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "The Statue of Liberty (Bartholdi, 1886) on Liberty Island; a sightseeing boat passes in the foreground with the New Jersey skyline behind.",
+        "width": 1280,
+        "height": 853,
+        "bytes": 256299,
+        "sha256": "4886deae954d61ce4fefa20124119749fee51967d6c33534db9ae8d19beb7791",
+        "sourceSha1": "618981b52f620318f0c60c86d67319d31ca0ec25",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "new-york-times-square",
+    "cityId": "city-new-york",
+    "name": {
+      "zh": "时代广场",
+      "en": "Times Square"
+    },
+    "article": "Times Square",
+    "topic": {
+      "zh": "曼哈顿的公共街区，展示商业标识、人流与城市公共空间。",
+      "en": "A Manhattan public district illustrating commercial signage, pedestrian flows and urban public space."
+    },
+    "entityId": "Q11259",
+    "latitude": 40.7575,
+    "longitude": -73.98583333333333,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q11259",
+      "https://en.wikipedia.org/wiki/Times_Square"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/new-york-times-square-1.jpg",
+        "filename": "New york times square-terabass.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:New_york_times_square-terabass.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/New_york_times_square-terabass.jpg/1280px-New_york_times_square-terabass.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Terabass",
+        "date": "Taken on 13 September 2009",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Times Square",
+        "width": 1280,
+        "height": 853,
+        "bytes": 398267,
+        "sha256": "39c67d5161a6daa3641a0ae768372e3bdb133fdf4591874b8ccc7d88d3c3cc5f",
+        "sourceSha1": "3bc8cc7a30b57c669997f0fe6cb1d54874a01f7f",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/new-york-times-square-2.jpg",
+        "filename": "Lehman Brothers Times Square by David Shankbone.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lehman_Brothers_Times_Square_by_David_Shankbone.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Lehman_Brothers_Times_Square_by_David_Shankbone.jpg/960px-Lehman_Brothers_Times_Square_by_David_Shankbone.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "David Shankbone",
+        "date": "Taken on 12 August 2007",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "description": "Lehman Brothers Rockefeller centre. The Manhattan headquarters of Lehman Brothers before their bankruptcy in 2008.",
+        "width": 960,
+        "height": 1280,
+        "bytes": 419348,
+        "sha256": "a4b50912464cd60ed6caae7da87c77703503185c4fd938be469012a9461a7076",
+        "sourceSha1": "cdb8fa039081f68d176fbb738e39761c9289804d",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "new-york-central-park",
+    "cityId": "city-new-york",
+    "name": {
+      "zh": "中央公园",
+      "en": "Central Park"
+    },
+    "article": "Central Park",
+    "topic": {
+      "zh": "曼哈顿的大型城市公园，把景观设计与休闲公共空间联系起来。",
+      "en": "A large Manhattan urban park connecting landscape design and public recreation space."
+    },
+    "entityId": "Q160409",
+    "latitude": 40.7825,
+    "longitude": -73.966111111111,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q160409",
+      "https://en.wikipedia.org/wiki/Central_Park"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/new-york-central-park-1.jpg",
+        "filename": "Global Citizen Festival Central Park New York City from NYonAir (15351915006).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Global_Citizen_Festival_Central_Park_New_York_City_from_NYonAir_(15351915006).jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f1/Global_Citizen_Festival_Central_Park_New_York_City_from_NYonAir_%2815351915006%29.jpg/1280px-Global_Citizen_Festival_Central_Park_New_York_City_from_NYonAir_%2815351915006%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Anthony Quintano from Hillsborough, NJ, United States",
+        "date": "Taken on 27 September 2014, 17:37",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "description": "Global Citizen Festival Central Park New York City from NYonAir",
+        "width": 1280,
+        "height": 853,
+        "bytes": 398900,
+        "sha256": "58345e20e3411bbe6517b0ed593bf78a8e921a68205d115a4c4920105351575f",
+        "sourceSha1": "375e18788c48fdde3d1a811e9685607382914360",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/new-york-central-park-2.jpg",
+        "filename": "Southwest corner of Central Park, looking east, NYC.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Southwest_corner_of_Central_Park,_looking_east,_NYC.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/05/Southwest_corner_of_Central_Park%2C_looking_east%2C_NYC.jpg/1280px-Southwest_corner_of_Central_Park%2C_looking_east%2C_NYC.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Ed Yourdon from New York City, USA",
+        "date": "Taken on 7 November 2009, 13:37",
+        "license": "CC BY-SA 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+        "description": "This was a 3-image, handheld HDR shot -- taken from an area near the southwest corner of Central Park, looking east towards Fifth Avenue. Note: this photo was published in a Dec 13, 2009 blog titled \"How to Get the Perfect Composition in your Digital Photography.\" On Nov 6, 2009 a group of roughly 150 members of the NYC Digital Photography Meetup Group (which comprises some 2,556 members, according to its website) assembled at the southeast corner of New York's Central Park for a \"meetup\" that consisted of a walk through Central Park to capture the fall foliage. A few people knew each other from previous meetups, but most of us were there for the first time, and knew only that we were in the midst of a lot of people with \"serious\" cameras. Introductions were made, hands were shaken, cameras were compared, but with rare exceptions, names were quickly forgotten -- except for lyman91, who served as the organizer for the afternoon's activities. After all, it wasn't a college mixer; we were there to get some nice photographs... Once we got started, we walked past the pond in the southeast corner of the park, up to a picturesque bridge, and then along the southern edge of the park until we reached another picturesque bridge by the southwest corner of the park. From there, we ventured north, past Tavern on the Green, past the Sheep Meadow, up to the 72nd Street entrance (where many photos were dutifully snapped of Strawberry Fields, and the Dakota apartment building where John Lennon lived at the time of his death). We then walked around parts of the boat pond, and a little further north into the Ramble ... at which point, the late-afternoon shadows were dark enough that I decided to call it a day and head on home. As someone observed early in the walk, \"fall foliage\" in New York City is not the same as it is up in Vermont and New Hampshire. There are no fiery reds, no mountainsides of bright orange trees. Our trees are more subdued: there were a few bright yellow ones (don't ask me what kind they were; I have no idea), but most of the trees were \"rust-colored\" at best. Still, it was a pleasant walk; the temperature was a little cool, but the skies were a brilliant blue, and there wasn't a cloud to be seen. I took fewer photos than I would have expected -- only about 300 -- and I'll upload the \"keepers\" throughout the week, as I edit them and put them in reasonable shape... and I'll look forward to another photo meetup sometime in the future. Next time, hopefully I will remember a few names...",
+        "width": 1280,
+        "height": 847,
+        "bytes": 400194,
+        "sha256": "14ef2a72a98a8ef1f42735dbbfb2a1935e21bc76a925bf499dda50869fb0f64d",
+        "sourceSha1": "0bcb8e700295b68702a667cbaf34f408256dd93c",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "new-york-empire-state",
+    "cityId": "city-new-york",
+    "name": {
+      "zh": "帝国大厦",
+      "en": "Empire State Building"
+    },
+    "article": "Empire State Building",
+    "topic": {
+      "zh": "纽约的装饰艺术风格摩天楼，从外形与结构认识高层建筑史。",
+      "en": "A New York Art Deco skyscraper whose form and structure introduce tall-building history."
+    },
+    "entityId": "Q9188",
+    "latitude": 40.748333333333335,
+    "longitude": -73.98555555555555,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q9188",
+      "https://en.wikipedia.org/wiki/Empire_State_Building"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/new-york-empire-state-1.jpg",
+        "filename": "Empire State Building (aerial view).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Empire_State_Building_(aerial_view).jpg",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/1/10/Empire_State_Building_%28aerial_view%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "author": "Sam Valadi",
+        "date": "25 September 2017, 15:02",
+        "license": "Public domain",
+        "licenseUrl": "https://commons.wikimedia.org/wiki/Commons:Licensing",
+        "description": "This image has been extracted from another file",
+        "width": 846,
+        "height": 1270,
+        "bytes": 1108443,
+        "sha256": "f8ec5a9eab4f224264812b819a631af737989cfd704bfa537c6026fddcc85aca",
+        "sourceSha1": "4fd1b12d9226f0e31e552927ab158641dc88dba2",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/new-york-empire-state-2.jpg",
+        "filename": "Empire State Building from Rockefeller Center (51197886181) (cropped).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Empire_State_Building_from_Rockefeller_Center_(51197886181)_(cropped).jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/67/Empire_State_Building_from_Rockefeller_Center_%2851197886181%29_%28cropped%29.jpg/960px-Empire_State_Building_from_Rockefeller_Center_%2851197886181%29_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Domenico Convertini from Zurich, Schweiz",
+        "date": "11 September 2019, 00:11 (according to Exif data)",
+        "license": "CC BY-SA 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+        "description": "Manhattan, New York",
+        "width": 960,
+        "height": 1919,
+        "bytes": 447354,
+        "sha256": "cdc1bb7ede38fbf8c3d43b69be7442a3340d4586caba84207ea02238f56436a1",
+        "sourceSha1": "87b897233099722f1d8126181fe1c386e24ffe8f",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "washington-white-house",
+    "cityId": "city-washington-dc",
+    "name": {
+      "zh": "白宫",
+      "en": "White House"
+    },
+    "article": "White House",
+    "topic": {
+      "zh": "华盛顿的历史建筑，本条目以建筑与城市空间作为教育主题。",
+      "en": "A historic Washington building explored here through architecture and its urban setting."
+    },
+    "entityId": "Q35525",
+    "latitude": 38.897777777777776,
+    "longitude": -77.03666666666666,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q35525",
+      "https://en.wikipedia.org/wiki/White_House"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/washington-white-house-1.jpg",
+        "filename": "White House from North.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:White_House_from_North.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/aa/White_House_from_North.jpg/1280px-White_House_from_North.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "BenAveling",
+        "date": "Taken on 4 July 2012",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "White House from across the North lawn",
+        "width": 1280,
+        "height": 841,
+        "bytes": 214112,
+        "sha256": "275496e5400d92e011df4f554108ee701773fa477068723d32f8e2524d992202",
+        "sourceSha1": "e3f3a498069caa5453e751e92e13504f76b31d02",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/washington-white-house-2.jpg",
+        "filename": "WhiteHouseSouthFacade.JPG",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:WhiteHouseSouthFacade.JPG",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/WhiteHouseSouthFacade.JPG/1280px-WhiteHouseSouthFacade.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "This image or media was taken or created by Matt H. Wade. To see his entire portfolio, click here.@thatmattwade This image is protected by copyright! If you would like to use it, please read this first.",
+        "date": "Taken on 26 May 2006",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "White House, the executive mansion of the President of the United States, located at 1600 Pennsylvania Avenue in Washington, D.C.",
+        "width": 1280,
+        "height": 949,
+        "bytes": 364571,
+        "sha256": "93451571ffa10aa450b688b856b5ee857a3bfa21ac8ebd662ed349c51f32a9e7",
+        "sourceSha1": "44a3a6a57d4554d2649c3fb971da8f04c058f6dd",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "washington-capitol",
+    "cityId": "city-washington-dc",
+    "name": {
+      "zh": "国会山 · 国会大厦",
+      "en": "Capitol Hill · U.S. Capitol"
+    },
+    "article": "United States Capitol",
+    "topic": {
+      "zh": "以美国国会大厦代表国会山，圆顶与周围轴线形成重要城市景观。",
+      "en": "The United States Capitol represents Capitol Hill here; its dome and surrounding axes form a significant urban landscape."
+    },
+    "entityId": "Q54109",
+    "latitude": 38.889722222222225,
+    "longitude": -77.00916666666667,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q54109",
+      "https://en.wikipedia.org/wiki/United_States_Capitol"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/washington-capitol-1.jpg",
+        "filename": "US Capitol east side.JPG",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:US_Capitol_east_side.JPG",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/US_Capitol_east_side.JPG/1280px-US_Capitol_east_side.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Martin Falbisoner",
+        "date": "2013-09-02 08:01:49",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "\"Capitol Hill\"",
+        "width": 1280,
+        "height": 680,
+        "bytes": 168085,
+        "sha256": "35ff9f27b0919e941636ded991c5f67dab74c19e29b53caf4938bb8c1b936503",
+        "sourceSha1": "1870e0f68465ba17b2895ef46c6aa5f816a7a435",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/washington-capitol-2.jpg",
+        "filename": "United States Capitol west front edit2.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:United_States_Capitol_west_front_edit2.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a3/United_States_Capitol_west_front_edit2.jpg/1280px-United_States_Capitol_west_front_edit2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "United_States_Capitol_-_west_front.jpg: Architect of the Capitol derivative work: O.J.",
+        "date": "1997",
+        "license": "Public domain",
+        "licenseUrl": "https://commons.wikimedia.org/wiki/Commons:Licensing",
+        "description": "The western front of the United States Capitol. The Neoclassical style building is located in Washington, D.C., on top of Capitol Hill at the east end of the National Mall. The Capitol was designated a National Historic Landmark in 1960.",
+        "width": 1280,
+        "height": 663,
+        "bytes": 216038,
+        "sha256": "29f8c0f2a6242104e578f7208cb95662e97d0104b275915ecd759a624bc0f2ae",
+        "sourceSha1": "20409f2a6f1900f1eb7601c59a07e409b0e3ec7b",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "washington-lincoln",
+    "cityId": "city-washington-dc",
+    "name": {
+      "zh": "林肯纪念堂",
+      "en": "Lincoln Memorial"
+    },
+    "article": "Lincoln Memorial",
+    "topic": {
+      "zh": "华盛顿国家广场的纪念建筑，从柱廊和空间关系认识纪念建筑设计。",
+      "en": "A National Mall memorial whose colonnade and spatial relationships introduce monument design."
+    },
+    "entityId": "Q213559",
+    "latitude": 38.889277777778,
+    "longitude": -77.050138888889,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q213559",
+      "https://en.wikipedia.org/wiki/Lincoln_Memorial"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/washington-lincoln-1.jpg",
+        "filename": "Lincoln Memorial east side.JPG",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lincoln_Memorial_east_side.JPG",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Lincoln_Memorial_east_side.JPG/1280px-Lincoln_Memorial_east_side.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Martin Falbisoner",
+        "date": "Taken on 3 September 2013, 08:53:46",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Lincoln Memorial, east side.",
+        "width": 1280,
+        "height": 553,
+        "bytes": 170739,
+        "sha256": "49c829d2d2896a25932e13eab1d4f2d301576c3446c0624f81007ac18cd77b3c",
+        "sourceSha1": "4bdf3ebb3a86a85701d4cbb2bb1578b02fc4ea31",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/washington-lincoln-2.jpg",
+        "filename": "Aerial view of Lincoln Memorial - east side EDIT.jpeg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Aerial_view_of_Lincoln_Memorial_-_east_side_EDIT.jpeg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/Aerial_view_of_Lincoln_Memorial_-_east_side_EDIT.jpeg/1280px-Aerial_view_of_Lincoln_Memorial_-_east_side_EDIT.jpeg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Aerial_view_of_Lincoln_Memorial_-_east_side.jpg: Carol M. Highsmith derivative work: upstateNYer",
+        "date": "2010-05-16 00:10",
+        "license": "Public domain",
+        "licenseUrl": "https://commons.wikimedia.org/wiki/Commons:Licensing",
+        "description": "Aerial view of the Lincoln Memorial in Washington, D.C.",
+        "width": 1280,
+        "height": 857,
+        "bytes": 379992,
+        "sha256": "348e6fc588b1365093c7e24d56084776911b4c4c1fc8643cba736b960318248b",
+        "sourceSha1": "60286314918d099bbc33f56dc29100de9591d2f0",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "washington-monument",
+    "cityId": "city-washington-dc",
+    "name": {
+      "zh": "华盛顿纪念碑",
+      "en": "Washington Monument"
+    },
+    "article": "Washington Monument",
+    "topic": {
+      "zh": "国家广场上的方尖碑，石材结构与城市轴线共同形成地标。",
+      "en": "A National Mall obelisk whose masonry structure and urban axes form a landmark."
+    },
+    "entityId": "Q178114",
+    "latitude": 38.889475,
+    "longitude": -77.035244444444,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q178114",
+      "https://en.wikipedia.org/wiki/Washington_Monument"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/washington-monument-1.jpg",
+        "filename": "Washington Monument 2022.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Washington_Monument_2022.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Washington_Monument_2022.jpg/960px-Washington_Monument_2022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Greyfiveys",
+        "date": "2022-06-05 10:23:56",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Washington Monument in Washington DC's National Mall Parks and Memorials",
+        "width": 960,
+        "height": 1280,
+        "bytes": 162629,
+        "sha256": "bd7b69e1d86907da161d29f5010d7197fe0140ac023d9870b22ad57d4cd58831",
+        "sourceSha1": "594a48b98daa795bd51285cc35516b4b0653444c",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/washington-monument-2.jpg",
+        "filename": "Washington 250424 Washington Monument 01.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Washington_250424_Washington_Monument_01.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Washington_250424_Washington_Monument_01.jpg/960px-Washington_250424_Washington_Monument_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Oren Rozen",
+        "date": "2024-04-25 16:07:50",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "The Washington Monument, Washington DC",
+        "width": 960,
+        "height": 1440,
+        "bytes": 286150,
+        "sha256": "85470299483c3aafe910a007edf53f1ed7de9b6ec92a2f6ef3ba0a7c01d626bf",
+        "sourceSha1": "d525e21f700a930bc9d6f494942f05289a0479f7",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "paris-eiffel",
+    "cityId": "city-paris",
+    "name": {
+      "zh": "埃菲尔铁塔",
+      "en": "Eiffel Tower"
+    },
+    "article": "Eiffel Tower",
+    "topic": {
+      "zh": "巴黎的铁制塔架，连接工程结构与城市文化；图像日期影响灯光等附加作品权利。",
+      "en": "A Paris iron tower connecting engineering and city culture; photograph dates and added lighting works have separate rights implications."
+    },
+    "entityId": "Q243",
+    "latitude": 48.858296,
+    "longitude": 2.294479,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q243",
+      "https://en.wikipedia.org/wiki/Eiffel_Tower"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/paris-eiffel-1.jpg",
+        "filename": "Tour Eiffel Wikimedia Commons (cropped).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tour_Eiffel_Wikimedia_Commons_(cropped).jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/85/Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg/960px-Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Benh LIEU SONG",
+        "date": "2009-06-01",
+        "license": "Public domain",
+        "licenseUrl": "https://commons.wikimedia.org/wiki/Commons:Licensing",
+        "description": "Eiffel Tower, Paris France",
+        "width": 960,
+        "height": 1599,
+        "bytes": 278029,
+        "sha256": "e26f8d655bc26852cff6f24a97eefd53b07bc945ad1a7379d30b750638a7cfdd",
+        "sourceSha1": "13c83c3b722bcb3475ea3aab5e73cc5e93a6acba",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/paris-eiffel-2.jpg",
+        "filename": "Paris - The Eiffel Tower in spring - 2307.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Paris_-_The_Eiffel_Tower_in_spring_-_2307.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Paris_-_The_Eiffel_Tower_in_spring_-_2307.jpg/1280px-Paris_-_The_Eiffel_Tower_in_spring_-_2307.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "© Jorge Royan / http://www.royan.com.ar",
+        "date": "2008",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "The Eiffel Tower in spring, Paris, France.",
+        "width": 1280,
+        "height": 853,
+        "bytes": 683477,
+        "sha256": "382225919f93cfe190461501f6941aceabde1efb21309668c5b581d5f4065f48",
+        "sourceSha1": "afdc7c435478f98cc9988031fce562ebd7ef0479",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "paris-louvre",
+    "cityId": "city-paris",
+    "name": {
+      "zh": "卢浮宫",
+      "en": "Louvre"
+    },
+    "article": "Louvre",
+    "topic": {
+      "zh": "巴黎的博物馆与历史宫殿建筑群，连接艺术收藏、展示和文化学习。",
+      "en": "A Paris museum and historic palace complex connecting collections, exhibitions and cultural learning."
+    },
+    "entityId": "Q19675",
+    "latitude": 48.861111111111114,
+    "longitude": 2.3358333333333334,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q19675",
+      "https://en.wikipedia.org/wiki/Louvre"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/paris-louvre-1.jpg",
+        "filename": "Cour Carrée at the Musée du Louvre.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cour_Carr%C3%A9e_at_the_Mus%C3%A9e_du_Louvre.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Cour_Carr%C3%A9e_at_the_Mus%C3%A9e_du_Louvre.jpg/1280px-Cour_Carr%C3%A9e_at_the_Mus%C3%A9e_du_Louvre.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "DiscoA340",
+        "date": "2022-07-02 12:29:21",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Cour Carrée at the Musée du Louvre in Paris, France.",
+        "width": 1280,
+        "height": 960,
+        "bytes": 291694,
+        "sha256": "ea527be317f375e67e213691aaab74367ee14bd04e39f3d09aeb3ca0fb37fccf",
+        "sourceSha1": "41e4c841765980c15982bbbe07d95ca256059ce2",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/paris-louvre-2.jpg",
+        "filename": "Louvre Cour Carrée June 2010.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Louvre_Cour_Carr%C3%A9e_June_2010.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/Louvre_Cour_Carr%C3%A9e_June_2010.jpg/1280px-Louvre_Cour_Carr%C3%A9e_June_2010.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "King of Hearts",
+        "date": "2010-06-21",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "West wing of the Cour Carrée of the Louvre.",
+        "width": 1280,
+        "height": 851,
+        "bytes": 320619,
+        "sha256": "53674b03e1730253f6673b54ce62751701de89e991b0204f3504b2f06e817a53",
+        "sourceSha1": "0e6e2b7df4bc4ab83c5ca136881c26dfcda1b7b1",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "paris-arc-triomphe",
+    "cityId": "city-paris",
+    "name": {
+      "zh": "凯旋门",
+      "en": "Arc de Triomphe"
+    },
+    "article": "Arc de Triomphe",
+    "topic": {
+      "zh": "巴黎星形广场的纪念建筑，本条目关注建筑艺术与城市道路布局。",
+      "en": "A Paris monument on a radial street junction, explored here through architectural art and street planning."
+    },
+    "entityId": "Q64436",
+    "latitude": 48.87378,
+    "longitude": 2.29504,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q64436",
+      "https://en.wikipedia.org/wiki/Arc_de_Triomphe"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/paris-arc-triomphe-1.jpg",
+        "filename": "Arc de Triomphe - Août 2026.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Arc_de_Triomphe_-_Ao%C3%BBt_2026.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Arc_de_Triomphe_-_Ao%C3%BBt_2026.jpg/1280px-Arc_de_Triomphe_-_Ao%C3%BBt_2026.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "ZeusUpsistos",
+        "date": "2026-08-02 08:29:27",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "L'Arc de Triomphe de l'Étoile.",
+        "width": 1280,
+        "height": 854,
+        "bytes": 241357,
+        "sha256": "21d584fb5d45d6db91b77951daf9e1fa6241fb80dadab9d0f2446891d5eea363",
+        "sourceSha1": "f85808b1ebb5822293b297912cedf190f19d93f8",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/paris-arc-triomphe-2.jpg",
+        "filename": "Antoine Étex, Der Friede von 1815, Halbrelief, Arc de Triomphe, Paris.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Antoine_%C3%89tex,_Der_Friede_von_1815,_Halbrelief,_Arc_de_Triomphe,_Paris.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/Antoine_%C3%89tex%2C_Der_Friede_von_1815%2C_Halbrelief%2C_Arc_de_Triomphe%2C_Paris.jpg/960px-Antoine_%C3%89tex%2C_Der_Friede_von_1815%2C_Halbrelief%2C_Arc_de_Triomphe%2C_Paris.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Alvesgaspar",
+        "date": "2011-07-04",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Sculpture in the Arc de Triomphe, Paris: La paix de 1813",
+        "width": 960,
+        "height": 1285,
+        "bytes": 372401,
+        "sha256": "771ad3d06830fef98866791e90c4a56674d81869d4bfe8776d9ad0834be1c606",
+        "sourceSha1": "2c2422f7c9fb7a373984f5c74ba1544bfcf2a950",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "paris-notre-dame",
+    "cityId": "city-paris",
+    "name": {
+      "zh": "巴黎圣母院",
+      "en": "Notre-Dame de Paris"
+    },
+    "article": "Notre-Dame de Paris",
+    "topic": {
+      "zh": "西岱岛上的哥特式教堂，从建筑与保护认识城市文化遗产。",
+      "en": "A Gothic cathedral on the Île de la Cité, introducing urban heritage through architecture and conservation."
+    },
+    "entityId": "Q2981",
+    "latitude": 48.853,
+    "longitude": 2.3498,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q2981",
+      "https://en.wikipedia.org/wiki/Notre-Dame_de_Paris"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/paris-notre-dame-1.jpg",
+        "filename": "Notre-Dame de Paris, 4 October 2017.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Notre-Dame_de_Paris,_4_October_2017.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/Notre-Dame_de_Paris%2C_4_October_2017.jpg/1280px-Notre-Dame_de_Paris%2C_4_October_2017.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Ali Sabbagh",
+        "date": "2017-10-04 20:36",
+        "license": "CC0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "description": "Notre Dame De Paris",
+        "width": 1280,
+        "height": 845,
+        "bytes": 349463,
+        "sha256": "e21d8f6817cc5c203745cdc032a448cf7732489fc44b340c0c74527a7b5f2f6b",
+        "sourceSha1": "793d6c31bd4e39765fce4eec6634a3a380af678b",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/paris-notre-dame-2.jpg",
+        "filename": "Notre-Dame de Paris 2013-07-24.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Notre-Dame_de_Paris_2013-07-24.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/Notre-Dame_de_Paris_2013-07-24.jpg/960px-Notre-Dame_de_Paris_2013-07-24.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Peter Haas",
+        "date": "2013-07-24",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Cathedral Notre Dame de Paris, West view, Paris, France",
+        "width": 960,
+        "height": 1296,
+        "bytes": 426959,
+        "sha256": "584c0bc87a1b68e16cdf87a84e8d293c229b7345fd648cd69168964894109418",
+        "sourceSha1": "d9f5a7a4cc07b4bb3370f9243654e6926b6354fd",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "london-big-ben",
+    "cityId": "city-london",
+    "name": {
+      "zh": "大本钟 · 伊丽莎白塔",
+      "en": "Big Ben · Elizabeth Tower"
+    },
+    "article": "Big Ben",
+    "topic": {
+      "zh": "大本钟严格指钟，所在建筑为伊丽莎白塔；这里用塔楼位置作为示意入口。",
+      "en": "Big Ben strictly names the bell; its building is Elizabeth Tower. The tower position is used as the orientation anchor here."
+    },
+    "entityId": "Q41225",
+    "latitude": 51.50067,
+    "longitude": -0.12457,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q41225",
+      "https://en.wikipedia.org/wiki/Big_Ben"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/london-big-ben-1.jpg",
+        "filename": "Elizabeth Tower and the north front of the Palace of Westminster, London.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Elizabeth_Tower_and_the_north_front_of_the_Palace_of_Westminster,_London.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/05/Elizabeth_Tower_and_the_north_front_of_the_Palace_of_Westminster%2C_London.jpg/960px-Elizabeth_Tower_and_the_north_front_of_the_Palace_of_Westminster%2C_London.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Christian David",
+        "date": "2026-07-17 15:05:38",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "The Elizabeth Tower and the northern end of the Palace of Westminster, seen from Parliament Square near the Carriage Gates. London, England.",
+        "width": 960,
+        "height": 1707,
+        "bytes": 371884,
+        "sha256": "f88c0e511e03d663bbd4f311cd83d675afb696908d685d9dc7a92b7e9c86a6c6",
+        "sourceSha1": "a49f3f50ecddeed475eff4ebc9ca58d171ae6191",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/london-big-ben-2.jpg",
+        "filename": "Big Ben 2007-1.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Big_Ben_2007-1.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d5/Big_Ben_2007-1.jpg/960px-Big_Ben_2007-1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Alvesgaspar",
+        "date": "2007-12",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "The Big Ben, London, view from across the Thames.",
+        "width": 960,
+        "height": 1507,
+        "bytes": 242958,
+        "sha256": "e0f4f4f7ce8f67a0c33f360ba89e8abda609fd00291431c27afb9c9358fa63cc",
+        "sourceSha1": "193b29d692ab9d417c7b4a95ecc1622097db9b84",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "london-buckingham",
+    "cityId": "city-london",
+    "name": {
+      "zh": "白金汉宫",
+      "en": "Buckingham Palace"
+    },
+    "article": "Buckingham Palace",
+    "topic": {
+      "zh": "伦敦的宫殿建筑，从立面、庭院与周边公共空间认识城市历史。",
+      "en": "A London palace whose facades, courts and surrounding public space offer a perspective on urban history."
+    },
+    "entityId": "Q42182",
+    "latitude": 51.501,
+    "longitude": -0.142,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q42182",
+      "https://en.wikipedia.org/wiki/Buckingham_Palace"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/london-buckingham-1.jpg",
+        "filename": "Buckingham Palace London Morning 2020 01 (cropped).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Buckingham_Palace_London_Morning_2020_01_(cropped).jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/Buckingham_Palace_London_Morning_2020_01_%28cropped%29.jpg/1280px-Buckingham_Palace_London_Morning_2020_01_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Julian Herzog (Website)",
+        "date": "2020-08-11 05:26:52",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "description": "East Front of Buckingham Palace",
+        "width": 1280,
+        "height": 767,
+        "bytes": 296650,
+        "sha256": "874aa34dcf7a3331e9f7e00261cec6ceb926a55916e75d56be90e175f934a406",
+        "sourceSha1": "f426de7c201b2e71d7c7788f91b1eaab40022120",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/london-buckingham-2.jpg",
+        "filename": "Buckingham Palace, London - April 2009.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Buckingham_Palace,_London_-_April_2009.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Buckingham_Palace%2C_London_-_April_2009.jpg/1280px-Buckingham_Palace%2C_London_-_April_2009.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Diliff",
+        "date": "Taken on 8 April 2009",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Buckingham Palace in London, England. taken by myself with a Canon 5D and 24-105mm f/4L IS lens.",
+        "width": 1280,
+        "height": 838,
+        "bytes": 404105,
+        "sha256": "318b4d9646bd9d0f8c15b66aac38ed790c1ad369e5537336d327ef58e98f9fb9",
+        "sourceSha1": "b4e7e7671bb3c5f5793eda530ee171274b819932",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "london-eye",
+    "cityId": "city-london",
+    "name": {
+      "zh": "伦敦眼",
+      "en": "London Eye"
+    },
+    "article": "London Eye",
+    "topic": {
+      "zh": "泰晤士河畔的观景摩天轮，展示大型结构与滨水城市景观。",
+      "en": "A Thames observation wheel illustrating large structures and waterfront cityscape."
+    },
+    "entityId": "Q160659",
+    "latitude": 51.50333333333333,
+    "longitude": -0.11972222222222223,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q160659",
+      "https://en.wikipedia.org/wiki/London_Eye"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/london-eye-1.jpg",
+        "filename": "London-Eye-2009.JPG",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:London-Eye-2009.JPG",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d6/London-Eye-2009.JPG/1280px-London-Eye-2009.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Khamtran",
+        "date": "2009-04-04",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "The London Eye from across the River Thames.",
+        "width": 1280,
+        "height": 853,
+        "bytes": 265646,
+        "sha256": "a67c0a62aa33ef2fcb73147d2cbe34a87ee10ee9cb8f64726af2517e04172f42",
+        "sourceSha1": "7d423473cd8b55de8764ebf4c99a547fa1842ca0",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/london-eye-2.jpg",
+        "filename": "London Eye seen from the north bank of the Thames, London.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:London_Eye_seen_from_the_north_bank_of_the_Thames,_London.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a8/London_Eye_seen_from_the_north_bank_of_the_Thames%2C_London.jpg/1280px-London_Eye_seen_from_the_north_bank_of_the_Thames%2C_London.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Christian David",
+        "date": "2026-07-17 14:38:10",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "The London Eye and County Hall seen from the north bank of the River Thames, Lambeth, London, England.",
+        "width": 1280,
+        "height": 960,
+        "bytes": 286190,
+        "sha256": "0527ecf2d233c6d572c193dd6ad610a3990875b1f1b37e531ba3f00a0da842ce",
+        "sourceSha1": "21fa7091c036c734f6ac9fd88da72278e692e9a9",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "london-tower-bridge",
+    "cityId": "city-london",
+    "name": {
+      "zh": "塔桥",
+      "en": "Tower Bridge"
+    },
+    "article": "Tower Bridge",
+    "topic": {
+      "zh": "伦敦的开启式桥梁，把道路通行、河流航运与桥梁工程联系起来。",
+      "en": "A London bascule bridge connecting road traffic, river navigation and bridge engineering."
+    },
+    "entityId": "Q83125",
+    "latitude": 51.50555555555555,
+    "longitude": -0.07527777777777778,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q83125",
+      "https://en.wikipedia.org/wiki/Tower_Bridge"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/london-tower-bridge-1.jpg",
+        "filename": "Tower Bridge at Dawn.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tower_Bridge_at_Dawn.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/59/Tower_Bridge_at_Dawn.jpg/1280px-Tower_Bridge_at_Dawn.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Fuzzypiggy",
+        "date": "2014-09-21 06:16:57",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Tower Bridge: pre-dawn light over London's most iconic landmark.",
+        "width": 1280,
+        "height": 853,
+        "bytes": 210513,
+        "sha256": "3d520edda3114a534b5714072ada0263a2e7a64d0d5492f5155a72d667a6bb55",
+        "sourceSha1": "ac998630dbd82bc209cd5d5a39819a76f29e78a9",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/london-tower-bridge-2.jpg",
+        "filename": "London - London Tower Bridge - 140806 171049.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:London_-_London_Tower_Bridge_-_140806_171049.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/London_-_London_Tower_Bridge_-_140806_171049.jpg/1280px-London_-_London_Tower_Bridge_-_140806_171049.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Barcex",
+        "date": "2014-08-06 17:10:49",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Tower Bridge, Londres.",
+        "width": 1280,
+        "height": 720,
+        "bytes": 227210,
+        "sha256": "98acd626432fbb0b7d7aaa18078128b5c727a26468f414817644a2824cde2f9d",
+        "sourceSha1": "037853196f875e1a14dede422157af72f051ae2d",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "moscow-red-square",
+    "cityId": "city-moscow",
+    "name": {
+      "zh": "红场",
+      "en": "Red Square"
+    },
+    "article": "Red Square",
+    "topic": {
+      "zh": "莫斯科的历史广场，周边建筑共同展示城市公共空间与文化遗产。",
+      "en": "A historic Moscow square whose surrounding buildings introduce public space and cultural heritage."
+    },
+    "entityId": "Q41116",
+    "latitude": 55.754166666667,
+    "longitude": 37.62,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q41116",
+      "https://en.wikipedia.org/wiki/Red_Square"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/moscow-red-square-1.jpg",
+        "filename": "Kremlin and Red Square.1.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kremlin_and_Red_Square.1.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ee/Kremlin_and_Red_Square.1.jpg/1280px-Kremlin_and_Red_Square.1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Mos.ru",
+        "date": "2021-06-13",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "description": "Kremlin and Red Square in Moscow",
+        "width": 1280,
+        "height": 850,
+        "bytes": 360421,
+        "sha256": "9d0c2a39031dde8a42ab0d6cb954fcdaaa98b87fa216ba4478df466d5970c178",
+        "sourceSha1": "428daf4fe03e7f9d8f6444022b91c9ac2ae3cfd7",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/moscow-red-square-2.jpg",
+        "filename": "Red Square in Moscow (general view in 2025).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red_Square_in_Moscow_(general_view_in_2025).jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Red_Square_in_Moscow_%28general_view_in_2025%29.jpg/1280px-Red_Square_in_Moscow_%28general_view_in_2025%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Юрий Д.К.",
+        "date": "Taken on 15 September 2025, 12:23:33",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+        "description": "Red Square in Moscow",
+        "width": 1280,
+        "height": 812,
+        "bytes": 272468,
+        "sha256": "9e2ed671c863b8ea40ee5b4503004a562a6af9c622328a10e066c0c570273df2",
+        "sourceSha1": "39611fdb44986975b832299327149fdb5d359b46",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "moscow-kremlin",
+    "cityId": "city-moscow",
+    "name": {
+      "zh": "克里姆林宫",
+      "en": "Moscow Kremlin"
+    },
+    "article": "Moscow Kremlin",
+    "topic": {
+      "zh": "莫斯科的城堡建筑群，城墙、塔楼与历史建筑形成文化景观。",
+      "en": "A Moscow fortified complex whose walls, towers and historic buildings form a cultural landscape."
+    },
+    "entityId": "Q133274",
+    "latitude": 55.751666666666665,
+    "longitude": 37.617777777777775,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q133274",
+      "https://en.wikipedia.org/wiki/Kremlin"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/moscow-kremlin-1.jpg",
+        "filename": "Moscow Kremlin (8281675670).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_Kremlin_(8281675670).jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Moscow_Kremlin_%288281675670%29.jpg/1280px-Moscow_Kremlin_%288281675670%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Pavel Kazachkov from Moscow, Russia",
+        "date": "2012-12-17 17:33",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+        "description": "Moscow Kremlin and Moskva River on a winter evening.",
+        "width": 1280,
+        "height": 859,
+        "bytes": 264917,
+        "sha256": "76edee124d9365d7830ab780deb21de6d67e7653070b6a7834f1d11b7d2baa54",
+        "sourceSha1": "35b2ee60b948629fd54d874f686cbe501b176e3f",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/moscow-kremlin-2.jpg",
+        "filename": "Moscow 05-2012 Kremlin 22.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_05-2012_Kremlin_22.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f5/Moscow_05-2012_Kremlin_22.jpg/1280px-Moscow_05-2012_Kremlin_22.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "A.Savin",
+        "date": "2012-05-28",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Moscow, Russia. General view of the Moscow Kremlin.",
+        "width": 1280,
+        "height": 808,
+        "bytes": 292019,
+        "sha256": "d795f58ac6ad3f4ec422246f4d192c3ef596214df1a1dce43136cea83fd9e5c0",
+        "sourceSha1": "3b8ae897939e9799619f8a66138b6608f9b15032",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "moscow-saint-basil",
+    "cityId": "city-moscow",
+    "name": {
+      "zh": "圣瓦西里大教堂",
+      "en": "Saint Basil's Cathedral"
+    },
+    "article": "Saint Basil's Cathedral",
+    "topic": {
+      "zh": "红场旁以多座穹顶闻名的教堂，正式名称涉及圣母代祷，并非圣母升天教堂；这里介绍建筑与装饰艺术。",
+      "en": "A cathedral beside Red Square recognized by multiple domes. Its formal dedication concerns the Intercession, not the Assumption; this entry explores architecture and decorative arts."
+    },
+    "entityId": "Q129846",
+    "latitude": 55.7525,
+    "longitude": 37.62305555555555,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q129846",
+      "https://en.wikipedia.org/wiki/Saint_Basil's_Cathedral"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/moscow-saint-basil-1.jpg",
+        "filename": "Saint Basil's Cathedral in Moscow.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Saint_Basil%27s_Cathedral_in_Moscow.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/Saint_Basil%27s_Cathedral_in_Moscow.jpg/1280px-Saint_Basil%27s_Cathedral_in_Moscow.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Tsy1980",
+        "date": "2015-10-21 13:44:25",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Покровский собор на рву (собор Василия Блаженного): Красная площадь, б/н, Тверской, Центральный округ, Москва",
+        "width": 1280,
+        "height": 1420,
+        "bytes": 481684,
+        "sha256": "8de8b236bf3b0dbf29938740ebfb22f2b2cf68cef549f36ace090f4db0509df7",
+        "sourceSha1": "e1a0807287a7b70924c179f43debdf7558d11457",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/moscow-saint-basil-2.jpg",
+        "filename": "00 0568 Saint Basil's Cathedral - Moscow.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:00_0568_Saint_Basil%27s_Cathedral_-_Moscow.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/df/00_0568_Saint_Basil%27s_Cathedral_-_Moscow.jpg/960px-00_0568_Saint_Basil%27s_Cathedral_-_Moscow.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "W. Bulach",
+        "date": "Taken on 31 July 2010 10:12:31",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Basilius-Kathedrale in Moskau (Roter Platz). Das russisch-orthodoxe Kirchengebäude in byzantinischer Architektur aus dem 16. Jahrhundert dient heute meist als Museum.",
+        "width": 960,
+        "height": 1440,
+        "bytes": 480482,
+        "sha256": "98410ef5cad229f3db83316ece885b5088fe89a0742ce56f09b1c4f0228f1fd3",
+        "sourceSha1": "353fd23d0405ff3734f900a814e8424df4642b10",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "saint-petersburg-winter-palace",
+    "cityId": "city-saint-petersburg",
+    "name": {
+      "zh": "冬宫",
+      "en": "Winter Palace"
+    },
+    "article": "Winter Palace",
+    "topic": {
+      "zh": "圣彼得堡的历史宫殿，现与艾尔米塔什博物馆关联，连接建筑与艺术收藏。",
+      "en": "A historic Saint Petersburg palace associated with the Hermitage Museum, connecting architecture and art collections."
+    },
+    "entityId": "Q182147",
+    "latitude": 59.940277777778,
+    "longitude": 30.313888888889,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q182147",
+      "https://en.wikipedia.org/wiki/Winter_Palace"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/saint-petersburg-winter-palace-1.jpg",
+        "filename": "RUS-2016-Aerial-SPB-Winter Palace (crop).jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:RUS-2016-Aerial-SPB-Winter_Palace_(crop).jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/74/RUS-2016-Aerial-SPB-Winter_Palace_%28crop%29.jpg/1280px-RUS-2016-Aerial-SPB-Winter_Palace_%28crop%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Andrew Shiva / Wikipedia",
+        "date": "2016-07-14 09:35:18",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "An aerial view of the Winter Palace, Saint Petersburg, Russia. Altitude ~1,000 - 1,200 feet.",
+        "width": 1280,
+        "height": 760,
+        "bytes": 405645,
+        "sha256": "423fa68418c0aaed8f3d381115f2e1ea0f42450706cc6b56091e217ceaed4a5a",
+        "sourceSha1": "8508ce638126208f00da8d936897088eb3ef1b88",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/saint-petersburg-winter-palace-2.jpg",
+        "filename": "Winter Palace Panorama 3.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Winter_Palace_Panorama_3.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/Winter_Palace_Panorama_3.jpg/1280px-Winter_Palace_Panorama_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Alex 'Florstein' Fedorov",
+        "date": "Taken on 4 August 2014",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Winter Palace in Saint Petersburg, the Central Part of the South Facade",
+        "width": 1280,
+        "height": 768,
+        "bytes": 315920,
+        "sha256": "56e085d41bdad8a649a8686b0480c66afb6cd8b1a6f7e9eeab15958bcb232a9d",
+        "sourceSha1": "25299b127fa49b6dee9efc5f611e2fa15ed90871",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "saint-petersburg-peter-paul",
+    "cityId": "city-saint-petersburg",
+    "name": {
+      "zh": "彼得保罗要塞",
+      "en": "Peter and Paul Fortress"
+    },
+    "article": "Peter and Paul Fortress",
+    "topic": {
+      "zh": "涅瓦河岛上的历史要塞，城墙与河流共同展示城市建造与文化保护。",
+      "en": "A historic fortress on a Neva island, where walls and river introduce urban construction and conservation."
+    },
+    "entityId": "Q38646",
+    "latitude": 59.95,
+    "longitude": 30.316666666667,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q38646",
+      "https://en.wikipedia.org/wiki/Peter_and_Paul_Fortress"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/saint-petersburg-peter-paul-1.jpg",
+        "filename": "RUS-2016-Aerial-SPB-Peter and Paul Fortress 02.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:RUS-2016-Aerial-SPB-Peter_and_Paul_Fortress_02.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/17/RUS-2016-Aerial-SPB-Peter_and_Paul_Fortress_02.jpg/1280px-RUS-2016-Aerial-SPB-Peter_and_Paul_Fortress_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "Andrew Shiva / Wikipedia",
+        "date": "2016-07-14 09:20:27",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Aerial view of Peter and Paul Fortress on Zayachy Island, Saint Petersburg, Russia. To the north, across the Kronverksky Strait is the Kronverk, including the Artillery Museum.",
+        "width": 1280,
+        "height": 732,
+        "bytes": 357064,
+        "sha256": "7e6a95936953e812a4a2b5fb6767fef4028831834b94d90fa7eb1b7b1bf28ac4",
+        "sourceSha1": "84880a50c9463ba7a0fbf83e643170668acc5ae4",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/saint-petersburg-peter-paul-2.jpg",
+        "filename": "00 4645 Sankt Petersburg - Haseninsel.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:00_4645_Sankt_Petersburg_-_Haseninsel.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/00_4645_Sankt_Petersburg_-_Haseninsel.jpg/1280px-00_4645_Sankt_Petersburg_-_Haseninsel.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "W. Bulach",
+        "date": "2010-08-03 12:27:19",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "description": "Sankt Petersburg: Haseninsel mit der Peter- und Paul-Festung und der Peter-Paul-Kathedrale. Die Grundsteinlegung der Festung im Jahre 1703 gilt zugleich als Gründungsdatum von Sankt Petersburg. Die Insel hat eine Länge von 860 Metern und eine Breite von 430 Metern.",
+        "width": 1280,
+        "height": 853,
+        "bytes": 276818,
+        "sha256": "fc7e39f6862d8c6a7cd79968424da5d883374c56e90e10f0e8222d3b5f45c9d3",
+        "sourceSha1": "3d20eb1ce773e34766a97801b49cd5046dda1f33",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  },
+  {
+    "id": "saint-petersburg-neva",
+    "cityId": "city-saint-petersburg",
+    "name": {
+      "zh": "涅瓦河沿岸 · 宫殿滨河路",
+      "en": "Neva River · Palace Embankment"
+    },
+    "article": "Palace Embankment",
+    "topic": {
+      "zh": "以宫殿滨河路代表涅瓦河沿岸，观察河流、街道与历史建筑的关系，不代表整条河岸的单一坐标。",
+      "en": "Palace Embankment represents the Neva waterfront here, connecting river, street and historic buildings; its anchor does not represent the whole riverbank."
+    },
+    "entityId": "Q2317742",
+    "latitude": 59.941230555556,
+    "longitude": 30.312627777778,
+    "sourceUrls": [
+      "https://www.wikidata.org/wiki/Q2317742",
+      "https://en.wikipedia.org/wiki/Palace_Embankment"
+    ],
+    "images": [
+      {
+        "path": "exploration/first-batch/landmarks/saint-petersburg-neva-1.jpg",
+        "filename": "Дворцовая набережная через Неву.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%94%D0%B2%D0%BE%D1%80%D1%86%D0%BE%D0%B2%D0%B0%D1%8F_%D0%BD%D0%B0%D0%B1%D0%B5%D1%80%D0%B5%D0%B6%D0%BD%D0%B0%D1%8F_%D1%87%D0%B5%D1%80%D0%B5%D0%B7_%D0%9D%D0%B5%D0%B2%D1%83.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/%D0%94%D0%B2%D0%BE%D1%80%D1%86%D0%BE%D0%B2%D0%B0%D1%8F_%D0%BD%D0%B0%D0%B1%D0%B5%D1%80%D0%B5%D0%B6%D0%BD%D0%B0%D1%8F_%D1%87%D0%B5%D1%80%D0%B5%D0%B7_%D0%9D%D0%B5%D0%B2%D1%83.jpg/1280px-%D0%94%D0%B2%D0%BE%D1%80%D1%86%D0%BE%D0%B2%D0%B0%D1%8F_%D0%BD%D0%B0%D0%B1%D0%B5%D1%80%D0%B5%D0%B6%D0%BD%D0%B0%D1%8F_%D1%87%D0%B5%D1%80%D0%B5%D0%B7_%D0%9D%D0%B5%D0%B2%D1%83.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "George Shuklin",
+        "date": "2007-08-12 17:42",
+        "license": "CC BY-SA 1.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/1.0",
+        "description": "Дворцовая набережная (Вид с Петропавловской крепости).",
+        "width": 1280,
+        "height": 691,
+        "bytes": 238621,
+        "sha256": "257fee17d8074dee31aeb33ee12c067fdd1e6db2673a3cab425d25b2a16ca4ba",
+        "sourceSha1": "bb7490cebefa1676088dab9bd815be097b56b522",
+        "review": "pending-subject-and-rights-review"
+      },
+      {
+        "path": "exploration/first-batch/landmarks/saint-petersburg-neva-2.jpg",
+        "filename": "Spb 06-2012 Palace Embankment various 02.jpg",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Spb_06-2012_Palace_Embankment_various_02.jpg",
+        "downloadUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/Spb_06-2012_Palace_Embankment_various_02.jpg/1280px-Spb_06-2012_Palace_Embankment_various_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "author": "A.Savin",
+        "date": "2012-05-31",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "description": "Saint Petersburg, Russia. Palace Embankment, house 6.",
+        "width": 1280,
+        "height": 819,
+        "bytes": 317180,
+        "sha256": "ca57fe6de885eb3a051431a3cb677fcdd845cdd4fba8aa1e0438ad8343c189c9",
+        "sourceSha1": "e103b024821a0bbe445c9ef79a53262fb2d40781",
+        "review": "pending-subject-and-rights-review"
+      }
+    ],
+    "humanReview": "pending"
+  }
+]

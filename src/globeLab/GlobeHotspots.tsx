@@ -22,19 +22,28 @@ import {
 import type { HotspotLabel, HotspotScaleLimits } from "./hotspotVisibility";
 import "./storyPanel.css";
 
-export interface GlobeHotspotsProps {
+export type GlobeLabelTarget = Pick<
+  ImmersiveHotspot,
+  "id" | "name" | "latitude" | "longitude" | "image"
+> & { priority?: number };
+
+export interface GlobeHotspotsProps<
+  T extends GlobeLabelTarget = ImmersiveHotspot,
+> {
   viewer: Viewer | null;
-  hotspots: readonly ImmersiveHotspot[];
+  hotspots: readonly T[];
   enabled: boolean;
   language?: "zh" | "en";
   focusedId?: string | null;
   activeId?: string | null;
   onFocus?: (id: string | null) => void;
-  onActivate: (hotspot: ImmersiveHotspot) => void;
+  onActivate: (hotspot: T) => void;
   scaleLimits?: HotspotScaleLimits;
+  kind?: "story" | "city";
+  maxLabels?: number;
 }
 
-export function GlobeHotspots({
+export function GlobeHotspots<T extends GlobeLabelTarget = ImmersiveHotspot>({
   viewer,
   hotspots,
   enabled,
@@ -44,7 +53,9 @@ export function GlobeHotspots({
   onFocus,
   onActivate,
   scaleLimits = DEFAULT_HOTSPOT_SCALE,
-}: GlobeHotspotsProps) {
+  kind = "story",
+  maxLabels = 12,
+}: GlobeHotspotsProps<T>) {
   const [labels, setLabels] = useState<HotspotLabel[]>([]);
   const visible = useRef(new Map<string, boolean>());
   const offsets = useRef(new Map<string, { dx: number; dy: number }>());
@@ -194,15 +205,31 @@ export function GlobeHotspots({
               ),
             height: 44,
             priority:
-              hotspot.id === activeId ? 2 : hotspot.id === focusedId ? 1 : 0,
+              hotspot.id === activeId
+                ? 100
+                : hotspot.id === focusedId
+                  ? 50
+                  : (hotspot.priority ?? 0),
           },
         ];
       });
       const next = placeGlobeHotspotLabels(
         anchors,
-        { width, height },
+        {
+          width,
+          height,
+          insetTop: Math.max(
+            78,
+            (canvas
+              .closest(".globe-lab")
+              ?.querySelector(".lab-bar")
+              ?.getBoundingClientRect().bottom ?? 66) -
+              canvas.getBoundingClientRect().top +
+              12,
+          ),
+        },
         offsets.current,
-      );
+      ).slice(0, maxLabels);
       for (const label of next)
         offsets.current.set(label.id, { dx: label.dx, dy: label.dy });
       const frame = next
@@ -229,12 +256,16 @@ export function GlobeHotspots({
     activeId,
     scaleLimits.showBelow,
     scaleLimits.hideAbove,
+    scaleLimits.showAbove,
+    scaleLimits.hideBelow,
+    maxLabels,
   ]);
 
   const byId = new Map(hotspots.map((hotspot) => [hotspot.id, hotspot]));
   return (
     <div
       className="globe-hotspots"
+      data-marker-kind={kind}
       aria-label={language === "zh" ? "地理热点" : "Geographic hotspots"}
     >
       <svg className="globe-hotspot-connectors" aria-hidden="true">
@@ -276,6 +307,7 @@ export function GlobeHotspots({
               style={{ left: label.x - 22, top: label.y - 22 }}
               tabIndex={-1}
               data-hotspot-id={label.id}
+              data-location-kind={kind}
               aria-label={hotspot.name[language]}
               aria-pressed={selected}
               {...events}
@@ -291,6 +323,7 @@ export function GlobeHotspots({
                 else buttonNodes.current.delete(label.id);
               }}
               data-hotspot-id={label.id}
+              data-location-kind={kind}
               aria-pressed={selected}
               {...events}
             >

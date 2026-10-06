@@ -9,6 +9,8 @@ import {
 } from "three";
 import { particles } from "../particles/ParticleEngine";
 import { descentPhase } from "../exploration/sceneState";
+import { store } from "../interaction/store";
+import { isPlanetStoryOpen } from "../exploration/planetAtlasState";
 export type CameraMode =
   | "SOLAR_VIEW"
   | "PLANET_VIEW"
@@ -25,6 +27,7 @@ export function CameraController() {
     matrix = useMemo(() => new Matrix4(), []),
     rotation = useMemo(() => new Quaternion(), []);
   useFrame(({ clock }, dt) => {
+    if (isPlanetStoryOpen(store.get())) return;
     const focus = particles.focus;
     const mobile = size.width < 700;
     const impact = particles.burst * (particles.explosion > 0 ? 1 : 0);

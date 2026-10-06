@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "scope": "current-worktree-solaris-label-reference",
+  "source": "SOLARIS_BILINGUAL_LABELS.json",
+  "policy": "Reference only. Existing nonempty text wins; no controls, layout, routes or interactions are created.",
+  "ui": {
+    "overview": {
+      "zh": "简介",
+      "en": "Overview"
+    },
+    "cityOverview": {
+      "zh": "城市简介",
+      "en": "City Overview"
+    },
+    "history": {
+      "zh": "历史与重要事件",
+      "en": "History & Milestones"
+    },
+    "science": {
+      "zh": "科学与探索",
+      "en": "Science & Exploration"
+    },
+    "gallery": {
+      "zh": "图集",
+      "en": "Gallery"
+    },
+    "nextImage": {
+      "zh": "下一张图片",
+      "en": "Next Image"
+    },
+    "previousImage": {
+      "zh": "上一张图片",
+      "en": "Previous Image"
+    },
+    "close": {
+      "zh": "关闭",
+      "en": "Close"
+    },
+    "back": {
+      "zh": "返回",
+      "en": "Back"
+    },
+    "backToSolarSystem": {
+      "zh": "返回太阳系",
+      "en": "Back to Solar System"
+    },
+    "imageSource": {
+      "zh": "图片来源",
+      "en": "Image Source"
+    },
+    "informationSources": {
+      "zh": "资料来源",
+      "en": "Sources"
+    },
+    "date": {
+      "zh": "日期",
+      "en": "Date"
+    },
+    "imageCredit": {
+      "zh": "图片署名",
+      "en": "Image Credit"
+    },
+    "historicalImage": {
+      "zh": "历史影像",
+      "en": "Historical Image"
+    },
+    "presentDayPhoto": {
+      "zh": "当代照片",
+      "en": "Present-day Photo"
+    },
+    "illustration": {
+      "zh": "艺术或科学示意",
+      "en": "Illustration"
+    },
+    "historicalObservation": {
+      "zh": "历史观测",
+      "en": "Historical Observation"
+    },
+    "loadingImage": {
+      "zh": "图片加载中…",
+      "en": "Loading image…"
+    },
+    "imageUnavailable": {
+      "zh": "图片暂时无法显示",
+      "en": "Image unavailable"
+    },
+    "retry": {
+      "zh": "重试",
+      "en": "Retry"
+    },
+    "pauseRotation": {
+      "zh": "暂停自转",
+      "en": "Pause Rotation"
+    },
+    "resumeRotation": {
+      "zh": "继续自转",
+      "en": "Resume Rotation"
+    },
+    "dragToRotate": {
+      "zh": "拖动旋转",
+      "en": "Drag to Rotate"
+    },
+    "zoomIn": {
+      "zh": "放大",
+      "en": "Zoom In"
+    },
+    "zoomOut": {
+      "zh": "缩小",
+      "en": "Zoom Out"
+    },
+    "contentInPreparation": {
+      "zh": "内容整理中",
+      "en": "Content in Preparation"
+    },
+    "imageCounter": {
+      "zh": "第 {current} / {total} 张",
+      "en": "Image {current} of {total}"
+    },
+    "showLabels": {
+      "zh": "显示标注",
+      "en": "Show Labels"
+    },
+    "hideLabels": {
+      "zh": "隐藏标注",
+      "en": "Hide Labels"
+    },
+    "language": {
+      "zh": "语言",
+      "en": "Language"
+    }
+  }
+}

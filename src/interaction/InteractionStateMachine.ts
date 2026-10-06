@@ -71,6 +71,7 @@ const transitions: Partial<
     ...focus,
     ENTER_BODY_EXPLORE: "BODY_EXPLORE",
     INFO: "INFO",
+    OPEN_HOTSPOT: "INFO_PANEL_OPEN",
     BROWSE: "PLANET_REGION_PICKER",
     BROWSE_EARTH: "EARTH_CONTINENT_PICKER",
   },
@@ -79,6 +80,7 @@ const transitions: Partial<
   INFO: {
     ...focus,
     INFO: "PLANET_OVERVIEW",
+    OPEN_HOTSPOT: "INFO_PANEL_OPEN",
     BROWSE: "PLANET_REGION_PICKER",
     BROWSE_EARTH: "EARTH_CONTINENT_PICKER",
   },
@@ -129,6 +131,7 @@ export class InteractionStateMachine {
   private scaleOrigin: InteractionState = "SOLAR_SYSTEM";
   private locationOrigin: InteractionState = "PLANET_REGION_PICKER";
   private transitionOrigin: InteractionState = "SOLAR_SYSTEM";
+  private hotspotOrigin: InteractionState = "LOCATION_OVERVIEW";
   get locked() {
     return (
       [
@@ -157,6 +160,7 @@ export class InteractionStateMachine {
     if (event === "SCALE")
       this.scaleOrigin = this.state === "POINTER" ? "SOLAR_SYSTEM" : this.state;
     if (event === "ENTER_LOCATION") this.locationOrigin = this.state;
+    if (event === "OPEN_HOTSPOT") this.hotspotOrigin = this.state;
     if (event === "SELECT" || event === "RETURN")
       this.transitionOrigin = this.state;
     if (event === "COLLAPSE") this.collapseAnimating = true;
@@ -169,7 +173,9 @@ export class InteractionStateMachine {
           ? this.locationOrigin
           : event === "TRANSITION_CANCEL"
             ? this.transitionOrigin
-            : next;
+            : event === "CLOSE_HOTSPOT"
+              ? this.hotspotOrigin
+              : next;
     return true;
   }
 }

@@ -30,10 +30,15 @@ import type { EarthViewHandoff } from "../scene/earthViewHandoff";
 import type { WorldCameraPose } from "./cameraPose";
 import { isBackKey } from "../platform/tvNavigation";
 import { useSolaris } from "../interaction/store";
+import type { ImmersiveHotspot } from "../exploration/immersiveCatalog";
 import {
-  immersiveSites,
-  type ImmersiveHotspot,
-} from "../exploration/immersiveCatalog";
+  cityTarget,
+  earthCityMarkers,
+  earthSites,
+  earthStoryHotspots,
+} from "./earthLocations";
+import { EARTH_LABEL_SCALES } from "./hotspotVisibility";
+import { instrumentEarthProvider, safeEarthError } from "./dataDiagnostics";
 import { GlobeGestureBridge } from "./GlobeGestureBridge";
 import {
   earthProviderConfig,
@@ -50,9 +55,13 @@ import "cesium/Build/Cesium/Widgets/widgets.css";
 import "./globeLab.css";
 
 Ion.defaultAccessToken = "";
-const beijingHotspots = immersiveSites.find(
-  (site) => site.id === "beijing",
-)!.hotspots;
+type EarthDataSnapshot = ReturnType<
+  ReturnType<typeof instrumentEarthProvider>["snapshot"]
+>;
+const initialCityId =
+  earthSites.find((site) => site.cityId)?.cityId ??
+  earthCityMarkers[0]?.id ??
+  "";
 
 export interface GlobeLabProps {
   embedded?: boolean;
@@ -75,11 +84,14 @@ export function GlobeLab(props: GlobeLabProps = {}) {
   const readyRef = useRef(false);
   const storyRef = useRef<ImmersiveHotspot | null>(null);
   const focusedRef = useRef<string | null>(null);
+  const cityEditing = useRef(false);
   const [story, setStory] = useState<ImmersiveHotspot | null>(null);
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [globeViewer, setGlobeViewer] = useState<Viewer | null>(null);
   const [provider, setProvider] = useState<EarthProviderBundle | null>(null);
   const [dataError, setDataError] = useState("");
+  const [dataStatus, setDataStatus] = useState<EarthDataSnapshot | null>(null);
+  const [cityId, setCityId] = useState(initialCityId);
   const [status, setStatus] = useState<GlobeCameraStatus | null>(null);
   const [error, setError] = useState("");
   const [attempt, setAttempt] = useState(0);
@@ -155,12 +167,14 @@ export function GlobeLab(props: GlobeLabProps = {}) {
     let cleanupContext = () => {};
     let cleanupResources = () => {};
     let releaseInputSink = () => {};
+    let startupStep: "config" | "provider" | "viewer" = "config";
     const loading = new AbortController();
     setStatus(null);
     readyRef.current = false;
     callbacks.current.onReady?.(false);
     setError("");
     setDataError("");
+    setDataStatus(null);
     setProvider(null);
     storyRef.current = null;
     setStory(null);
@@ -170,7 +184,12 @@ export function GlobeLab(props: GlobeLabProps = {}) {
         const config = earthProviderConfig(location.search, {
           VITE_CESIUM_ION_READ_TOKEN: import.meta.env
             .VITE_CESIUM_ION_READ_TOKEN,
+          VITE_CESIUM_TERRAIN_ASSET_ID: import.meta.env
+            .VITE_CESIUM_TERRAIN_ASSET_ID,
+          VITE_CESIUM_IMAGERY_ASSET_ID: import.meta.env
+            .VITE_CESIUM_IMAGERY_ASSET_ID,
         });
+        startupStep = "provider";
         const bundle = await Promise.race([
           loadEarthProvider(
             config,
@@ -191,6 +210,10 @@ export function GlobeLab(props: GlobeLabProps = {}) {
         ]);
         if (timeout) clearTimeout(timeout);
         if (disposed) return;
+        const telemetry = instrumentEarthProvider(bundle);
+        cleanupResources = () => telemetry.dispose();
+        setDataStatus(telemetry.snapshot());
+        startupStep = "viewer";
         viewer = new Viewer(element, {
           baseLayer: false,
           baseLayerPicker: false,
@@ -263,10 +286,20 @@ export function GlobeLab(props: GlobeLabProps = {}) {
             const button = document
               .elementFromPoint(x * window.innerWidth, y * window.innerHeight)
               ?.closest<HTMLElement>("[data-hotspot-id]");
-            const hotspot = beijingHotspots.find(
+            const hotspot = earthStoryHotspots.find(
               (entry) => entry.id === button?.dataset.hotspotId,
             );
             if (hotspot) openStory(hotspot);
+            else {
+              const target = cityTarget(
+                button?.dataset.hotspotId ?? "",
+                controls.minimumHeight,
+              );
+              if (target) {
+                setCityId(button!.dataset.hotspotId!);
+                controls.flyTo(target);
+              }
+            }
           },
         });
         gestureBridge.current = bridge;
@@ -300,6 +333,7 @@ export function GlobeLab(props: GlobeLabProps = {}) {
           controls.enforceTerrainClearance();
           callbacks.current.onPoseChange?.(controls.capture());
           setStatus(controls.status());
+          setDataStatus(telemetry.snapshot());
         };
         timeout = setTimeout(() => {
           failed = true;
@@ -309,19 +343,26 @@ export function GlobeLab(props: GlobeLabProps = {}) {
           setStatus(null);
           setError("地球首帧未能完成加载");
         }, 30_000);
-        const resourceFailed = () => {
-          if (!disposed)
+        const resourceFailed = (
+          stage: "terrain" | "imagery",
+          reason: unknown,
+        ) => {
+          const safe = safeEarthError(reason, stage);
+          if (!disposed && safe.code !== "CANCELED")
             setDataError(
-              "地图瓦片加载异常：当前清晰度/覆盖未通过；请检查网络、权限与配额后重试。",
+              `${stage === "imagery" ? "影像" : "地形"}瓦片加载异常（${safe.code}${safe.statusCode ? ` · HTTP ${safe.statusCode}` : ""}）：当前清晰度/覆盖未通过；未静默替换底图。`,
             );
         };
-        const removeImageryError =
-          bundle.imagery.errorEvent.addEventListener(resourceFailed);
-        const removeTerrainError =
-          bundle.terrain.errorEvent.addEventListener(resourceFailed);
+        const removeImageryError = bundle.imagery.errorEvent.addEventListener(
+          (reason) => resourceFailed("imagery", reason),
+        );
+        const removeTerrainError = bundle.terrain.errorEvent.addEventListener(
+          (reason) => resourceFailed("terrain", reason),
+        );
         cleanupResources = () => {
           removeImageryError();
           removeTerrainError();
+          telemetry.dispose();
         };
         viewer.scene.renderError.addEventListener(() => {
           failed = true;
@@ -424,6 +465,7 @@ export function GlobeLab(props: GlobeLabProps = {}) {
                 frameCount,
                 minimumHeight: controls.minimumHeight,
                 provider: bundle.mode,
+                data: telemetry.snapshot(),
                 storyId: storyRef.current?.id ?? null,
                 focusedId: focusedRef.current,
                 initialView: props.initialView,
@@ -464,7 +506,11 @@ export function GlobeLab(props: GlobeLabProps = {}) {
         if (disposed) return;
         actions.current = null;
         callbacks.current.onReady?.(false);
-        setError(reason instanceof Error ? reason.message : "地球视图未能启动");
+        setError(
+          startupStep !== "viewer" && reason instanceof Error
+            ? reason.message
+            : "地球视图未能启动（错误已脱敏）；请检查 WebGL 与运行环境。",
+        );
       }
     };
     void start();
@@ -495,6 +541,10 @@ export function GlobeLab(props: GlobeLabProps = {}) {
 
   useEffect(() => {
     const back = () => {
+      if (cityEditing.current) {
+        cityEditing.current = false;
+        return true;
+      }
       if (closeStory()) return true;
       if (cancelFlight()) return true;
       if (viewModeRef.current) {
@@ -526,11 +576,20 @@ export function GlobeLab(props: GlobeLabProps = {}) {
       }
       if (event.altKey || event.metaKey || event.ctrlKey) return;
       if (storyRef.current) return;
+      if (document.activeElement instanceof HTMLSelectElement) {
+        if (new URLSearchParams(location.search).get("tv") !== "1") return;
+        if (event.key === "Enter") {
+          cityEditing.current = !cityEditing.current;
+          event.preventDefault();
+          return;
+        }
+        if (cityEditing.current && event.key.startsWith("Arrow")) return;
+      }
       if (!viewModeRef.current) {
         if (!event.key.startsWith("Arrow")) return;
         const items = [
-          ...document.querySelectorAll<HTMLButtonElement>(
-            ".lab-control:not(:disabled),.globe-hotspot-hit:not(:disabled)",
+          ...document.querySelectorAll<HTMLElement>(
+            ".lab-city-select:not(:disabled),.lab-control:not(:disabled),.globe-hotspot-hit:not(:disabled)",
           ),
         ];
         const index = items.indexOf(
@@ -622,6 +681,16 @@ export function GlobeLab(props: GlobeLabProps = {}) {
     setCameraOn(true);
     await manager.current?.start();
   };
+  const destination = cityTarget(cityId, provider?.minimumHeight ?? 250_000);
+  const labelScales = EARTH_LABEL_SCALES[provider?.mode ?? "local"];
+  const flyToCity = (id: string) => {
+    const controls = actions.current;
+    if (!controls || storyRef.current) return;
+    const target = cityTarget(id, controls.minimumHeight);
+    if (!target) return;
+    setCityId(id);
+    command((current) => current.flyTo(target));
+  };
   return (
     <section
       className="globe-lab"
@@ -633,18 +702,25 @@ export function GlobeLab(props: GlobeLabProps = {}) {
       <div className="globe-stage" ref={container} />
       <GlobeHotspots
         viewer={globeViewer}
-        hotspots={beijingHotspots}
+        hotspots={earthCityMarkers}
+        kind="city"
+        maxLabels={8}
+        enabled={ready && !flying && !story}
+        focusedId={focusedId}
+        onFocus={focusHotspot}
+        onActivate={(city) => flyToCity(city.id)}
+        scaleLimits={labelScales.city}
+      />
+      <GlobeHotspots
+        viewer={globeViewer}
+        hotspots={earthStoryHotspots}
         enabled={ready && !flying}
         activeId={story?.id ?? null}
         focusedId={focusedId}
         onFocus={focusHotspot}
         onActivate={openStory}
         language="zh"
-        scaleLimits={
-          provider?.mode === "ion"
-            ? { showBelow: 140, hideAbove: 200 }
-            : { showBelow: 1000, hideAbove: 1300 }
-        }
+        scaleLimits={labelScales.story}
       />
       <header className="lab-bar">
         {props.embedded ? (
@@ -673,20 +749,35 @@ export function GlobeLab(props: GlobeLabProps = {}) {
           </span>
         </div>
         <nav className="lab-tools" aria-label="地球导航">
+          <select
+            className="lab-city-select"
+            aria-label="目的地城市"
+            value={cityId}
+            disabled={!ready || !!story || flying}
+            onChange={(event) => setCityId(event.target.value)}
+            onBlur={() => {
+              cityEditing.current = false;
+            }}
+          >
+            {earthCityMarkers.map((city) => (
+              <option key={city.id} value={city.id}>
+                {city.name.zh}
+              </option>
+            ))}
+          </select>
           <button
             className="lab-control lab-destination"
             disabled={!ready || flying}
             onClick={(event) => {
               flightFocus.current = event.currentTarget;
               command((c) => {
-                c.flyToBeijing();
+                if (destination) c.flyTo(destination);
               });
             }}
-            title="飞向北京"
-            aria-label="飞向北京"
+            title={`飞向${destination?.name ?? "城市"}`}
+            aria-label={`飞向${destination?.name ?? "城市"}`}
           >
             <MapPin size={18} />
-            <span>北京</span>
           </button>
           <button
             className="lab-control"
@@ -748,7 +839,7 @@ export function GlobeLab(props: GlobeLabProps = {}) {
       </header>
       {flying && (
         <div className="lab-flight" role="status">
-          <span>飞向北京</span>
+          <span>飞向{status?.focus}</span>
           <button
             className="lab-control"
             onClick={cancelFlight}
@@ -816,6 +907,15 @@ export function GlobeLab(props: GlobeLabProps = {}) {
         <span className="lab-coverage">
           {provider?.coverage ?? "真实数据未连接"}
         </span>
+        {dataStatus?.mode === "ion" && (
+          <span className="lab-tile-evidence">
+            影像接收 {dataStatus.imagery.received}/
+            {dataStatus.imagery.requested} · 级别{" "}
+            {dataStatus.imagery.levels.join(",") || "待接收"}； 地形接收{" "}
+            {dataStatus.terrain.received}/{dataStatus.terrain.requested} ·
+            建筑未接入
+          </span>
+        )}
         {status?.atBoundary && (
           <span className="lab-boundary">
             {provider?.mode === "ion"

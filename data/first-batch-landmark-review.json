@@ -1,0 +1,234 @@
+{
+  "beijing-tiananmen": [
+    "d1f0d694ffbcda0d51f8e9e0be7aff75073df9fa",
+    "b0248570585d0decebe520d89f5ea1d1b2cd0008"
+  ],
+  "beijing-forbidden-city": [
+    "7de57265c85be839714817f5916616654ed6e50e",
+    "98f52f3c3cf06ac721dc62b83d1f1f35345a3dbf"
+  ],
+  "beijing-great-wall": [
+    "f8115cde2998dd385c4e2b4b4568fda1446a1fe5",
+    "7ed47fa2bf53855c1c10963bca1d8811d14cbbed"
+  ],
+  "beijing-birds-nest": [
+    "5f337ea0218110369d7e9bba4c91626023bb38ed",
+    "b7d3cee7aea0500d97b23d031caa83fddce43535"
+  ],
+  "beijing-temple-heaven": [
+    "e461b4867445b8f11a16cee586bcfe6342c9f275",
+    "c5a9b8c6e8322513adef77b836b290292efd4d3c"
+  ],
+  "shanghai-bund": [
+    "2c16934e44c110f6b73f38946af258292649d797",
+    "fd9ec6fdd9ab676c0f30c1031d3c3184d390560d"
+  ],
+  "shanghai-oriental-pearl": [
+    "8d2e97489c00e6662e999810e3cfb69ee626fb76",
+    "e876f7edef78ea736e37b87223f84b4f9c890686"
+  ],
+  "shanghai-tower": [
+    "077d8e110c671430f3b533230eea5d3527a189ba",
+    "f02c903fcd21582911d1990554000f1776e950d1"
+  ],
+  "shenzhen-bay": [
+    "358963252be6e9d0e8f3160547c07bb19a166753",
+    "719df3146b435430cdcebd2ee5b371864f023c88"
+  ],
+  "shenzhen-huaqiangbei": [
+    "ab2f67f061475430fc034de5284626ec5c59dafb",
+    "eaa9b26f7c749164a0e2c601d7dce2e6d0887515"
+  ],
+  "shenzhen-qianhai": [
+    "b97a3b645d7611082374d68db63a85cd4c31d41b",
+    "8e2553ea6e18c0f62ec0f65da3332b9240cba750"
+  ],
+  "hangzhou-west-lake": [
+    "d8e32572d3b10d9989338eb59fb6a4a539b2f03a",
+    "356c7a5764b3d47077a07d83908bc97235c6d8f1"
+  ],
+  "hangzhou-lingyin": [
+    "9fa02fdab01220d975c271938543c833c2449937",
+    "e23fbbd10046508e9713310fe40d91c3c0e8466a"
+  ],
+  "hangzhou-asian-games": [
+    "5374bf23501590c6e311189de48d2bfb2c18f18d",
+    "111ecf50ac268f2a6404e0a54c1b99cf5a373040"
+  ],
+  "hong-kong-victoria-peak": [
+    "26ca2a0cb154bbe034f88649288772693b6f9655",
+    "8ad66f3c815394d794f2cfff605835f71f6cf30a"
+  ],
+  "hong-kong-central": [
+    "188d92e317904561397eaf9468fe543330c73101",
+    "1a40721ec376b6a66eb86bd6acb8d267f19b07f8"
+  ],
+  "hong-kong-convention-centre": [
+    "b19c4270bac3da18b643f40f6ed1e07e3ce3e01e",
+    "f3cb46f494cf04bce573faddee294fe5663e63c0"
+  ],
+  "taipei-101": [
+    "fe81ba0b65832d81939b72751e53788c3c6599d8",
+    "5962f30fe235a7598d791c50ebfbf4982d8a4905"
+  ],
+  "taipei-chiang-kai-shek": [
+    "b4acb1baf563699ea92ff786e4448aa1630db8d4",
+    "3eef366f39cc765d38667d13190623503b460a26"
+  ],
+  "tokyo-tower": [
+    "43a782109fa11f5ff593ef2a089215ee8d13b548",
+    "4ee0d91eb552b1b29bd7377647c07bb4d73f7dfd"
+  ],
+  "tokyo-station": [
+    "954e95ae69986e6c0d4bbc884dca904590f89738",
+    "52d315c63273d5818f2610be44012e02aeaa83b8"
+  ],
+  "kyoto-kiyomizu": [
+    "4bfd0fada27fec953553ffe9d06a267985ed66f5",
+    "991d4dbc772b5dc63f6f8c359f8548752a25d250"
+  ],
+  "kyoto-kinkakuji": [
+    "b181bd4f5796b034bc387cf491a316d1f0b37b64",
+    "f856634120ea50bd7bb65d66d199c41197a6428e"
+  ],
+  "kyoto-fushimi-inari": [
+    "4d22d4ec063fd420a9d66833f6e7aef9d245a121",
+    "540d071704fabe6f3da4e5db00d101376e034adb"
+  ],
+  "seoul-gyeongbokgung": [
+    "16c2381eb4b5debec07cd48f90d03afc91fe08f3",
+    "800cc06d0c0ec85238d21ec0d05ca073bd76bf3b"
+  ],
+  "singapore-merlion": [
+    "5649149b81282931e8b1e31b5902bdd69c8ded8c",
+    "beaaae95816b85fea3e04d47fb071689ae2a3700"
+  ],
+  "singapore-marina-bay-sands": [
+    "6c322acacb85976ed674dcc0bee9fc5659ca358b",
+    "96c0f54192cd75859b5bbcfe85bfd0e6f6d0b427"
+  ],
+  "singapore-gardens-bay": [
+    "bc80f7573cfe71307f3bc68ca7ffb147d58235a3",
+    "5bd0d7e62bffecf3bc760bf380e281413a8e50ea"
+  ],
+  "new-york-liberty": [
+    "e54ef8ff49539ca46f93ed19314246d5c834f4da",
+    "618981b52f620318f0c60c86d67319d31ca0ec25"
+  ],
+  "new-york-times-square": [
+    "3bc8cc7a30b57c669997f0fe6cb1d54874a01f7f",
+    "cdb8fa039081f68d176fbb738e39761c9289804d"
+  ],
+  "new-york-central-park": [
+    "375e18788c48fdde3d1a811e9685607382914360",
+    "0bcb8e700295b68702a667cbaf34f408256dd93c"
+  ],
+  "new-york-empire-state": [
+    "4fd1b12d9226f0e31e552927ab158641dc88dba2",
+    "87b897233099722f1d8126181fe1c386e24ffe8f"
+  ],
+  "washington-capitol": [
+    "1870e0f68465ba17b2895ef46c6aa5f816a7a435",
+    "20409f2a6f1900f1eb7601c59a07e409b0e3ec7b"
+  ],
+  "washington-lincoln": [
+    "4bdf3ebb3a86a85701d4cbb2bb1578b02fc4ea31",
+    "60286314918d099bbc33f56dc29100de9591d2f0"
+  ],
+  "washington-monument": [
+    "594a48b98daa795bd51285cc35516b4b0653444c",
+    "d525e21f700a930bc9d6f494942f05289a0479f7"
+  ],
+  "paris-arc-triomphe": [
+    "f85808b1ebb5822293b297912cedf190f19d93f8",
+    "2c2422f7c9fb7a373984f5c74ba1544bfcf2a950"
+  ],
+  "paris-notre-dame": [
+    "793d6c31bd4e39765fce4eec6634a3a380af678b",
+    "d9f5a7a4cc07b4bb3370f9243654e6926b6354fd"
+  ],
+  "london-big-ben": [
+    "a49f3f50ecddeed475eff4ebc9ca58d171ae6191",
+    "193b29d692ab9d417c7b4a95ecc1622097db9b84"
+  ],
+  "london-buckingham": [
+    "f426de7c201b2e71d7c7788f91b1eaab40022120",
+    "b4e7e7671bb3c5f5793eda530ee171274b819932"
+  ],
+  "london-eye": [
+    "7d423473cd8b55de8764ebf4c99a547fa1842ca0",
+    "21fa7091c036c734f6ac9fd88da72278e692e9a9"
+  ],
+  "london-tower-bridge": [
+    "ac998630dbd82bc209cd5d5a39819a76f29e78a9",
+    "037853196f875e1a14dede422157af72f051ae2d"
+  ],
+  "moscow-kremlin": [
+    "35b2ee60b948629fd54d874f686cbe501b176e3f",
+    "3b8ae897939e9799619f8a66138b6608f9b15032"
+  ],
+  "moscow-saint-basil": [
+    "e1a0807287a7b70924c179f43debdf7558d11457",
+    "353fd23d0405ff3734f900a814e8424df4642b10"
+  ],
+  "saint-petersburg-winter-palace": [
+    "8508ce638126208f00da8d936897088eb3ef1b88",
+    "25299b127fa49b6dee9efc5f611e2fa15ed90871"
+  ],
+  "saint-petersburg-peter-paul": [
+    "84880a50c9463ba7a0fbf83e643170668acc5ae4",
+    "3d20eb1ce773e34766a97801b49cd5046dda1f33"
+  ],
+  "saint-petersburg-neva": [
+    "bb7490cebefa1676088dab9bd815be097b56b522",
+    "e103b024821a0bbe445c9ef79a53262fb2d40781"
+  ],
+  "hong-kong-victoria-harbour": [
+    "da37518d52e3230c5479b439e909c4ac16454401",
+    "18e53c07ee1381a7923a7e3fb72c3935da00a31a"
+  ],
+  "taipei-palace-museum": [
+    "8ac75bddf1d7cf3e80a5210c3c60d36261f8494e",
+    "aa1a7ad22c135f4f357cc4ba8d905540f83e3526"
+  ],
+  "tokyo-sensoji": [
+    "ea7d6feac8ecee3e4fb88420f8bed56f2fd0e836",
+    "f1aa973753eac44874d21cf1e5e2c91c8c4ef059"
+  ],
+  "tokyo-shibuya": [
+    "3abb12c212e38c662a406c48dd9a526c881404f3",
+    "34345c4afafe22c20716f5f6946d88fa7a8a6190"
+  ],
+  "shenzhen-ping-an": [
+    "500a65f020b7a41158a32d956e146bc1f8421910",
+    "771700470371176d069a5616fa4e7f601c4b6874"
+  ],
+  "seoul-namsan-tower": [
+    "1b1af0e9227446711c9632d5180bac7a7da13233",
+    "7faf26bcd923d502ef7956d8b9865624b51d9bdc"
+  ],
+  "seoul-gwanghwamun": [
+    "754d9c1b7434d09f4868cdebdafd955157af37e4",
+    "7814251c4768c681dfc2f5c58d96409efc085a1d"
+  ],
+  "washington-white-house": [
+    "e3f3a498069caa5453e751e92e13504f76b31d02",
+    "44a3a6a57d4554d2649c3fb971da8f04c058f6dd"
+  ],
+  "paris-eiffel": [
+    "13c83c3b722bcb3475ea3aab5e73cc5e93a6acba",
+    "afdc7c435478f98cc9988031fce562ebd7ef0479"
+  ],
+  "paris-louvre": [
+    "41e4c841765980c15982bbbe07d95ca256059ce2",
+    "0e6e2b7df4bc4ab83c5ca136881c26dfcda1b7b1"
+  ],
+  "moscow-red-square": [
+    "428daf4fe03e7f9d8f6444022b91c9ac2ae3cfd7",
+    "39611fdb44986975b832299327149fdb5d359b46"
+  ],
+  "shanghai-yu-garden": [
+    "619458ff091c7b18fd838e31504690fa24e37b17",
+    "7da817d5b44f7b04a3372e994dc83e1a5d5625db"
+  ]
+}
