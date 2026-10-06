@@ -120,6 +120,8 @@ try {
     join(temporary, "THIRD_PARTY_NOTICES.md"),
     join(built, "THIRD_PARTY_NOTICES.md"),
   );
+  // Pages omits dotfiles; the main artifact already owns the Jekyll marker.
+  await rm(join(built, ".nojekyll"), { force: true });
   const files = [];
   async function hashFiles(folder, prefix = "") {
     for (const entry of (await readdir(folder, { withFileTypes: true })).sort(
