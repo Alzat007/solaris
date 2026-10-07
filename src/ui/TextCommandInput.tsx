@@ -12,14 +12,32 @@ import { OrbitIcon } from "./Icons";
 
 export function TextCommandInput() {
   const scene = useSolaris();
+  const zh = scene.language === "zh";
   const [input, setInput] = useState("");
   const [feedback, setFeedback] = useState<CommandResult | null>(null);
   const [pending, setPending] = useState<SceneCommand | null>(null);
   const composing = useRef(false);
   const current =
     scene.mode === "SUN_INTERIOR"
-      ? "太阳内部"
-      : planetById(scene.selected)?.chineseName || "太阳系";
+      ? zh
+        ? "太阳内部"
+        : "Inside the Sun"
+      : planetById(scene.selected)?.[zh ? "chineseName" : "name"] ||
+        (zh ? "太阳系" : "Solar system");
+  const target =
+    feedback?.command?.type === "select"
+      ? planetById(feedback.command.planetId)?.name
+      : "the solar system";
+  const englishFeedback: Record<CommandResult["status"], string> = {
+    invalid: "Enter a planet name or 'back to solar system'.",
+    busy: "The scene is changing. Please try again shortly.",
+    blocked: "This command is not available in the current scene.",
+    already_done: `Already at ${target}.`,
+    started: `Travelling to ${target}...`,
+    completed: `Arrived at ${target}.`,
+    interrupted:
+      "The command was interrupted or completion could not be confirmed. Please try again.",
+  };
 
   useEffect(() => {
     if (!pending) return;
@@ -60,22 +78,25 @@ export function TextCommandInput() {
   return (
     <form
       className="talk-command"
-      aria-label="SOLARIS Talk 指令"
+      aria-label={zh ? "SOLARIS Talk 指令" : "SOLARIS Talk commands"}
       onSubmit={submit}
       onKeyDown={(event) => event.stopPropagation()}
     >
       <div className="talk-heading">
         <label htmlFor="talk-input">SOLARIS Talk</label>
-        <span className="talk-mode">本地指令</span>
-        <span className="talk-current">当前：{current}</span>
+        <span className="talk-mode">{zh ? "本地指令" : "Local commands"}</span>
+        <span className="talk-current">
+          {zh ? "当前：" : "Current: "}
+          {current}
+        </span>
       </div>
       <div className="talk-input-row">
         <input
           id="talk-input"
           type="text"
-          aria-label="场景指令"
+          aria-label={zh ? "场景指令" : "Scene command"}
           aria-describedby="talk-feedback"
-          placeholder="带我去火星"
+          placeholder={zh ? "带我去火星" : "Take me to Mars"}
           autoComplete="off"
           spellCheck={false}
           maxLength={120}
@@ -99,8 +120,8 @@ export function TextCommandInput() {
         />
         <button
           type="submit"
-          aria-label="执行指令"
-          title="执行指令"
+          aria-label={zh ? "执行指令" : "Run command"}
+          title={zh ? "执行指令" : "Run command"}
           disabled={!input.trim()}
         >
           <OrbitIcon />
@@ -114,7 +135,7 @@ export function TextCommandInput() {
         aria-live="polite"
         aria-atomic="true"
       >
-        {feedback?.message}
+        {feedback && (zh ? feedback.message : englishFeedback[feedback.status])}
       </div>
     </form>
   );

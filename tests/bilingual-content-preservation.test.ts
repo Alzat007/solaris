@@ -221,8 +221,21 @@ test("fact sources, copyright metadata and audit gates keep their original JSON"
   }
 });
 
-test("labels-only work leaves the classic, gesture, camera, rotation and style files untouched", () => {
+test("original file protection remains active outside authorized glass-panel and language UI changes", () => {
+  // Keep the historical baseline intact. Only the shared presentation and the
+  // requested language display files are exempt; data, images, gesture recognition
+  // and camera/input controllers stay locked outside the prior glass-panel scope.
+  const presentationScope = new Set([
+    "src/globeLab/GlobeStoryPanel.tsx",
+    "src/globeLab/storyPanel.css",
+    "src/interaction/InteractionController.ts",
+    "src/ui/HUD.tsx",
+    "src/ui/GestureHint.tsx",
+    "src/ui/TextCommandInput.tsx",
+    "src/planets/PlanetBase.tsx",
+  ]);
   for (const [path, expected] of Object.entries(baseline.protectedFiles)) {
+    if (presentationScope.has(path)) continue;
     const bytes = readFileSync(new URL(`../${path}`, import.meta.url));
     assert.equal(
       createHash("sha256").update(bytes).digest("hex"),

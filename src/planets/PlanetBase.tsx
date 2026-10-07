@@ -32,7 +32,7 @@ export function PlanetBase({
   const root = useRef<Group>(null),
     body = useRef<Group>(null);
   const hoverRing = useRef<Mesh>(null);
-  const { selected, hover, mode } = useSolaris();
+  const { selected, hover, mode, language } = useSolaris();
   const active = selected === id;
   const labelsVisible = ["SOLAR_SYSTEM", "POINTER", "UNIVERSE_SCALE"].includes(
     mode,
@@ -185,7 +185,7 @@ export function PlanetBase({
           className={`planet-label ${isHover ? "is-hover" : ""}`}
           style={{ pointerEvents: "none" }}
         >
-          <span>{data.chineseName}</span>
+          <span>{language === "zh" ? data.chineseName : data.name}</span>
           <i />
         </Html>
       )}

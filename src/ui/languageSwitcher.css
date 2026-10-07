@@ -1,0 +1,66 @@
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid #ffffff38;
+  border-radius: 8px;
+  background: #ffffff08;
+  pointer-events: auto;
+}
+.language-switcher button {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #d2d9db;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  cursor: pointer;
+}
+.language-switcher button[aria-pressed="true"] {
+  color: #fff;
+  background: #ffffff26;
+  box-shadow: inset 0 1px 0 #ffffff24;
+}
+.language-switcher button:hover {
+  background: #ffffff1c;
+}
+.language-switcher button:focus-visible {
+  outline: 2px solid #d1e9e1;
+  outline-offset: -2px;
+}
+.globe-story-copy > .language-switcher {
+  position: sticky;
+  top: 12px;
+  z-index: 2;
+  margin: 0 48px 12px 0;
+  background: rgba(39, 48, 54, 0.68);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+@media (max-width: 700px) {
+  .hud .topbar .top-actions {
+    gap: 8px;
+  }
+  .hud .topbar .tracking-button span,
+  .hud .topbar .sound-button span {
+    display: none;
+  }
+  .hud .topbar .tracking-button svg {
+    display: block;
+  }
+  .hud .topbar .tracking-button,
+  .hud .topbar .sound-button {
+    justify-content: center;
+    width: 32px;
+    height: 44px;
+    padding: 0;
+    gap: 4px;
+    flex: 0 0 auto;
+  }
+}

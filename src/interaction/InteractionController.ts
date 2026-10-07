@@ -12,9 +12,13 @@ import { audio } from "../audio/AudioManager";
 import { gestureConfig as config } from "../gesture/gestureConfig";
 import type { CelestialId } from "../gesture/gestureFeedback";
 import { gestureTargets } from "../gesture/gestureTargets";
-import { getPlanetAnnotation, getPlanetStory } from "../exploration/planetAtlasCatalog";
+import {
+  getPlanetAnnotation,
+  getPlanetStory,
+} from "../exploration/planetAtlasCatalog";
 import {
   getPlanetAtlasRotation,
+  isPlanetAutoRotating,
   isPlanetAtlasVisible,
   setPlanetAutoRotate,
 } from "../exploration/planetAtlasState";
@@ -84,6 +88,7 @@ export class InteractionController {
   } | null = null;
   private directoryInfoVisible = false;
   private directoryOrigin: InteractionState = "PLANET_OVERVIEW";
+  private storyRotation: { bodyId: PlanetId; automatic: boolean } | null = null;
   private planetOrigin: {
     mode: InteractionState;
     selected: PlanetId | null;
@@ -227,6 +232,7 @@ export class InteractionController {
   }
   openPlanetStory(id: string) {
     const bodyId = store.get().selected;
+    const automatic = isPlanetAutoRotating(store.get(), bodyId);
     if (
       !bodyId ||
       (bodyId === "earth" && !usesLightEarth()) ||
@@ -237,6 +243,7 @@ export class InteractionController {
       !this.machine.send("OPEN_HOTSPOT")
     )
       return false;
+    this.storyRotation = { bodyId, automatic };
     this.cancelInfo();
     getPlanetAtlasRotation(bodyId).discardPending();
     rotation.stop();
@@ -552,12 +559,16 @@ export class InteractionController {
       return true;
     }
     if (this.machine.state === "INFO_PANEL_OPEN") {
+      const rotationSetting = this.storyRotation;
+      this.storyRotation = null;
       this.machine.send("CLOSE_HOTSPOT");
       store.set({
         mode: this.machine.state,
         activeHotspotId: null,
         activeStoryId: null,
       });
+      if (rotationSetting && store.get().selected === rotationSetting.bodyId)
+        setPlanetAutoRotate(rotationSetting.bodyId, rotationSetting.automatic);
       return true;
     }
     if (

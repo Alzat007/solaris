@@ -105,6 +105,7 @@ for (const planet of planets) {
     assert.equal(store.get().mode, "PLANET_OVERVIEW");
     assert.equal(store.get().selected, planet.id);
     assert.equal(store.get().activeStoryId, null);
+    assert.equal(isPlanetAutoRotating(store.get()), true);
     motor.step(body, {
       delta: 1 / 60,
       dragDelta: 0,
@@ -121,5 +122,18 @@ for (const planet of planets) {
     assert.equal(controller.return(), true);
     assert.deepEqual(body.rotation.toArray(), before);
     assert.equal(store.get().selected, planet.id);
+  });
+  test(`${planet.id}: closing a story preserves an explicitly disabled automatic rotation preference`, (t) => {
+    const { controller, body } = setup(t, planet.id);
+    setPlanetAutoRotate(planet.id, false);
+    const before = body.rotation.toArray();
+    assert.equal(
+      controller.openPlanetStory(getPlanetAnnotations(planet.id)[0].id),
+      true,
+    );
+    assert.equal(isPlanetAutoRotating(store.get()), false);
+    assert.equal(controller.return(), true);
+    assert.equal(isPlanetAutoRotating(store.get()), false);
+    assert.deepEqual(body.rotation.toArray(), before);
   });
 }

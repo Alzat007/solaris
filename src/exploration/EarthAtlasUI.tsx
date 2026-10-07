@@ -1,4 +1,4 @@
-import { useRef, useState, type PointerEvent } from "react";
+import { useLayoutEffect, useRef, useState, type PointerEvent } from "react";
 import {
   ArrowDown,
   ArrowLeft,
@@ -11,7 +11,7 @@ import {
   Play,
   Plus,
 } from "lucide-react";
-import { useSolaris } from "../interaction/store";
+import { store, useSolaris } from "../interaction/store";
 import { interaction } from "../interaction/InteractionController";
 import { rotation } from "../interaction/rotation";
 import { particles } from "../particles/ParticleEngine";
@@ -51,6 +51,24 @@ export function PlanetAtlasUI() {
     y: number;
     moved: boolean;
   } | null>(null);
+  const lastStory = useRef<string | null>(null);
+  const ui = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    if (state.activeStoryId) {
+      lastStory.current = state.activeStoryId;
+      return;
+    }
+    const id = lastStory.current;
+    lastStory.current = null;
+    if (id && isPlanetAtlasVisible(state)) {
+      const marker = Array.from(
+        ui.current?.querySelectorAll<HTMLButtonElement>(
+          ".earth-atlas-label[data-annotation-id]",
+        ) ?? [],
+      ).find((element) => element.dataset.annotationId === id);
+      marker?.focus({ preventScroll: true });
+    }
+  }, [state.activeStoryId, state.mode, state.selected, view.labels]);
   if (!state.selected || !isPlanetAtlasVisible(state)) return null;
   const bodyId = state.selected;
   const earth = bodyId === "earth";
@@ -102,7 +120,6 @@ export function PlanetAtlasUI() {
   };
   const pointerDown = (event: PointerEvent<HTMLButtonElement>) => {
     if (event.button !== 0) return;
-    stopRotation();
     pointer.current = {
       id: event.pointerId,
       x: event.clientX,
@@ -135,11 +152,9 @@ export function PlanetAtlasUI() {
       pointer.current = null;
     },
     onFocus: () => {
-      stopRotation();
       earthAtlasView.set({ focusId: id });
     },
     onMouseEnter: () => {
-      stopRotation();
       setHoverId(id);
     },
     onMouseLeave: () =>
@@ -158,6 +173,7 @@ export function PlanetAtlasUI() {
   });
   return (
     <div
+      ref={ui}
       className={`earth-atlas${storyOpen ? " story-open" : ""}`}
       data-atlas-planet={bodyId}
     >
@@ -398,7 +414,9 @@ export function PlanetAtlasUI() {
         <GlobeStoryPanel
           hotspot={story}
           language={state.language}
+          onLanguageChange={(language) => store.set({ language })}
           onClose={() => interaction.return()}
+          restoreFocus={false}
         />
       )}
     </div>
