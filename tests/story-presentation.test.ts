@@ -129,6 +129,19 @@ test("single-image and missing-image records never render fake gallery controls"
   }
 });
 
+test("cold-load preparation has an accessible cancel action without enabling the hidden gallery", () => {
+  const html = renderToStaticMarkup(
+    createElement(GlobeStoryPanel, { hotspot: planetStories[0], onClose() {} }),
+  );
+  assert.ok(html.includes('data-initial-loading="true"'));
+  assert.ok(html.includes('data-gesture-id="story-prepare-cancel"'));
+  assert.ok(html.includes('aria-label="取消打开信息卡"'));
+  assert.ok(
+    html.includes('class="globe-story-scroll" inert="" aria-hidden="true"'),
+  );
+  assert.match(html, /data-gesture-id="story-close"[^>]*disabled=""/);
+});
+
 test("English panel renders the real caption and retains pending review and source disclosure", () => {
   const story = planetStories[0];
   const html = renderToStaticMarkup(

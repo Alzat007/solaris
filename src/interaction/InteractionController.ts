@@ -1,4 +1,5 @@
 import { gsap } from "gsap";
+import type { StoryPanelControls } from "../globeLab/useStoryPanelMotion";
 import {
   InteractionStateMachine,
   type InteractionEvent,
@@ -89,6 +90,36 @@ export class InteractionController {
   private directoryInfoVisible = false;
   private directoryOrigin: InteractionState = "PLANET_OVERVIEW";
   private storyRotation: { bodyId: PlanetId; automatic: boolean } | null = null;
+  private storyPresentation: StoryPanelControls | null = null;
+  bindPlanetStoryPresentation = (presentation: StoryPanelControls) => {
+    this.storyPresentation = presentation;
+    return () => {
+      if (this.storyPresentation === presentation)
+        this.storyPresentation = null;
+    };
+  };
+  finishPlanetStoryClose(id: string) {
+    if (
+      this.machine.state !== "INFO_PANEL_OPEN" ||
+      store.get().activeStoryId !== id
+    )
+      return false;
+    return this.closeStoryNow();
+  }
+  private closeStoryNow() {
+    this.storyPresentation = null;
+    const rotationSetting = this.storyRotation;
+    this.storyRotation = null;
+    this.machine.send("CLOSE_HOTSPOT");
+    store.set({
+      mode: this.machine.state,
+      activeHotspotId: null,
+      activeStoryId: null,
+    });
+    if (rotationSetting && store.get().selected === rotationSetting.bodyId)
+      setPlanetAutoRotate(rotationSetting.bodyId, rotationSetting.automatic);
+    return true;
+  }
   private planetOrigin: {
     mode: InteractionState;
     selected: PlanetId | null;
@@ -231,6 +262,16 @@ export class InteractionController {
     return this.openPlanetStory(id);
   }
   openPlanetStory(id: string) {
+    if (
+      this.machine.state === "INFO_PANEL_OPEN" &&
+      store.get().activeStoryId === id &&
+      this.storyPresentation?.id === id &&
+      !store.get().webglError &&
+      !this.isLocked()
+    ) {
+      this.storyPresentation.reopen();
+      return true;
+    }
     const bodyId = store.get().selected;
     const automatic = isPlanetAutoRotating(store.get(), bodyId);
     if (
@@ -559,17 +600,14 @@ export class InteractionController {
       return true;
     }
     if (this.machine.state === "INFO_PANEL_OPEN") {
-      const rotationSetting = this.storyRotation;
-      this.storyRotation = null;
-      this.machine.send("CLOSE_HOTSPOT");
-      store.set({
-        mode: this.machine.state,
-        activeHotspotId: null,
-        activeStoryId: null,
-      });
-      if (rotationSetting && store.get().selected === rotationSetting.bodyId)
-        setPlanetAutoRotate(rotationSetting.bodyId, rotationSetting.automatic);
-      return true;
+      if (
+        !store.get().webglError &&
+        this.storyPresentation?.id === store.get().activeStoryId
+      ) {
+        this.storyPresentation.close();
+        return true;
+      }
+      return this.closeStoryNow();
     }
     if (
       ["DESCENT_TRANSITION", "LOCATION_OVERVIEW"].includes(this.machine.state)

@@ -20,6 +20,12 @@ import {
 } from "../exploration/storyPresentation";
 import "./storyPanel.css";
 import { LanguageSwitcher } from "../ui/LanguageSwitcher";
+import {
+  useReducedStoryMotion,
+  useStoryPanelMotion,
+  type StoryPanelControls,
+} from "./useStoryPanelMotion";
+import { useDecodedGallery } from "./useDecodedGallery";
 
 export interface GlobeStoryPanelProps {
   hotspot: ImmersiveHotspot;
@@ -28,6 +34,7 @@ export interface GlobeStoryPanelProps {
   onClose: () => void;
   restoreFocus?: boolean;
   imagePresentation?: Readonly<Record<string, StoryImagePresentation>>;
+  bindControls?: (controls: StoryPanelControls) => () => void;
 }
 
 export function GlobeStoryPanel({
@@ -37,56 +44,52 @@ export function GlobeStoryPanel({
   onClose,
   restoreFocus = true,
   imagePresentation,
+  bindControls,
 }: GlobeStoryPanelProps) {
+  const backdrop = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const close = useRef<HTMLButtonElement>(null);
-  const mainImage = useRef<HTMLImageElement>(null);
-  const [imageStatus, setImageStatus] = useState<
-    "loading" | "loaded" | "error"
-  >("loading");
-  const [attempt, setAttempt] = useState(0);
-  const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
+  const waiting = useRef(false);
   const [fullImage, setFullImage] = useState(false);
   const story = isGalleryStory(hotspot) ? hotspot : null;
   const gallery = story?.gallery ?? (hotspot.image ? [hotspot.image] : []);
-  const imageIndex = Math.min(selectedImage, Math.max(0, gallery.length - 1));
+  const assetBase = import.meta.env?.BASE_URL ?? "/";
+  const reducedMotion = useReducedStoryMotion();
+  const frames = useDecodedGallery({
+    identity: hotspot.id,
+    paths: gallery.map((entry) => `${assetBase}${entry.path}`),
+    resolveEvent: (index, eventId) =>
+      story ? (getGalleryEvent(story, index, eventId)?.id ?? null) : null,
+    reducedMotion,
+  });
+  const imageIndex = frames.index;
+  const imageStatus = frames.status;
+  const preparing = !frames.ready && imageStatus === "loading";
+  const selectImage = frames.select;
+  const { phase, requestClose } = useStoryPanelMotion({
+    id: hotspot.id,
+    backdrop,
+    onClosed: onClose,
+    bindControls,
+    ready: frames.ready || frames.status === "error",
+  });
   const image = gallery[imageIndex];
   const presentation = image
     ? getStoryImagePresentation(image, imagePresentation?.[image.path])
     : null;
   const activeEvent = story
-    ? getGalleryEvent(story, imageIndex, selectedEvent)
+    ? getGalleryEvent(story, imageIndex, frames.eventId)
     : null;
-  const imageKey = `${hotspot.id}-${imageIndex}-${attempt}-${image?.path ?? "none"}`;
-  const activeImage = useRef(imageKey);
-  activeImage.current = imageKey;
   const zh = language === "zh";
-  const assetBase = import.meta.env?.BASE_URL ?? "/";
   const sectionTitle =
     story?.sectionTitle?.[language] ??
     (zh ? "历史与教育" : "History and learning");
   const titleId = `globe-story-${hotspot.id}`;
   useLayoutEffect(() => {
-    const element = mainImage.current;
-    if (!element || activeImage.current !== imageKey) return;
-    // Cached images can finish before React's load handler or focus effect.
-    setImageStatus(
-      element.complete
-        ? element.naturalWidth > 0
-          ? "loaded"
-          : "error"
-        : "loading",
-    );
-  }, [imageKey]);
-  useLayoutEffect(() => {
     const returnFocus =
       document.activeElement instanceof HTMLElement
         ? document.activeElement
         : null;
-    setAttempt(0);
-    setSelectedImage(0);
-    setSelectedEvent(null);
     setFullImage(false);
     // Establish modal focus before cached images make controls actionable.
     close.current?.focus();
@@ -94,22 +97,37 @@ export function GlobeStoryPanel({
       if (restoreFocus && returnFocus?.isConnected) returnFocus.focus();
     };
   }, [hotspot.id, restoreFocus]);
-  function selectImage(index: number, eventId?: string) {
-    if (index < 0 || index >= gallery.length) return;
-    if (story)
-      setSelectedEvent(
-        getGalleryEvent(story, index, eventId ?? selectedEvent)?.id ?? null,
-      );
-    if (index === imageIndex) return;
-    setImageStatus("loading");
-    setAttempt(0);
-    setSelectedImage(index);
-  }
+  useLayoutEffect(() => {
+    if (preparing)
+      panel.current
+        ?.querySelector<HTMLButtonElement>(
+          '[data-gesture-id="story-prepare-cancel"]',
+        )
+        ?.focus({ preventScroll: true });
+    else if (waiting.current) close.current?.focus({ preventScroll: true });
+    waiting.current = preparing;
+  }, [hotspot.id, frames.ready, imageStatus]);
   function trapFocus(event: KeyboardEvent<HTMLDivElement>) {
     if (event.key === "Escape" || event.key === "BrowserBack") {
       event.preventDefault();
       event.stopPropagation();
-      if (!event.repeat) onClose();
+      if (!event.repeat) requestClose();
+      return;
+    }
+    if (
+      !frames.ready &&
+      imageStatus === "loading" &&
+      ["Tab", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(
+        event.key,
+      )
+    ) {
+      event.preventDefault();
+      event.stopPropagation();
+      panel.current
+        ?.querySelector<HTMLButtonElement>(
+          '[data-gesture-id="story-prepare-cancel"]',
+        )
+        ?.focus();
       return;
     }
     const elements = Array.from(
@@ -163,10 +181,14 @@ export function GlobeStoryPanel({
   return (
     <div
       className="globe-story-backdrop"
+      ref={backdrop}
+      data-panel-phase={phase}
+      data-initial-loading={preparing}
       onClick={(event) => {
-        if (event.target === event.currentTarget) onClose();
+        if (event.target === event.currentTarget) requestClose();
       }}
     >
+      <div className="globe-story-softening" aria-hidden="true" />
       <div
         className="globe-story-panel"
         ref={panel}
@@ -175,55 +197,102 @@ export function GlobeStoryPanel({
         aria-labelledby={titleId}
         onKeyDown={trapFocus}
         data-story-id={hotspot.id}
+        data-panel-phase={phase}
+        data-gallery-status={imageStatus}
+        data-gallery-pending={frames.pendingIndex ?? ""}
         data-active-event-id={activeEvent?.id ?? ""}
         data-tv-scroll-keys="vertical"
         lang={zh ? "zh-CN" : "en"}
       >
+        {preparing && (
+          <div className="globe-story-preparing" role="status">
+            <span>{zh ? "正在读取照片" : "Preparing photograph"}</span>
+            <button
+              type="button"
+              onClick={requestClose}
+              data-gesture-id="story-prepare-cancel"
+              aria-label={zh ? "取消打开信息卡" : "Cancel opening panel"}
+              title={zh ? "取消打开信息卡" : "Cancel opening panel"}
+            >
+              <X size={20} />
+            </button>
+          </div>
+        )}
         <button
           className="globe-story-close"
           data-gesture-id="story-close"
           ref={close}
           type="button"
+          disabled={preparing}
           aria-label={zh ? "关闭信息卡" : "Close information panel"}
           title={zh ? "关闭信息卡" : "Close information panel"}
-          onClick={onClose}
+          onClick={requestClose}
         >
           <X size={22} />
         </button>
-        <div className="globe-story-scroll">
+        <div
+          className="globe-story-scroll"
+          inert={preparing}
+          aria-hidden={preparing}
+        >
           <figure className="globe-story-media">
             <div className="globe-story-image-area">
+              {frames.previousIndex !== null &&
+                gallery[frames.previousIndex] && (
+                  <img
+                    key={`previous-${hotspot.id}-${frames.previousIndex}`}
+                    className="globe-story-photo globe-story-photo-previous"
+                    src={`${assetBase}${gallery[frames.previousIndex].path}`}
+                    alt=""
+                    aria-hidden="true"
+                    data-gallery-index={frames.previousIndex}
+                    style={{
+                      objectFit: fullImage
+                        ? "contain"
+                        : getStoryImagePresentation(
+                            gallery[frames.previousIndex],
+                            imagePresentation?.[
+                              gallery[frames.previousIndex].path
+                            ],
+                          ).fit,
+                      objectPosition: getStoryImagePresentation(
+                        gallery[frames.previousIndex],
+                        imagePresentation?.[gallery[frames.previousIndex].path],
+                      ).position,
+                    }}
+                  />
+                )}
               {image && (
                 <img
-                  key={imageKey}
-                  ref={mainImage}
+                  key={`${hotspot.id}-${imageIndex}-${frames.ready}`}
+                  className={`globe-story-photo${frames.previousIndex !== null ? " is-crossfading" : ""}`}
                   src={`${assetBase}${image.path}`}
                   alt={image.caption[language]}
                   decoding="async"
                   data-gallery-index={imageIndex}
+                  data-gallery-current="true"
                   aria-describedby={`globe-story-image-${hotspot.id}`}
-                  onLoad={() => {
-                    if (activeImage.current === imageKey)
-                      setImageStatus("loaded");
-                  }}
-                  onError={() => {
-                    if (activeImage.current === imageKey)
-                      setImageStatus("error");
-                  }}
+                  onAnimationEnd={frames.finishFade}
                   style={{
-                    opacity: imageStatus === "loaded" ? 1 : 0,
+                    opacity: frames.ready ? 1 : 0,
                     objectFit: fullImage ? "contain" : presentation?.fit,
                     objectPosition: presentation?.position,
                   }}
                 />
               )}
               {image && imageStatus === "loading" && (
-                <div className="globe-story-image-status" role="status">
+                <div
+                  className={`globe-story-image-status${frames.ready ? " is-notice" : ""}`}
+                  role="status"
+                >
                   {zh ? "正在加载图片" : "Loading image"}
                 </div>
               )}
               {(!image || imageStatus === "error") && (
-                <div className="globe-story-image-status" role="status">
+                <div
+                  className={`globe-story-image-status${frames.ready ? " is-notice" : ""}`}
+                  role="status"
+                >
                   <ImageIcon size={28} aria-hidden="true" />
                   <span>
                     {image
@@ -240,10 +309,7 @@ export function GlobeStoryPanel({
                       data-gesture-id="story-gallery-retry"
                       aria-label={zh ? "重新加载图片" : "Reload image"}
                       title={zh ? "重新加载图片" : "Reload image"}
-                      onClick={() => {
-                        setImageStatus("loading");
-                        setAttempt((value) => value + 1);
-                      }}
+                      onClick={frames.retry}
                     >
                       <RefreshCw size={18} />
                       {zh ? "重试" : "Retry"}
@@ -262,7 +328,8 @@ export function GlobeStoryPanel({
                       title={zh ? "上一张图片" : "Previous image"}
                       onClick={() =>
                         selectImage(
-                          (imageIndex - 1 + gallery.length) % gallery.length,
+                          (frames.requestedIndex - 1 + gallery.length) %
+                            gallery.length,
                         )
                       }
                     >
@@ -278,7 +345,9 @@ export function GlobeStoryPanel({
                       aria-label={zh ? "下一张图片" : "Next image"}
                       title={zh ? "下一张图片" : "Next image"}
                       onClick={() =>
-                        selectImage((imageIndex + 1) % gallery.length)
+                        selectImage(
+                          (frames.requestedIndex + 1) % gallery.length,
+                        )
                       }
                     >
                       <ChevronRight size={22} />

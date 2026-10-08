@@ -163,6 +163,7 @@ export function PlanetAtlasUI() {
       const moved = event.detail > 0 && pointer.current?.moved;
       pointer.current = null;
       if (!moved) {
+        earthAtlasView.set({ focusId: id });
         if (earth && getPlanetStory(bodyId, id))
           earthAtlasView.set({
             scopeCityId: getPlanetAnnotation(bodyId, id)?.cityId ?? id,
@@ -336,22 +337,6 @@ export function PlanetAtlasUI() {
               })}
             </div>
           </div>
-          <PlanetAnnotations
-            entries={atlasCities}
-            view={view}
-            language={state.language}
-            hoverId={hoverId}
-            markerProps={markerProps}
-            label={
-              earth
-                ? zh
-                  ? "地球城市标注"
-                  : "Earth city annotations"
-                : zh
-                  ? "星球区域标注"
-                  : "Planet region annotations"
-            }
-          />
           <div
             className="earth-atlas-credits"
             style={{ bottom: view.insetBottom ?? 180 }}
@@ -410,12 +395,31 @@ export function PlanetAtlasUI() {
           </div>
         </>
       )}
+      <div aria-hidden={storyOpen} inert={storyOpen}>
+        <PlanetAnnotations
+          entries={atlasCities}
+          view={view}
+          language={state.language}
+          hoverId={hoverId}
+          markerProps={markerProps}
+          label={
+            earth
+              ? zh
+                ? "地球城市标注"
+                : "Earth city annotations"
+              : zh
+                ? "星球区域标注"
+                : "Planet region annotations"
+          }
+        />
+      </div>
       {story && (
         <GlobeStoryPanel
           hotspot={story}
           language={state.language}
           onLanguageChange={(language) => store.set({ language })}
-          onClose={() => interaction.return()}
+          onClose={() => interaction.finishPlanetStoryClose(story.id)}
+          bindControls={interaction.bindPlanetStoryPresentation}
           restoreFocus={false}
         />
       )}
