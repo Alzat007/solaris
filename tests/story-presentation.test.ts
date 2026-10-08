@@ -82,13 +82,20 @@ test("a large gallery exposes at most four thumbnails while keeping the active p
     }
 });
 
-test("all 134 stories render the same dialog, separate glass layer and right-side attribution", () => {
+test("all 140 stories render the same dialog, separate glass layer and right-side attribution", () => {
   const stories = [
     ...firstBatchCityStories,
     ...cityLandmarks,
     ...planetStories,
   ];
-  assert.equal(stories.length, 134);
+  assert.equal(
+    stories.filter((story) => !story.id.startsWith("region-moon-")).length,
+    134,
+  );
+  assert.equal(
+    stories.filter((story) => story.id.startsWith("region-moon-")).length,
+    6,
+  );
   for (const story of stories) {
     const html = renderToStaticMarkup(
       createElement(GlobeStoryPanel, { hotspot: story, onClose() {} }),

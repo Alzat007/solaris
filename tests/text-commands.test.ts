@@ -60,7 +60,7 @@ function focusEarth(controller: InteractionController) {
 const earthCommand: SceneCommand = { type: "select", planetId: "earth" };
 const returnCommand: SceneCommand = { type: "return" };
 
-test("the whitelist accepts all eight Chinese and English planet names and explicit commands", () => {
+test("the whitelist accepts the eight planets and Moon in Chinese and English commands", () => {
   for (const planet of planets) {
     const expected = { type: "select", planetId: planet.id };
     for (const text of [
@@ -85,7 +85,7 @@ test("empty, negative, ambiguous, question, unknown, multiline and overlong inpu
     "",
     "   ",
     "太阳",
-    "moon",
+    "europa",
     "pluto",
     "不要去火星",
     "别前往地球",

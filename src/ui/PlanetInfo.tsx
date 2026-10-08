@@ -12,8 +12,11 @@ export function PlanetInfo() {
       <dl>
         {[
           ["直径", p.diameter],
-          ["距太阳距离", p.distanceFromSun],
-          ["公转周期", p.orbitalPeriod],
+          [
+            p.parentId ? "距地球距离" : "距太阳距离",
+            p.distanceFromParent ?? p.distanceFromSun,
+          ],
+          [p.parentId ? "绕地球周期" : "公转周期", p.orbitalPeriod],
           ["卫星数量", p.moons],
         ].map(([label, value]) => (
           <div key={label}>
@@ -22,7 +25,11 @@ export function PlanetInfo() {
           </div>
         ))}
       </dl>
-      <span className="info-footnote">画面比例经过艺术化处理</span>
+      <span className="info-footnote">
+        {p.parentId
+          ? "画面比例与观察自转为示意；真实月球自转与绕地球公转周期同步"
+          : "画面比例经过艺术化处理"}
+      </span>
     </section>
   );
 }

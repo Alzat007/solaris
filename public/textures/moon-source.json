@@ -1,0 +1,87 @@
+{
+  "id": "moon-lroc-natural-color-2025-2k",
+  "path": "textures/moon-day.jpg",
+  "title": "CGI Moon Kit: 2025 lunar natural-color map",
+  "sourceUrl": "https://svs.gsfc.nasa.gov/4720/",
+  "imageUrl": "https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_2k.jpg",
+  "credit": "NASA's Scientific Visualization Studio; LRO/LROC/Arizona State University; LOLA",
+  "license": "NASA educational and informational media use guidelines; not a claim of a blanket license to third-party material or NASA endorsement",
+  "licenseUrl": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+  "licenseNotes": "NASA media is generally not subject to copyright in the United States and may be used factually for education/information with source acknowledgment. Third-party notices, logos, identifiable-person restrictions, and no-endorsement terms still apply. The source page requests credit to NASA's Scientific Visualization Studio; no asset-specific third-party restriction is identified on that page. Rights outside the United States and any promotional reuse require separate review.",
+  "fetchedOn": "2026-10-08",
+  "sourcePageUpdatedOn": "2026-01-09",
+  "sourceVersion": "2025 color map, produced December 2025",
+  "width": 2048,
+  "height": 1024,
+  "bytes": 457942,
+  "sha256": "f7130a1822681fa7512d7dcfd40db8c10b9ba4f06777910348698260ed7a2170",
+  "mediaType": "image/jpeg",
+  "colorSpace": "sRGB",
+  "exifOrientation": 1,
+  "processing": "Official 2048 x 1024 JPEG downloaded without cropping, resizing, re-encoding, sharpening, or invented details. NASA adjusted exposure and white balance, combined the 643/566/415 nm bands, and inpainted small high-latitude source gaps; this is not raw radiance data.",
+  "projection": "Equirectangular longitude-latitude map centered on 0 degrees longitude",
+  "longitudeConvention": "Positive east, normalized to -180 to +180 for existing SOLARIS annotations",
+  "pixelOrientation": {
+    "leftLongitude": -180,
+    "centerLongitude": 0,
+    "rightLongitude": 180,
+    "topLatitude": 90,
+    "bottomLatitude": -90,
+    "longitudeIncreases": "left-to-right",
+    "northIsUp": true,
+    "sphereUvFormula": "u = 0.5 + eastLongitude / 360; v = 0.5 + latitude / 180",
+    "imagePixelFormula": "x = width * (0.5 + eastLongitude / 360); y = height * (0.5 - latitude / 180), interpreted at pixel centers",
+    "threeTextureFlipY": true,
+    "shaderUOffset": 0,
+    "verification": "NASA explicitly identifies the delivered map as centered at 0 degrees. Visual inspection independently places Tycho's ray system near pixel 960,758 and Copernicus near pixel 910,457, consistent with the existing SphereGeometry UV and geographicPoint convention. This is regional orientation verification, not a surveyed pixel-level registration claim. The upstream PDS 0-360 east areal coverage is not the delivered JPEG's seam convention.",
+    "orientationChecks": [
+      {
+        "name": "Tycho",
+        "sourceUrl": "https://planetarynames.wr.usgs.gov/Feature/6163",
+        "latitude": -43.3,
+        "longitude": -11.22,
+        "expectedPixel": [960.17, 758.33],
+        "controlNetworkNote": "USGS currently displays several control-network solutions. This check uses the paired -43.30 / -11.22 solution and does not mix its latitude with another solution's longitude."
+      },
+      {
+        "name": "Copernicus",
+        "sourceUrl": "https://planetarynames.wr.usgs.gov/Feature/1296",
+        "latitude": 9.62,
+        "longitude": -20.08,
+        "expectedPixel": [909.77, 457.27],
+        "controlNetworkNote": "Uses the paired 9.62 / -20.08 solution displayed by USGS, not the historical 9.70 / -20.10 solution."
+      }
+    ]
+  },
+  "coverage": {
+    "renderedLatitude": [-90, 90],
+    "renderedLongitude": [-180, 180],
+    "lrocColorLatitude": [-70, 70],
+    "polarSupplement": "Outside 70 N to 70 S, NASA filled missing LROC color coverage with lower-resolution monochromatic LRO LOLA LDAM albedo. These polar pixels do not establish detailed color photography, ice deposits, future landing safety, or terrain at the south pole.",
+    "isGlobalTexture": true,
+    "terrainAttached": false,
+    "liveView": false
+  },
+  "resolution": {
+    "servedPixelsPerDegree": 5.688888888888889,
+    "referenceRadiusKm": 1737.4,
+    "approximateEquatorialKmPerServedPixel": 5.33,
+    "upstreamMosaicEquatorialMetersPerPixel": 400,
+    "upstreamValueAppliesToServedJpeg": false,
+    "notes": "The approximately 5.33 km/pixel value is derived from a 1737.4 km reference sphere and the served 2048-pixel longitude width; it is texture sampling, not a guaranteed optical resolution. Source PDS products report 400 m/pixel at the equator, but that detail is not retained by this downsampled JPEG. Latitude-dependent sampling and lower-resolution polar supplements remain. No elevation/displacement map is loaded."
+  },
+  "sourceControlNetwork": {
+    "readmeUrl": "https://pds.lroc.asu.edu/data/LRO-L-LROC-5-RDR-V1.0/LROLRC_2001/DATA/MDR/WAC_HAPKE/WAC_HAPKE_README.TXT",
+    "readmeResolvedUrl": "https://pds.mcp.nasa.gov/data/store/img/lunar_reconnaissance_orbiter/pds4/lroc/lro-l-lroc-5-rdr/LROLRC_2001/DATA/MDR/WAC_HAPKE/WAC_HAPKE_README.TXT",
+    "description": "Upstream WAC Hapke normalized mosaic uses ephemeris from LOLA/GRAIL and an improved geometric camera model. The source readme lists roughly 124300 WAC images acquired January 21 2010 through May 1 2013, 70 N to 70 S and 0-360 east coverage. The NASA rendering derivative additionally uses LOLA LDAM for poles.",
+    "citation": "Sato et al. (2017), Lunar Mare TiO2 Abundances Estimated from UV/Vis Reflectance, Icarus 296, 216-238, https://doi.org/10.1016/j.icarus.2017.06.013"
+  },
+  "audit": {
+    "sourceChecked": true,
+    "bytesAndDimensionsChecked": true,
+    "orientationChecked": "regional landmarks and source documentation",
+    "humanReview": "pending",
+    "notForScientificMeasurementOrNavigation": true,
+    "notNasaEndorsed": true
+  }
+}

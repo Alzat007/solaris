@@ -1,0 +1,500 @@
+{
+  "retrievedAt": "2026-10-08",
+  "scope": "6 lunar educational anchors / 12 distinct official images; not live map data or generated terrain",
+  "review": {
+    "status": "source-checked",
+    "by": "Codex primary-source cross-check",
+    "checkedAt": "2026-10-08",
+    "humanReview": "pending"
+  },
+  "coordinates": [
+    {
+      "id": "region-moon-apollo-11",
+      "name": {
+        "zh": "阿波罗11号着陆区",
+        "en": "Apollo 11 Landing Site"
+      },
+      "latitude": 0.67409,
+      "longitude": 23.47298,
+      "coordinateNote": {
+        "zh": "采用 NASA Apollo Lunar Surface Journal 的 0.67409°N、23.47298°E。是静海基地的区域锚点，与宁静海整体中心分开；非导航精度，未验证与显示纹理逐像素配准。",
+        "en": "NASA Apollo Lunar Surface Journal coordinates: 0.67409°N, 23.47298°E. An anchor for Tranquility Base, distinct from the center of Mare Tranquillitatis; not navigation-grade, with pixel-level texture registration unverified."
+      },
+      "sourceUrls": [
+        "https://history.nasa.gov/wp-content/uploads/static/history/alsj/a11/a11ov.html",
+        "https://www.nasa.gov/mission/apollo-11/",
+        "https://science.nasa.gov/resource/apollo-11-buzz-aldrin/",
+        "https://science.nasa.gov/photojournal/apollo-11-second-look/"
+      ],
+      "status": "source-checked",
+      "humanReview": "pending"
+    },
+    {
+      "id": "region-moon-mare-tranquillitatis",
+      "name": {
+        "zh": "宁静海",
+        "en": "Mare Tranquillitatis"
+      },
+      "latitude": 8.35,
+      "longitude": 30.83,
+      "coordinateNote": {
+        "zh": "USGS Feature 3691 的当前区域中心为8.35°N、30.83°E；不是阿波罗11号坐标。区域内图像可以展示西南部或局部皱脊，不能将整片月海缩成单个着陆点。纹理配准未逐像素验证。",
+        "en": "Current regional center from USGS Feature 3691: 8.35°N, 30.83°E, not Apollo 11's coordinates. Images show southwestern terrain or local wrinkle ridges within the mare, not one landing point representing the whole region. Pixel-level registration unverified."
+      },
+      "sourceUrls": [
+        "https://planetarynames.wr.usgs.gov/Feature/3691",
+        "https://science.nasa.gov/resource/sabine-crater-in-mare-tranquillitatis-on-the-moon/",
+        "https://science.nasa.gov/photojournal/constellation-region-of-interest-at-mare-tranquillitatis/"
+      ],
+      "status": "source-checked",
+      "humanReview": "pending"
+    },
+    {
+      "id": "region-moon-tycho",
+      "name": {
+        "zh": "第谷陨石坑",
+        "en": "Tycho Crater"
+      },
+      "latitude": -43.3,
+      "longitude": -11.22,
+      "coordinateNote": {
+        "zh": "采用USGS Feature 6163当前中心43.30°S、11.22°W；NASA旧资料另列43.37°S、348.68°E，不混用两个控制网的数值。仅区域级锚点，纹理配准未逐像素验证。",
+        "en": "Current USGS Feature 6163 center: 43.30°S, 11.22°W. Older NASA material lists 43.37°S, 348.68°E; values from different control networks are not mixed. Regional anchor; pixel-level registration unverified."
+      },
+      "sourceUrls": [
+        "https://planetarynames.wr.usgs.gov/Feature/6163",
+        "https://science.nasa.gov/resource/tycho-craters-central-peak-on-the-moon/"
+      ],
+      "status": "source-checked",
+      "humanReview": "pending"
+    },
+    {
+      "id": "region-moon-copernicus",
+      "name": {
+        "zh": "哥白尼陨石坑",
+        "en": "Copernicus Crater"
+      },
+      "latitude": 9.62,
+      "longitude": -20.08,
+      "coordinateNote": {
+        "zh": "USGS Feature 1296当前中心为9.62°N、20.08°W。是陨石坑区域中心，不是中央峰顶的单点；旧照片说明中的近似10°N、20°W只用于说明，不混作新精确值。纹理配准未逐像素验证。",
+        "en": "Current USGS Feature 1296 center: 9.62°N, 20.08°W. A crater-region center, not a surveyed summit. Older captions' approximate 10°N, 20°W are not mixed into a new precise pair. Pixel-level registration unverified."
+      },
+      "sourceUrls": [
+        "https://planetarynames.wr.usgs.gov/Feature/1296",
+        "https://science.nasa.gov/photojournal/limb-of-copernicus-impact-crater/",
+        "https://science.nasa.gov/resource/copernicus-central-peak-another-layered-target/"
+      ],
+      "status": "source-checked",
+      "humanReview": "pending"
+    },
+    {
+      "id": "region-moon-south-pole",
+      "name": {
+        "zh": "月球南极",
+        "en": "Lunar South Pole"
+      },
+      "latitude": -90,
+      "longitude": 0,
+      "coordinateNote": {
+        "zh": "使用几何南极90°S作为整个极区的教育锚点；经度0°只是极点坐标约定，南极上所有经度交汇。不是Cabeus撞击点、沙克尔顿坑中心或任何载人着陆点。",
+        "en": "The geographic pole at 90°S anchors the broad polar region; 0° longitude is only a convention because all meridians meet there. Not the Cabeus impact point, Shackleton center or a crewed landing site."
+      },
+      "sourceUrls": [
+        "https://science.nasa.gov/photojournal/the-lunar-south-pole/",
+        "https://science.nasa.gov/photojournal/south-pole-region-of-the-moon-as-seen-by-clementine/",
+        "https://science.nasa.gov/mission/lcross/"
+      ],
+      "status": "source-checked",
+      "humanReview": "pending"
+    },
+    {
+      "id": "region-moon-change-4",
+      "name": {
+        "zh": "嫦娥四号着陆区·天河基地",
+        "en": "Chang'e 4 Landing Site · Statio Tianhe"
+      },
+      "latitude": -45.45,
+      "longitude": 177.6,
+      "coordinateNote": {
+        "zh": "采用USGS Feature 15781/LOLA 2011的天河基地近似坐标45.45°S、177.60°E，对应冯·卡门陨石坑内嫦娥四号着陆点。不是整片南极—艾特肯盆地或几何南极；未做导航级或纹理逐像素配准。",
+        "en": "USGS Feature 15781 / LOLA 2011 approximate Statio Tianhe coordinates: 45.45°S, 177.60°E, for Chang'e 4 inside Von Kármán crater. Not the entire South Pole–Aitken basin or geographic pole; neither navigation-grade nor pixel-registered."
+      },
+      "sourceUrls": [
+        "https://planetarynames.wr.usgs.gov/Feature/15781",
+        "https://science.nasa.gov/moon/missions/",
+        "https://science.nasa.gov/resource/first-look-change-4/",
+        "https://lroc.im-ldi.com/images/1091"
+      ],
+      "status": "source-checked",
+      "humanReview": "pending"
+    }
+  ],
+  "rightsNotes": {
+    "nasa": "NASA factual educational/informational use with acknowledgement; no endorsement. No blanket rights for NASA-hosted third-party material; astronaut promotional/likeness rights are not cleared.",
+    "lroc": "LROC curated and Featured Images are copyrighted. LROC terms permit credited educational use, but commercial reuse requires prior permission. Only PDS-delivered data are expressly public domain; these gallery images are not mislabeled as PDS public-domain data.",
+    "jpl": "NASA/JPL policy permits attributed educational/informational use, with third-party and endorsement restrictions retained."
+  },
+  "files": [
+    {
+      "filename": "apollo11-aldrin-as11-40-5902.jpg",
+      "downloadUrl": "https://assets.science.nasa.gov/dynamicimage/assets/science/psd/solar/2023/09/a/as11_40_5902.jpg?fit=clip&w=1280&h=1280",
+      "bytes": 402364,
+      "sha256": "5ef754ee28d89e68350be8d59c7aa44be85436021a2d7cab257b97b098e9eeaf",
+      "width": 1240,
+      "height": 1280,
+      "format": "jpeg",
+      "path": "exploration/planets/moon/apollo11-aldrin-as11-40-5902.jpg",
+      "storyId": "region-moon-apollo-11",
+      "sourceUrl": "https://science.nasa.gov/resource/apollo-11-buzz-aldrin/",
+      "credit": "NASA / Neil Armstrong · AS11-40-5902",
+      "date": "1969-07",
+      "dateKind": "acquired during July 1969 surface activity; no exact UTC exposure day asserted",
+      "caption": {
+        "zh": "阿姆斯特朗拍摄的奥尔德林与鹰号登月舱支腿，AS11-40-5902；是1969年7月阿波罗11号月面活动照片。来源页面用着陆日标注整项任务，这里不将其误当成照片精确 UTC 时间。",
+        "en": "Armstrong's photograph of Aldrin beside an Eagle landing leg, AS11-40-5902, during Apollo 11's July 1969 surface activity. The source labels the mission's landing day; this is not asserted as an exact UTC exposure time."
+      },
+      "processing": {
+        "zh": "使用 NASA 官方等比例长边 1280 像素版本；未在本地裁剪、调色或添加细节。此显示版本的像素数不代表原始观测精度。",
+        "en": "NASA's official proportional 1280-pixel longest-edge variant; no local crop, recoloring or invented detail. Display dimensions do not represent original observing resolution."
+      },
+      "license": "NASA educational/informational image reuse; credit required; no endorsement; employee/insignia promotional rights not cleared",
+      "licenseUrl": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+      "rightsChecked": "Selected source caption and specific rights policy checked separately; no commercial permission or human approval asserted.",
+      "rightsSourceUrl": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+      "humanReview": "pending",
+      "officialSizeVariant": "NASA proportional longest-edge 1280px, fit=clip; no local processing",
+      "imageRelation": ["moon-apollo11-crewed-landing"]
+    },
+    {
+      "filename": "apollo11-lro-pia12909.jpg",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia12/pia12909/PIA12909.jpg",
+      "bytes": 113564,
+      "sha256": "fc7bd0623cb83f66b312f516ab786a029cc5f2b0b0aec94b7ca90d113aa6c079",
+      "width": 800,
+      "height": 800,
+      "format": "jpeg",
+      "path": "exploration/planets/moon/apollo11-lro-pia12909.jpg",
+      "storyId": "region-moon-apollo-11",
+      "sourceUrl": "https://science.nasa.gov/photojournal/apollo-11-second-look/",
+      "credit": "NASA/GSFC/Arizona State University · PIA12909",
+      "date": "2009-09-29",
+      "dateKind": "published; individual acquisition day not supplied",
+      "caption": {
+        "zh": "PIA12909：LRO 再次观测静海基地的轨道影像，NASA于2009-09-29发布；不是1969年着陆瞬间，来源未列单幅影像的采集日。标记与刻度保留完整。",
+        "en": "PIA12909: LRO's second view of Tranquility Base, released September 29, 2009. Not the 1969 landing moment; the source gives no individual acquisition day. Original annotations and scale retained."
+      },
+      "processing": {
+        "zh": "保留官方提供的图像字节；未在本地裁剪、调色、生成或增强地形。图像像素数不等同于地面分辨率。",
+        "en": "Official image bytes retained without local cropping, recoloring, generation or terrain enhancement. Image dimensions are not ground resolution."
+      },
+      "license": "Copyrighted LROC curated image; credited educational use permitted; commercial reuse requires prior permission; not a public-domain claim",
+      "licenseUrl": "https://lroc.im-ldi.com/about/terms",
+      "rightsChecked": "Selected source caption and specific rights policy checked separately; no commercial permission or human approval asserted.",
+      "rightsSourceUrl": "https://lroc.im-ldi.com/about/terms",
+      "humanReview": "pending",
+      "officialSizeVariant": "Original official JPEG/PNG bytes as delivered",
+      "imageRelation": ["moon-apollo11-lro-follow-up"]
+    },
+    {
+      "filename": "tranquillitatis-ranger8-b045.jpg",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/lunar-science/2023/09/detail_ra8_b045.jpg",
+      "bytes": 223543,
+      "sha256": "42bf6112e445f9a2f8f3196fd7cc8cc8e0de7fea9e6050225969bb85be3d1bb1",
+      "width": 720,
+      "height": 705,
+      "format": "jpeg",
+      "path": "exploration/planets/moon/tranquillitatis-ranger8-b045.jpg",
+      "storyId": "region-moon-mare-tranquillitatis",
+      "sourceUrl": "https://science.nasa.gov/resource/sabine-crater-in-mare-tranquillitatis-on-the-moon/",
+      "credit": "NASA · Ranger 8 B045",
+      "date": "1965-02-20",
+      "dateKind": "acquired",
+      "caption": {
+        "zh": "Ranger 8 B045：1965-02-20距月面约511千米时拍摄，画面约95千米宽；左上为萨宾陨石坑，属于宁静海西南部。阿波罗11号着陆点约在画面右侧30千米外，不在此图中。",
+        "en": "Ranger 8 B045, acquired February 20, 1965 from about 511 km altitude; roughly 95 km across. Sabine crater is upper left in southwestern Mare Tranquillitatis. Apollo 11's site lies about 30 km to the right, outside this frame."
+      },
+      "processing": {
+        "zh": "保留官方提供的图像字节；未在本地裁剪、调色、生成或增强地形。图像像素数不等同于地面分辨率。",
+        "en": "Official image bytes retained without local cropping, recoloring, generation or terrain enhancement. Image dimensions are not ground resolution."
+      },
+      "license": "NASA educational/informational image reuse; credit required; no endorsement; employee/insignia promotional rights not cleared",
+      "licenseUrl": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+      "rightsChecked": "Selected source caption and specific rights policy checked separately; no commercial permission or human approval asserted.",
+      "rightsSourceUrl": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+      "humanReview": "pending",
+      "officialSizeVariant": "Original official JPEG/PNG bytes as delivered",
+      "imageRelation": ["moon-tranquillitatis-ranger-survey"]
+    },
+    {
+      "filename": "tranquillitatis-ridge-pia13079.jpg",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia13/pia13079/PIA13079.jpg",
+      "bytes": 154115,
+      "sha256": "e622feadb5aba7c6fed1d70167b076d4718d0ce90fa20e2c0fc505c2061b7eb8",
+      "width": 1000,
+      "height": 1000,
+      "format": "jpeg",
+      "path": "exploration/planets/moon/tranquillitatis-ridge-pia13079.jpg",
+      "storyId": "region-moon-mare-tranquillitatis",
+      "sourceUrl": "https://science.nasa.gov/photojournal/constellation-region-of-interest-at-mare-tranquillitatis/",
+      "credit": "NASA/GSFC/Arizona State University · PIA13079",
+      "date": "2010-04-27",
+      "dateKind": "published; individual acquisition day not supplied",
+      "caption": {
+        "zh": "PIA13079：宁静海玄武岩平原中的皱脊近景，覆盖约1.25千米宽；NASA于2010-04-27发布，非单幅采集日期。它是月海内部的局部轨道照片，不是整片宁静海或阿波罗遗址。",
+        "en": "PIA13079: a wrinkle ridge in Mare Tranquillitatis basalt plains, about 1.25 km across. Released April 27, 2010; not an individual acquisition date. A local orbital view within the mare, not the whole mare or Apollo site."
+      },
+      "processing": {
+        "zh": "保留官方提供的图像字节；未在本地裁剪、调色、生成或增强地形。图像像素数不等同于地面分辨率。",
+        "en": "Official image bytes retained without local cropping, recoloring, generation or terrain enhancement. Image dimensions are not ground resolution."
+      },
+      "license": "Copyrighted LROC curated image; credited educational use permitted; commercial reuse requires prior permission; not a public-domain claim",
+      "licenseUrl": "https://lroc.im-ldi.com/about/terms",
+      "rightsChecked": "Selected source caption and specific rights policy checked separately; no commercial permission or human approval asserted.",
+      "rightsSourceUrl": "https://lroc.im-ldi.com/about/terms",
+      "humanReview": "pending",
+      "officialSizeVariant": "Original official JPEG/PNG bytes as delivered",
+      "imageRelation": ["moon-tranquillitatis-wrinkle-ridge"]
+    },
+    {
+      "filename": "tycho-central-peak-lro.jpg",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/5/565736main_M162350671LE_full-1.jpg",
+      "bytes": 445444,
+      "sha256": "74f7c86421ebe6f1525898d3bc4b3aebdeb60309e56a7e22e5b9541b4c51b62a",
+      "width": 2147,
+      "height": 986,
+      "format": "jpeg",
+      "path": "exploration/planets/moon/tycho-central-peak-lro.jpg",
+      "storyId": "region-moon-tycho",
+      "sourceUrl": "https://science.nasa.gov/resource/tycho-craters-central-peak-on-the-moon/",
+      "credit": "NASA/GSFC/Arizona State University",
+      "date": "2011-06-10",
+      "dateKind": "acquired",
+      "caption": {
+        "zh": "LRO于2011-06-10拍摄的第谷中央峰斜视照片，峰群横跨约15千米；低角度阳光突出山体和阴影。这是轨道照片，不是人在坑内拍摄或本地生成地形。",
+        "en": "LRO oblique view of Tycho's central peaks acquired June 10, 2011; the peak complex spans about 15 km. Low sunlight emphasizes relief and shadows. An orbital photograph, not a ground photograph or locally generated terrain."
+      },
+      "processing": {
+        "zh": "保留官方提供的图像字节；未在本地裁剪、调色、生成或增强地形。图像像素数不等同于地面分辨率。",
+        "en": "Official image bytes retained without local cropping, recoloring, generation or terrain enhancement. Image dimensions are not ground resolution."
+      },
+      "license": "Copyrighted LROC curated image; credited educational use permitted; commercial reuse requires prior permission; not a public-domain claim",
+      "licenseUrl": "https://lroc.im-ldi.com/about/terms",
+      "rightsChecked": "Selected source caption and specific rights policy checked separately; no commercial permission or human approval asserted.",
+      "rightsSourceUrl": "https://lroc.im-ldi.com/about/terms",
+      "humanReview": "pending",
+      "officialSizeVariant": "Original official JPEG/PNG bytes as delivered",
+      "imageRelation": ["moon-tycho-lro-morphology"]
+    },
+    {
+      "filename": "tycho-wac-mosaic-lro.jpg",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/solar/internal_resources/3375/565706main_wac_tycho_highphase.jpg",
+      "bytes": 1184532,
+      "sha256": "9bfce8378746a0cb5f7ee4b4b2bcfc9d0988e73bc3b5a79bac46bb7118324504",
+      "width": 1300,
+      "height": 1300,
+      "format": "jpeg",
+      "path": "exploration/planets/moon/tycho-wac-mosaic-lro.jpg",
+      "storyId": "region-moon-tycho",
+      "sourceUrl": "https://science.nasa.gov/resource/tycho-craters-central-peak-on-the-moon/",
+      "credit": "NASA/GSFC/Arizona State University",
+      "date": "2019-01-30",
+      "dateKind": "published; single acquisition day for mosaic not supplied",
+      "caption": {
+        "zh": "NASA说明页中的LRO广角相机第谷俯视拼接图，北向上、约130千米宽。日期为2019-01-30说明页发布时间；来源未给这幅拼接图统一的采集日。",
+        "en": "LRO wide-angle mosaic of Tycho from NASA's explanation page, north up and about 130 km across. January 30, 2019 is the page's publication date; no single acquisition day is supplied for this mosaic."
+      },
+      "processing": {
+        "zh": "官方多幅轨道影像拼接；未本地裁剪、改色或增强。拼接图与斜视照片不是同一视角或同一次快门。",
+        "en": "Official orbital-image mosaic, without local cropping, recoloring or enhancement. It is not the same view or exposure as the oblique photograph."
+      },
+      "license": "Copyrighted LROC curated image; credited educational use permitted; commercial reuse requires prior permission; not a public-domain claim",
+      "licenseUrl": "https://lroc.im-ldi.com/about/terms",
+      "rightsChecked": "Selected source caption and specific rights policy checked separately; no commercial permission or human approval asserted.",
+      "rightsSourceUrl": "https://lroc.im-ldi.com/about/terms",
+      "humanReview": "pending",
+      "officialSizeVariant": "Original official JPEG/PNG bytes as delivered",
+      "imageRelation": ["moon-tycho-lro-morphology"]
+    },
+    {
+      "filename": "copernicus-orbiter-pia00094.jpg",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia00/pia00094/PIA00094.jpg",
+      "bytes": 361897,
+      "sha256": "27a9ce63f60ba8457113cadb3e81b1f37d1450a72787c5cb6e3bac2d264a5874",
+      "width": 2000,
+      "height": 1100,
+      "format": "jpeg",
+      "path": "exploration/planets/moon/copernicus-orbiter-pia00094.jpg",
+      "storyId": "region-moon-copernicus",
+      "sourceUrl": "https://science.nasa.gov/photojournal/limb-of-copernicus-impact-crater/",
+      "credit": "NASA/JPL/USGS · PIA00094",
+      "date": "1998-06-03",
+      "dateKind": "image added; not exposure date of 1960s mission",
+      "caption": {
+        "zh": "PIA00094：Lunar Orbiter的哥白尼陨石坑斜视影像，显示坑底、中央隆起、坑缘与喷出物。1998-06-03为NASA入库日期，不是1960年代任务的曝光日期。",
+        "en": "PIA00094: Lunar Orbiter's oblique view of Copernicus, showing floor, peaks, rim and ejecta. June 3, 1998 is NASA's image-addition date, not the exposure date of the 1960s mission."
+      },
+      "processing": {
+        "zh": "保留官方提供的图像字节；未在本地裁剪、调色、生成或增强地形。图像像素数不等同于地面分辨率。",
+        "en": "Official image bytes retained without local cropping, recoloring, generation or terrain enhancement. Image dimensions are not ground resolution."
+      },
+      "license": "NASA/JPL educational/informational reuse with credit; no endorsement; third-party rights not cleared",
+      "licenseUrl": "https://www.jpl.nasa.gov/jpl-image-use-policy/",
+      "rightsChecked": "Selected source caption and specific rights policy checked separately; no commercial permission or human approval asserted.",
+      "rightsSourceUrl": "https://www.jpl.nasa.gov/jpl-image-use-policy/",
+      "humanReview": "pending",
+      "officialSizeVariant": "Original official JPEG/PNG bytes as delivered",
+      "imageRelation": ["moon-copernicus-orbital-geology"]
+    },
+    {
+      "filename": "copernicus-central-peak-lro.png",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/lunar-science/2023/09/CopernPeak.png",
+      "bytes": 483585,
+      "sha256": "cd520eb70fd413d6aec8fa69991c3330fc5aa1385c54745b1e13b073e99043b1",
+      "width": 1100,
+      "height": 1100,
+      "format": "png",
+      "path": "exploration/planets/moon/copernicus-central-peak-lro.png",
+      "storyId": "region-moon-copernicus",
+      "sourceUrl": "https://science.nasa.gov/resource/copernicus-central-peak-another-layered-target/",
+      "credit": "NASA/GSFC/Arizona State University",
+      "date": "2018-10-08",
+      "dateKind": "published; individual acquisition day not supplied",
+      "caption": {
+        "zh": "LRO的哥白尼中央峰照片，画面约3千米宽，显示层状结构与亮度差异；NASA于2018-10-08发布，来源未列精确采集日。不是整个陨石坑的全景。",
+        "en": "LRO view of Copernicus's central peaks, about 3 km across, showing layering and brightness variations. Published October 8, 2018; no exact acquisition day supplied. Not a panorama of the whole crater."
+      },
+      "processing": {
+        "zh": "保留官方提供的图像字节；未在本地裁剪、调色、生成或增强地形。图像像素数不等同于地面分辨率。",
+        "en": "Official image bytes retained without local cropping, recoloring, generation or terrain enhancement. Image dimensions are not ground resolution."
+      },
+      "license": "Copyrighted LROC curated image; credited educational use permitted; commercial reuse requires prior permission; not a public-domain claim",
+      "licenseUrl": "https://lroc.im-ldi.com/about/terms",
+      "rightsChecked": "Selected source caption and specific rights policy checked separately; no commercial permission or human approval asserted.",
+      "rightsSourceUrl": "https://lroc.im-ldi.com/about/terms",
+      "humanReview": "pending",
+      "officialSizeVariant": "Original official JPEG/PNG bytes as delivered",
+      "imageRelation": ["moon-copernicus-orbital-geology"]
+    },
+    {
+      "filename": "south-pole-lro-pia13523.jpg",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia13/pia13523/PIA13523.jpg",
+      "bytes": 420759,
+      "sha256": "776d419370404e628e7dd0844ecaeeeec6ac9c676ab963f4234e0102ebcc8282",
+      "width": 1521,
+      "height": 1521,
+      "format": "jpeg",
+      "path": "exploration/planets/moon/south-pole-lro-pia13523.jpg",
+      "storyId": "region-moon-south-pole",
+      "sourceUrl": "https://science.nasa.gov/photojournal/the-lunar-south-pole/",
+      "credit": "NASA/GSFC/Arizona State University · PIA13523",
+      "date": "2010-09-27",
+      "dateKind": "image added; single exposure day not supplied",
+      "caption": {
+        "zh": "PIA13523：LRO广角相机南极区拼接影像，覆盖约600千米宽。2010-09-27为NASA入库日期，非单次快门日期；不是地面照片或水冰的直接可见光特写。",
+        "en": "PIA13523: LRO wide-angle mosaic of the south polar region, about 600 km across. September 27, 2010 is NASA's image-addition date, not one exposure. Not a ground photograph or a visible-light close-up of ice."
+      },
+      "processing": {
+        "zh": "保留官方提供的图像字节；未在本地裁剪、调色、生成或增强地形。图像像素数不等同于地面分辨率。",
+        "en": "Official image bytes retained without local cropping, recoloring, generation or terrain enhancement. Image dimensions are not ground resolution."
+      },
+      "license": "Copyrighted LROC curated image; credited educational use permitted; commercial reuse requires prior permission; not a public-domain claim",
+      "licenseUrl": "https://lroc.im-ldi.com/about/terms",
+      "rightsChecked": "Selected source caption and specific rights policy checked separately; no commercial permission or human approval asserted.",
+      "rightsSourceUrl": "https://lroc.im-ldi.com/about/terms",
+      "humanReview": "pending",
+      "officialSizeVariant": "Original official JPEG/PNG bytes as delivered",
+      "imageRelation": ["moon-south-pole-robotic-science"]
+    },
+    {
+      "filename": "south-pole-clementine-pia00001.jpg",
+      "downloadUrl": "https://assets.science.nasa.gov/dynamicimage/assets/science/psd/photojournal/pia/pia00/pia00001/PIA00001.jpg?fit=clip&w=1280&h=1280",
+      "bytes": 479809,
+      "sha256": "a5617fce79bcfcbee8a82e3aec88cd7aab299579b08fcd8c62f6c7b5ae5e9468",
+      "width": 1280,
+      "height": 1280,
+      "format": "jpeg",
+      "path": "exploration/planets/moon/south-pole-clementine-pia00001.jpg",
+      "storyId": "region-moon-south-pole",
+      "sourceUrl": "https://science.nasa.gov/photojournal/south-pole-region-of-the-moon-as-seen-by-clementine/",
+      "credit": "NASA/JPL/USGS · PIA00001",
+      "date": "1996-06-03",
+      "dateKind": "image added; source mosaics from 1994 mission",
+      "caption": {
+        "zh": "PIA00001：约1500幅Clementine影像组成的南极正射拼接图。NASA于1996-06-03入库，原始任务在1994年进行；不是1996年的新着陆。右下的薛定谔盆地提供区域参照。",
+        "en": "PIA00001: orthographic south-pole mosaic assembled from about 1,500 Clementine images. Added June 3, 1996 from the 1994 mission, not a new landing in 1996. Schrödinger basin at lower right provides regional context."
+      },
+      "processing": {
+        "zh": "使用 NASA 官方等比例长边 1280 像素版本；未在本地裁剪、调色或添加细节。此显示版本的像素数不代表原始观测精度。",
+        "en": "NASA's official proportional 1280-pixel longest-edge variant; no local crop, recoloring or invented detail. Display dimensions do not represent original observing resolution."
+      },
+      "license": "NASA/JPL educational/informational reuse with credit; no endorsement; third-party rights not cleared",
+      "licenseUrl": "https://www.jpl.nasa.gov/jpl-image-use-policy/",
+      "rightsChecked": "Selected source caption and specific rights policy checked separately; no commercial permission or human approval asserted.",
+      "rightsSourceUrl": "https://www.jpl.nasa.gov/jpl-image-use-policy/",
+      "humanReview": "pending",
+      "officialSizeVariant": "NASA proportional longest-edge 1280px, fit=clip; no local processing",
+      "imageRelation": ["moon-south-pole-robotic-science"]
+    },
+    {
+      "filename": "change4-first-look-lro.png",
+      "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/c/change4.png",
+      "bytes": 664512,
+      "sha256": "22f84d01e06644d8679f0aaede89590302816bdc039228c0538854ccf7c56917",
+      "width": 1100,
+      "height": 1100,
+      "format": "png",
+      "path": "exploration/planets/moon/change4-first-look-lro.png",
+      "storyId": "region-moon-change-4",
+      "sourceUrl": "https://science.nasa.gov/resource/first-look-change-4/",
+      "credit": "NASA/GSFC/Arizona State University",
+      "date": "2019-01-30",
+      "dateKind": "acquired",
+      "caption": {
+        "zh": "LRO于2019-01-30斜视嫦娥四号着陆区；箭头间的亮点只有约两个原始像素，玉兔二号在这张图中不可分辨。背景是冯·卡门陨石坑西侧坑壁，不是月面相机近景。",
+        "en": "LRO's January 30, 2019 oblique view of the Chang'e 4 site. The lander between arrows spans only about two native pixels; Yutu-2 is not resolved here. The background is Von Kármán's western wall, not a surface-camera close-up."
+      },
+      "processing": {
+        "zh": "保留官方标箭头图；源图局部已放大两倍。放大没有新增地面细节；本地未生成或锐化。",
+        "en": "Official annotated image retained; the source includes a twofold enlargement. Enlargement adds no ground detail; no local generation or sharpening."
+      },
+      "license": "Copyrighted LROC curated image; credited educational use permitted; commercial reuse requires prior permission; not a public-domain claim",
+      "licenseUrl": "https://lroc.im-ldi.com/about/terms",
+      "rightsChecked": "Selected source caption and specific rights policy checked separately; no commercial permission or human approval asserted.",
+      "rightsSourceUrl": "https://lroc.im-ldi.com/about/terms",
+      "humanReview": "pending",
+      "officialSizeVariant": "Original official JPEG/PNG bytes as delivered",
+      "imageRelation": ["moon-change4-farside-soft-landing"]
+    },
+    {
+      "filename": "change4-lander-rover-lro.png",
+      "downloadUrl": "https://lroc.im-ldi.com/ckeditor_assets/pictures/727/content_M1303570617_LRmos.extreme_crop_enlarge4x.png",
+      "bytes": 83057,
+      "sha256": "a118237ac5cac1bd52f83d5908235cdee1ba8019849490aa09af5e7120267001",
+      "width": 1100,
+      "height": 1100,
+      "format": "png",
+      "path": "exploration/planets/moon/change4-lander-rover-lro.png",
+      "storyId": "region-moon-change-4",
+      "sourceUrl": "https://lroc.im-ldi.com/images/1091",
+      "credit": "NASA/GSFC/Arizona State University · M1303570617LR",
+      "date": "2019-01-31",
+      "dateKind": "acquired, the following day after source's January 30 observation",
+      "caption": {
+        "zh": "2019-01-31 LROC NAC再次拍摄：箭头分别标出着陆器与玉兔二号，北向右上；玉兔二号仅约两个原始像素。这是着陆后约四周的轨道观察，不是1月3日落月照片。",
+        "en": "LROC NAC's January 31, 2019 observation: arrows identify the lander and Yutu-2, north toward upper right. The rover spans only about two native pixels. Orbital follow-up four weeks after landing, not a January 3 touchdown photograph."
+      },
+      "processing": {
+        "zh": "LROC官方四倍放大、裁切及箭头注释的发布图原样保留。像素块反映原始分辨率限制；未用AI补充探测器近景。",
+        "en": "LROC's published fourfold enlargement, crop and arrows retained as delivered. Blocky pixels reflect native resolution limits; no AI-generated vehicle close-up."
+      },
+      "license": "Copyrighted LROC curated image; credited educational use permitted; commercial reuse requires prior permission; not a public-domain claim",
+      "licenseUrl": "https://lroc.im-ldi.com/about/terms",
+      "rightsChecked": "Selected source caption and specific rights policy checked separately; no commercial permission or human approval asserted.",
+      "rightsSourceUrl": "https://lroc.im-ldi.com/about/terms",
+      "humanReview": "pending",
+      "officialSizeVariant": "Original official JPEG/PNG bytes as delivered",
+      "imageRelation": ["moon-change4-farside-soft-landing"]
+    }
+  ]
+}

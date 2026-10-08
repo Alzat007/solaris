@@ -7,6 +7,7 @@ import { Sun } from "../planets/Sun";
 import { Mercury } from "../planets/Mercury";
 import { Venus } from "../planets/Venus";
 import { Earth } from "../planets/Earth";
+import { Moon } from "../planets/Moon";
 import { Mars } from "../planets/Mars";
 import { Jupiter } from "../planets/Jupiter";
 import { Saturn } from "../planets/Saturn";
@@ -54,6 +55,9 @@ export function SolarSystem() {
       <Saturn />
       <Uranus />
       <Neptune />
+      <Suspense fallback={null}>
+        <Moon />
+      </Suspense>
       <ParticleField count={115000} />
     </group>
   );

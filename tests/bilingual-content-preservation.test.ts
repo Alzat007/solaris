@@ -54,10 +54,26 @@ function withoutNames(
   );
 }
 
+// New Moon content has its own audit tests; retain the immutable original baseline.
+const originalPlanetIds = new Set(
+  baseline.domains.planets.rows.map((row) => row.id),
+);
+const originalStoryIds = new Set(
+  baseline.domains.planetStories.rows.map((row) => row.id),
+);
+const originalPlanets = planets.filter((entry) =>
+  originalPlanetIds.has(entry.id),
+);
+const originalPlanetStories = planetStories.filter((entry) =>
+  originalStoryIds.has(entry.id),
+);
+
 // Only the entry's own display name and aliases are excluded. Nested event text,
 // captions, ownership, image order, anchors, rights and review remain protected.
 const domains: Record<string, object[]> = {
-  planets: planets.map((entry) => withoutNames(entry, ["name", "chineseName"])),
+  planets: originalPlanets.map((entry) =>
+    withoutNames(entry, ["name", "chineseName"]),
+  ),
   directoryMetadata: [withoutNames(earthDirectory, ["countries", "cities"])],
   directoryCountries: earthDirectory.countries.map((entry) =>
     withoutNames(entry),
@@ -69,9 +85,9 @@ const domains: Record<string, object[]> = {
   cityStories: firstBatchCityStories.map((entry) => withoutNames(entry)),
   legacyCityStories: cityStories.map((entry) => withoutNames(entry)),
   landmarks: cityLandmarks.map((entry) => withoutNames(entry)),
-  planetStories: planetStories.map((entry) => withoutNames(entry)),
+  planetStories: originalPlanetStories.map((entry) => withoutNames(entry)),
   legacyAtlasCities: atlasCities.map((entry) => withoutNames(entry)),
-  annotations: planets.map((planet) => ({
+  annotations: originalPlanets.map((planet) => ({
     id: planet.id,
     entries: getPlanetAnnotations(planet.id).map((entry) =>
       withoutNames(entry),
@@ -94,7 +110,7 @@ const domains: Record<string, object[]> = {
       bodyId: "earth",
       story: withoutNames(getPlanetStory("earth", story.id)!),
     })),
-    ...planetStories.map((story) => ({
+    ...originalPlanetStories.map((story) => ({
       id: story.id,
       bodyId: story.bodyId,
       story: withoutNames(getPlanetStory(story.bodyId, story.id)!),
@@ -115,7 +131,7 @@ const domains: Record<string, object[]> = {
 };
 
 const namedDomains = {
-  planets: planets.map((planet) => ({
+  planets: originalPlanets.map((planet) => ({
     id: planet.id,
     name: { zh: planet.chineseName, en: planet.name },
   })),
@@ -127,16 +143,20 @@ const namedDomains = {
   cityStories: firstBatchCityStories,
   legacyCityStories: cityStories,
   landmarks: cityLandmarks,
-  planetStories,
+  planetStories: originalPlanetStories,
   legacyAtlasCities: atlasCities,
-  annotations: planets.flatMap((planet) => getPlanetAnnotations(planet.id)),
+  annotations: originalPlanets.flatMap((planet) =>
+    getPlanetAnnotations(planet.id),
+  ),
   scopes: firstBatchCities.flatMap((city) =>
     getVisiblePlanetAnnotations("earth", city.id),
   ),
   resolvedStories: [
     ...firstBatchCityStories.map((story) => getPlanetStory("earth", story.id)!),
     ...cityLandmarks.map((story) => getPlanetStory("earth", story.id)!),
-    ...planetStories.map((story) => getPlanetStory(story.bodyId, story.id)!),
+    ...originalPlanetStories.map(
+      (story) => getPlanetStory(story.bodyId, story.id)!,
+    ),
   ],
   destinations: explorationContent.destinations,
   immersiveSites,
@@ -221,7 +241,7 @@ test("fact sources, copyright metadata and audit gates keep their original JSON"
   }
 });
 
-test("original file protection remains active outside authorized glass-panel and language UI changes", () => {
+test("original file protection remains active outside authorized presentation and additive Moon integration", () => {
   // Keep the historical baseline intact. Only the shared presentation and the
   // requested language display files are exempt; data, images, gesture recognition
   // and camera/input controllers stay locked outside the prior glass-panel scope.
@@ -233,6 +253,9 @@ test("original file protection remains active outside authorized glass-panel and
     "src/ui/GestureHint.tsx",
     "src/ui/TextCommandInput.tsx",
     "src/planets/PlanetBase.tsx",
+    // Remove the duplicate decorative Moon and register the selectable satellite.
+    "src/planets/Earth.tsx",
+    "src/scene/SolarSystem.tsx",
   ]);
   for (const [path, expected] of Object.entries(baseline.protectedFiles)) {
     if (presentationScope.has(path)) continue;
@@ -261,7 +284,9 @@ function imagePaths(folder: URL): string[] {
 test("all 249 existing exploration image files keep their exact bytes and paths", () => {
   assert.equal(baseline.images.length, 249);
   assert.deepEqual(
-    imagePaths(new URL("../public/exploration/", import.meta.url)),
+    imagePaths(new URL("../public/exploration/", import.meta.url)).filter(
+      (path) => !path.startsWith("exploration/planets/moon/"),
+    ),
     baseline.images.map((image) => image.path.replace(/^public\//, "")),
   );
   for (const image of baseline.images) {

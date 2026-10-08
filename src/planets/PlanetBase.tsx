@@ -59,17 +59,37 @@ export function PlanetBase({
     // A cancel can update the store before React commits the next frame's props.
     const active = state.selected === id;
     const mode = state.mode;
-    if (active && isPlanetStoryOpen(state)) return;
+    if (
+      isPlanetStoryOpen(state) &&
+      (active || (data.parentId && state.selected === data.parentId))
+    )
+      return;
+    const parent = data.parentId ? planetObjects.get(data.parentId) : null;
+    if (data.parentId) {
+      root.current.visible = !!parent && parent.visible;
+      if (!parent || !parent.visible) return;
+    }
     const angle =
       data.angle +
-      clock.elapsedTime * data.orbitSpeed * 0.3 +
+      clock.elapsedTime * data.orbitSpeed * (parent ? 1 : 0.3) +
       particles.rotation +
       particles.collapse * (2.1 + planets.indexOf(data) * 0.12);
-    target.set(
-      Math.cos(angle) * data.distance,
-      0,
-      Math.sin(angle) * data.distance,
-    );
+    if (parent) {
+      // Satellite separation is schematic and follows its parent's live pose.
+      const distance = data.distance * parent.scale.x;
+      target.set(
+        Math.cos(angle) * distance,
+        Math.sin(angle) * distance * 0.12,
+        Math.sin(angle) * distance,
+      );
+      target.add(parent.position);
+    } else {
+      target.set(
+        Math.cos(angle) * data.distance,
+        0,
+        Math.sin(angle) * data.distance,
+      );
+    }
     const f = particles.focus;
     if (wasActive.current && !active) exitAmount.current = 1;
     wasActive.current = active;
@@ -82,7 +102,7 @@ export function PlanetBase({
       );
       target.lerp(focusTarget, f);
     } else if (f > 0) {
-      target.multiplyScalar(1 + f * 0.18);
+      if (!parent) target.multiplyScalar(1 + f * 0.18);
       if (exitAmount.current > 0.02)
         target.lerp(
           focusTarget.set(-particles.switchDirection * 11, 0.3, 3.5),

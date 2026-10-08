@@ -5,6 +5,7 @@ import { getAtlasCity, getAtlasStory } from "./earthAtlasCatalog";
 import type { GalleryStory } from "./galleryStory";
 import { rockPlanetStories } from "./planetStoriesRock";
 import { gasPlanetStories } from "./planetStoriesGas";
+import { moonPlanetStories } from "./planetStoriesMoon";
 import type { PlanetStory } from "./planetStoryTypes";
 import { firstBatchCities, firstBatchCityStories } from "./firstBatchEarth";
 import { cityLandmarks, getCityLandmark } from "./cityLandmarks";
@@ -27,6 +28,7 @@ export interface AtlasAnnotation {
 export const planetStories: PlanetStory[] = [
   ...rockPlanetStories,
   ...gasPlanetStories,
+  ...moonPlanetStories,
 ];
 const storyById = new Map(planetStories.map((story) => [story.id, story]));
 const earthStories = new Map(

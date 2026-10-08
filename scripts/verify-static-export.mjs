@@ -88,6 +88,7 @@ for (const asset of [
   "models/hand_landmarker.task",
   "textures/earth-day.jpg",
   "textures/earth-night.png",
+  "textures/moon-day.jpg",
 ]) {
   const file = await readFile(path.join(root, asset));
   assert.ok(file.length > 1000, `Missing or empty runtime asset: ${asset}`);
@@ -112,6 +113,7 @@ for (const rootPath of [
   "/models/hand_landmarker.task",
   "/textures/earth-day.jpg",
   "/textures/earth-night.png",
+  "/textures/moon-day.jpg",
 ]) {
   assert.ok(
     base === "/" || !bundles.includes(`"${rootPath}"`),
@@ -160,6 +162,39 @@ for (const manifest of ["content-pack.json", "immersive-pack.json"]) {
     `${manifest}: ${pack.files.length} images, ${packBytes} bytes`,
   );
 }
+for (const auditPath of [
+  "textures/moon-source.json",
+  "exploration/planets/moon/source-records.json",
+]) {
+  const auditBytes = await readFile(path.join(root, auditPath));
+  assert.deepEqual(
+    auditBytes,
+    await readFile(path.resolve("public", auditPath)),
+    `Lunar audit changed during export: ${auditPath}`,
+  );
+  const audit = JSON.parse(auditBytes.toString("utf8"));
+  const records = auditPath.startsWith("textures/") ? [audit] : audit.files;
+  const auditPaths = new Set();
+  for (const item of records) {
+    assert.match(
+      item.path,
+      /^(textures\/moon-day\.jpg|exploration\/planets\/moon\/[a-z0-9-]+\.(jpg|png))$/,
+    );
+    assert.ok(
+      !auditPaths.has(item.path),
+      `Duplicate lunar image: ${item.path}`,
+    );
+    auditPaths.add(item.path);
+    const bytes = await readFile(path.join(root, item.path));
+    assert.equal(bytes.length, item.bytes, item.path);
+    assert.equal(
+      createHash("sha256").update(bytes).digest("hex"),
+      item.sha256,
+      item.path,
+    );
+  }
+  packResults.push(`${auditPath}: ${records.length} verified lunar images`);
+}
 console.log(
-  `Static export verified: ${buildPaths.size} generated files with build SHA-256, ${assets.length} entry assets, 7 runtime assets, full Cesium license, ${imagePaths.size} unique exploration images with SHA-256, base ${base}; ${packResults.join("; ")}. Browser offline cold start is not verified.`,
+  `Static export verified: ${buildPaths.size} generated files with build SHA-256, ${assets.length} entry assets, 8 runtime assets, full Cesium license, ${imagePaths.size} unique exploration images with SHA-256, base ${base}; ${packResults.join("; ")}. Browser offline cold start is not verified.`,
 );

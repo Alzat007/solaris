@@ -1,8 +1,8 @@
 import { colorManaged } from "../shaders/colorManagement";
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
-import { AdditiveBlending, Color, Group } from "three";
+import { AdditiveBlending, Color } from "three";
 import { PlanetBase } from "./PlanetBase";
 import { particles } from "../particles/ParticleEngine";
 import { useSolaris } from "../interaction/store";
@@ -52,8 +52,7 @@ function EarthSurface() {
 export function Earth() {
   const state = useSolaris();
   const atlas = useEarthAtlasView();
-  const moon = useRef<Group>(null),
-    { selected } = useSolaris();
+  const { selected } = state;
   const uniforms = useMemo(
     () => ({
       uColor: { value: new Color("#72bbeb") },
@@ -61,15 +60,7 @@ export function Earth() {
     }),
     [],
   );
-  useFrame(({ clock }) => {
-    if (moon.current) {
-      moon.current.position.set(
-        Math.cos(clock.elapsedTime * 0.15) * 1.9,
-        0.35 + Math.sin(clock.elapsedTime * 0.15) * 0.5,
-        Math.sin(clock.elapsedTime * 0.15) * 0.65,
-      );
-      moon.current.visible = selected === "earth";
-    }
+  useFrame(() => {
     uniforms.uOpacity.value = selected === "earth" ? 0.2 : 0.15;
   });
   return (
@@ -94,12 +85,6 @@ export function Earth() {
           blending={AdditiveBlending}
         />
       </mesh>
-      <group ref={moon}>
-        <mesh>
-          <sphereGeometry args={[0.12, 24, 20]} />
-          <meshStandardMaterial color="#a5a49e" roughness={1} />
-        </mesh>
-      </group>
     </PlanetBase>
   );
 }

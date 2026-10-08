@@ -219,7 +219,8 @@ test("Sun English fills the existing logical scene name without adding a planet"
     zh: "太阳",
     en: "Sun",
   });
-  assert.equal(planets.length, 8);
+  assert.equal(planets.filter((planet) => planet.id !== "moon").length, 8);
+  assert.equal(planets.filter((planet) => planet.id === "moon").length, 1);
   assert.equal(
     planets.some((x) => String(x.id) === "sun"),
     false,

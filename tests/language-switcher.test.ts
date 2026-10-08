@@ -38,7 +38,7 @@ test("both language controls remain named and exactly one is selected", () => {
   }
 });
 
-test("all 134 shared stories use their existing bilingual resources without changing IDs, photos or credits", () => {
+test("all shared stories use bilingual resources without changing IDs, photos or credits", () => {
   const stories = [
     ...firstBatchCityStories,
     ...cityLandmarks,

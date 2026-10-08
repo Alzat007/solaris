@@ -2,6 +2,7 @@ import type { GalleryStory } from "./galleryStory";
 import { immersiveSites, type ImmersiveHotspotImage } from "./immersiveCatalog";
 import { rockPlanetStories } from "./planetStoriesRock";
 import { gasPlanetStories } from "./planetStoriesGas";
+import { moonPlanetStories } from "./planetStoriesMoon";
 
 export interface StoryImagePresentation {
   fit: "cover" | "contain";
@@ -10,8 +11,8 @@ export interface StoryImagePresentation {
 
 // Preserve scientific annotations and framing without changing audited images.
 const scientificImages = new Set([
-  ...[...rockPlanetStories, ...gasPlanetStories].flatMap((story) =>
-    story.gallery.map((image) => image.path),
+  ...[...rockPlanetStories, ...gasPlanetStories, ...moonPlanetStories].flatMap(
+    (story) => story.gallery.map((image) => image.path),
   ),
   ...immersiveSites
     .filter((site) => site.bodyId !== "earth")

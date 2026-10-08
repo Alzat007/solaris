@@ -111,8 +111,9 @@ test("scale release restores the exact previous focused state", () => {
   }
 });
 test("planet visual sizes and physical data stay separate and ordered", () => {
+  const primaryPlanets = planets.filter((planet) => !planet.parentId);
   assert.deepEqual(
-    planets.map((planet) => planet.id),
+    primaryPlanets.map((planet) => planet.id),
     [
       "mercury",
       "venus",
@@ -124,9 +125,9 @@ test("planet visual sizes and physical data stay separate and ordered", () => {
       "neptune",
     ],
   );
-  planets.forEach((planet, index) => {
+  primaryPlanets.forEach((planet, index) => {
     assert.ok(planet.realRadius > 1000);
     assert.ok(planet.visualRadius < 2);
-    if (index) assert.ok(planet.distance > planets[index - 1].distance);
+    if (index) assert.ok(planet.distance > primaryPlanets[index - 1].distance);
   });
 });

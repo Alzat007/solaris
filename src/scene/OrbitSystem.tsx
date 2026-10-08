@@ -19,24 +19,26 @@ export function OrbitSystem() {
   );
   const lines = useMemo(
     () =>
-      planets.map((p) => {
-        const g = new BufferGeometry(),
-          points = [];
-        for (let i = 0; i < 256; i++) {
-          const a = (i / 256) * Math.PI * 2;
-          points.push(Math.cos(a) * p.distance, 0, Math.sin(a) * p.distance);
-        }
-        g.setAttribute("position", new Float32BufferAttribute(points, 3));
-        return new LineLoop(
-          g,
-          new LineBasicMaterial({
-            color: "#9e927e",
-            transparent: true,
-            opacity: 0,
-            depthWrite: false,
-          }),
-        );
-      }),
+      planets
+        .filter((p) => !p.parentId)
+        .map((p) => {
+          const g = new BufferGeometry(),
+            points = [];
+          for (let i = 0; i < 256; i++) {
+            const a = (i / 256) * Math.PI * 2;
+            points.push(Math.cos(a) * p.distance, 0, Math.sin(a) * p.distance);
+          }
+          g.setAttribute("position", new Float32BufferAttribute(points, 3));
+          return new LineLoop(
+            g,
+            new LineBasicMaterial({
+              color: "#9e927e",
+              transparent: true,
+              opacity: 0,
+              depthWrite: false,
+            }),
+          );
+        }),
     [],
   );
   useFrame(() => {

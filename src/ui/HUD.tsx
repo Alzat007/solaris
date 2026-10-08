@@ -33,6 +33,7 @@ const englishTaglines = {
   saturn: "A world encircled by rings",
   uranus: "The quiet ice giant",
   neptune: "A world of deep blue",
+  moon: "Earth's natural satellite",
 };
 
 export function HUD() {
@@ -190,7 +191,7 @@ export function HUD() {
                   "沉浸漫游 / 被光环绕",
                   "Immersive exploration / Surrounded by light",
                 )
-              : `${number} / ${p ? text("探索行星", "Explore a planet") : text("太阳系的中心", "Heart of the solar system")}`}
+              : `${number} / ${p ? (p.parentId ? text("探索天然卫星", "Explore a natural satellite") : text("探索行星", "Explore a planet")) : text("太阳系的中心", "Heart of the solar system")}`}
           </p>
           <h1>
             {insideSun
@@ -208,8 +209,8 @@ export function HUD() {
                   ? p.description
                   : englishTaglines[p.id]
                 : text(
-                    "一颗恒星，八个世界，由你掌控。",
-                    "One star. Eight worlds. Yours to explore.",
+                    "一颗恒星，八颗行星与月球，由你掌控。",
+                    "One star. Eight planets and the Moon. Yours to explore.",
                   )}
           </p>
           {insideSun && (
@@ -398,10 +399,12 @@ export function HUD() {
                     ? text("引力坍缩", "Gravitational collapse")
                     : s.mode === "BIG_BANG"
                       ? text("宇宙正在重组", "The universe is re-forming")
-                      : text(
-                          "诞生于约 46 亿年前",
-                          "Formed about 4.6 billion years ago",
-                        )}
+                      : s.selected === "moon"
+                        ? text("地球的天然卫星", "Earth's natural satellite")
+                        : text(
+                            "诞生于约 46 亿年前",
+                            "Formed about 4.6 billion years ago",
+                          )}
               </small>
             </span>
           </div>

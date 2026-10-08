@@ -25,7 +25,7 @@ import {
 } from "../src/exploration/earthAtlasProjection";
 import { store } from "../src/interaction/store";
 
-test("all eight planets have separate annotations and real multi-image story records", () => {
+test("the eight planets and Moon have separate annotations and real multi-image story records", () => {
   for (const planet of planets) {
     const entries = getPlanetAnnotations(planet.id);
     assert.ok(entries.length >= 2, `${planet.id} annotations`);

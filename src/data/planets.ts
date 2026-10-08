@@ -6,7 +6,8 @@ export type PlanetId =
   | "jupiter"
   | "saturn"
   | "uranus"
-  | "neptune";
+  | "neptune"
+  | "moon";
 export interface PlanetData {
   id: PlanetId;
   name: string;
@@ -27,6 +28,8 @@ export interface PlanetData {
   angle: number;
   kind: number;
   description: string;
+  parentId?: PlanetId;
+  distanceFromParent?: string;
 }
 export const planets: PlanetData[] = [
   {
@@ -196,6 +199,29 @@ export const planets: PlanetData[] = [
     angle: 5.3,
     kind: 7,
     description: "深蓝之境",
+  },
+  {
+    id: "moon",
+    name: "MOON",
+    chineseName: "月球",
+    radius: 1737.4,
+    realRadius: 1737.4,
+    visualRadius: 0.145,
+    visualScale: 1,
+    distance: 1.9,
+    orbitSpeed: 0.15,
+    rotationSpeed: 0.035,
+    color: "#b7b8b5",
+    particleColor: "#d6d7d3",
+    moons: "0 颗",
+    diameter: "3,474.8 公里",
+    distanceFromSun: "随地球绕日运动",
+    orbitalPeriod: "约 27.3 天（绕地球，恒星月）",
+    angle: 1.2,
+    kind: 0,
+    description: "地球的天然卫星",
+    parentId: "earth",
+    distanceFromParent: "平均约 384,400 公里",
   },
 ];
 export const planetById = (id: PlanetId | null) =>

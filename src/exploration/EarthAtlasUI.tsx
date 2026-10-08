@@ -188,9 +188,13 @@ export function PlanetAtlasUI() {
                 ? zh
                   ? "地球探索"
                   : "Earth exploration"
-                : zh
-                  ? "星球探索"
-                  : "Planet exploration"
+                : bodyId === "moon"
+                  ? zh
+                    ? "月球探索"
+                    : "Moon exploration"
+                  : zh
+                    ? "星球探索"
+                    : "Planet exploration"
             }
           >
             <div className="earth-atlas-heading">
@@ -384,6 +388,19 @@ export function PlanetAtlasUI() {
                 >
                   ODbL 1.0
                 </a>
+              </span>
+            ) : bodyId === "moon" ? (
+              <span>
+                <a
+                  href="https://svs.gsfc.nasa.gov/4720/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  NASA SVS / LRO / LROC / ASU / LOLA
+                </a>
+                {zh
+                  ? " · 2K 月面影像，非三维地形 · 示意观察自转，非真实潮汐锁定运动"
+                  : " · 2K surface imagery, not 3D terrain · Illustrative viewing rotation, not physical tidal locking"}
               </span>
             ) : (
               <span>
