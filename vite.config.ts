@@ -47,6 +47,7 @@ export default defineConfig(({ mode }) => {
         input: {
           main: resolve(import.meta.dirname, "index.html"),
           globeLab: resolve(import.meta.dirname, "globe-lab.html"),
+          controller: resolve(import.meta.dirname, "controller/index.html"),
         },
         output: {
           manualChunks: {

@@ -18,6 +18,8 @@ import {
   isBackKey,
 } from "../platform/tvNavigation";
 import { earthViewHandoff } from "../scene/earthViewHandoff";
+import { handleInputBack } from "../input/backHandlers";
+import { clearRemoteInput } from "../input/sharedInput";
 const EarthExplorer = lazy(() =>
   import("../globeLab/embeddedEarth")
     .then((module) => module.loadEmbeddedEarth())
@@ -111,7 +113,11 @@ export function App() {
     document.body.classList.add("tv-mode");
     const dispose = installTvNavigation(
       document.querySelector<HTMLElement>(".solaris-app")!,
-      () => interaction.return(),
+      () => {
+        clearRemoteInput();
+        if (handleInputBack()) return true;
+        return interaction.return();
+      },
     );
     return () => {
       dispose();

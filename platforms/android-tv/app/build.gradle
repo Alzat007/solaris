@@ -2,6 +2,40 @@ plugins {
     id 'com.android.application'
 }
 
+def normalizeHttps = { String raw, boolean page ->
+    if (!raw.trim()) return ''
+    def uri = new URI(raw.trim())
+    if (uri.scheme != 'https' || !uri.host || uri.userInfo || uri.query || uri.fragment ||
+        (!page && uri.path && uri.path != '/') || uri.port == 0 || uri.port > 65535) {
+        throw new GradleException(page ? 'TV_CONTROLLER_URL must be a credential-free HTTPS page' :
+            'TV_RELAY_ORIGIN must be an HTTPS origin without credentials, path, query or fragment')
+    }
+    def port = uri.port == 443 ? -1 : uri.port
+    return new URI('https', null, uri.host.toLowerCase(Locale.ROOT), port,
+        page ? (uri.path ?: '/') : null, null, null).toASCIIString()
+}
+def relayOrigin = normalizeHttps((findProperty('TV_RELAY_ORIGIN') ?:
+    System.getenv('TV_RELAY_ORIGIN') ?: '').toString(), false)
+def controllerUrl = normalizeHttps((findProperty('TV_CONTROLLER_URL') ?:
+    System.getenv('TV_CONTROLLER_URL') ?: '').toString(), true)
+def nodeExecutable = (findProperty('SOLARIS_NODE') ?: System.getenv('SOLARIS_NODE') ?: 'node').toString()
+def verifyScript = rootProject.file('../../scripts/verify-tv-assets.mjs')
+def testCaPath = (findProperty('TV_TEST_CA_FILE') ?: System.getenv('TV_TEST_CA_FILE') ?: '').toString().trim()
+def testLanHost = (findProperty('TV_TEST_LAN_HOST') ?: System.getenv('TV_TEST_LAN_HOST') ?: '').toString().trim()
+def normalizeTestLanHost = { String host ->
+    if (!host.matches('(0|[1-9][0-9]{0,2})(\\.(0|[1-9][0-9]{0,2})){3}')) {
+        throw new GradleException('TV_TEST_LAN_HOST must be a canonical RFC1918 IPv4 address')
+    }
+    def octets = host.split('\\.').collect { Integer.parseInt(it) }
+    if (octets.any { it > 255 } || !(octets[0] == 10 ||
+        (octets[0] == 172 && octets[1] >= 16 && octets[1] <= 31) ||
+        (octets[0] == 192 && octets[1] == 168))) {
+        throw new GradleException('TV_TEST_LAN_HOST must be a canonical RFC1918 IPv4 address')
+    }
+    return host
+}
+def debugSecurityResources = layout.buildDirectory.dir('generated/solarisDebugSecurity/res')
+
 android {
     namespace 'cn.solaris.tv'
     compileSdk 35
@@ -11,6 +45,7 @@ android {
         targetSdk 35
         versionCode 1
         versionName '0.3.0'
+        buildConfigField 'String', 'TV_RELAY_ORIGIN', groovy.json.JsonOutput.toJson(relayOrigin)
     }
     buildFeatures {
         buildConfig true
@@ -26,13 +61,133 @@ dependencies {
     implementation 'androidx.webkit:webkit:1.14.0'
 }
 
+abstract class GenerateSolarisDebugSecurity extends DefaultTask {
+    @org.gradle.api.tasks.OutputDirectory
+    abstract org.gradle.api.file.DirectoryProperty getOutputDirectory()
+}
+
+// Trust the local test CA only for the debug relay; never broaden production TLS trust.
+def generateDebugNetworkSecurity = tasks.register('generateDebugNetworkSecurity', GenerateSolarisDebugSecurity) {
+    outputDirectory.set(debugSecurityResources)
+    inputs.property('tvTestCaFile', testCaPath)
+    inputs.property('tvRelayOrigin', relayOrigin)
+    inputs.property('tvTestLanHost', testLanHost)
+    outputs.upToDateWhen { !testCaPath }
+    doLast {
+        def resourceRoot = outputDirectory.get().asFile
+        delete(resourceRoot)
+        def domainConfig = ''
+        if (testCaPath) {
+            def testRelayHost = testLanHost ? normalizeTestLanHost(testLanHost) : 'localhost'
+            if (relayOrigin != "https://${testRelayHost}:5444") {
+                throw new GradleException('TV_TEST_CA_FILE requires https://localhost:5444 or an exact TV_TEST_LAN_HOST relay on HTTPS port 5444')
+            }
+            def caFile = file(testCaPath).canonicalFile
+            def repositoryPath = rootProject.file('../..').canonicalFile.toPath()
+            if (!caFile.isFile() || caFile.toPath().startsWith(repositoryPath) || caFile.length() > 65536) {
+                throw new GradleException('TV_TEST_CA_FILE must be a small public PEM CA file outside the repository')
+            }
+            def pemLines = []
+            caFile.withReader('US-ASCII') { reader ->
+                def started = false
+                def ended = false
+                String line
+                while ((line = reader.readLine()) != null) {
+                    def trimmedLine = line.trim()
+                    if (!started && !trimmedLine) continue
+                    if (!started) {
+                        if (trimmedLine != '-----BEGIN CERTIFICATE-----') {
+                            throw new GradleException('TV_TEST_CA_FILE must start with a public certificate, never a private key')
+                        }
+                        started = true
+                    } else if (ended) {
+                        if (trimmedLine) {
+                            throw new GradleException('TV_TEST_CA_FILE must contain only one public certificate')
+                        }
+                        continue
+                    } else if (trimmedLine.startsWith('-----BEGIN')) {
+                        throw new GradleException('TV_TEST_CA_FILE must not contain another certificate or key')
+                    }
+                    pemLines.add(trimmedLine)
+                    if (trimmedLine == '-----END CERTIFICATE-----') ended = true
+                }
+            }
+            def pem = pemLines.join('\n')
+            if (!pem.matches('(?s)-----BEGIN CERTIFICATE-----[A-Za-z0-9+/=\\s]+-----END CERTIFICATE-----') ||
+                pem.contains('PRIVATE KEY')) {
+                throw new GradleException('TV_TEST_CA_FILE must contain exactly one public certificate, never a private key')
+            }
+            def certificate
+            try {
+                def publicPem = pem =~ '(?s)-----BEGIN CERTIFICATE-----([A-Za-z0-9+/=\\s]+)-----END CERTIFICATE-----'
+                def certificateBytes = java.util.Base64.getMimeDecoder().decode(publicPem[0][1].toString())
+                certificate = (java.security.cert.X509Certificate) java.security.cert.CertificateFactory
+                    .getInstance('X.509').generateCertificate(new ByteArrayInputStream(certificateBytes))
+                if (!java.util.Arrays.equals(certificateBytes, certificate.getEncoded())) {
+                    throw new GradleException('TV_TEST_CA_FILE contains data beyond one public certificate')
+                }
+                certificate.checkValidity()
+                if (certificate.getBasicConstraints() < 0) {
+                    throw new GradleException('TV_TEST_CA_FILE must be a certificate authority')
+                }
+            } catch (GradleException error) {
+                throw error
+            } catch (Exception ignored) {
+                throw new GradleException('TV_TEST_CA_FILE is not a currently valid X.509 CA certificate')
+            }
+            def rawDirectory = new File(resourceRoot, 'raw')
+            rawDirectory.mkdirs()
+            def canonicalBody = java.util.Base64.getMimeEncoder(64, '\n'.getBytes('US-ASCII'))
+                .encodeToString(certificate.getEncoded())
+            new File(rawDirectory, 'solaris_test_ca.pem').setText(
+                "-----BEGIN CERTIFICATE-----\n${canonicalBody}\n-----END CERTIFICATE-----\n", 'US-ASCII')
+            domainConfig = """
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="false">${testRelayHost}</domain>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="@raw/solaris_test_ca" />
+        </trust-anchors>
+    </domain-config>"""
+        }
+        def xmlDirectory = new File(resourceRoot, 'xml')
+        xmlDirectory.mkdirs()
+        new File(xmlDirectory, 'solaris_debug_network_security.xml').setText("""<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors><certificates src="system" /></trust-anchors>
+    </base-config>${domainConfig}
+</network-security-config>
+""", 'UTF-8')
+    }
+}
+androidComponents {
+    onVariants(selector().withBuildType('debug')) { variant ->
+        variant.sources.res.addGeneratedSourceDirectory(generateDebugNetworkSecurity, { task -> task.outputDirectory })
+    }
+}
+
 def webDist = rootProject.file('../../dist')
 tasks.register('syncWebAssets', Sync) {
     from(webDist)
+    exclude 'classic/**'
     into(layout.buildDirectory.dir('generated/solarisAssets'))
+    inputs.property('tvRelayOrigin', relayOrigin)
+    inputs.property('tvControllerUrl', controllerUrl)
+    inputs.file(verifyScript)
     doFirst {
         if (!new File(webDist, 'index.html').isFile()) {
             throw new GradleException('Build the Web app from the repository root first: VITE_BASE_PATH=/ npm run build')
+        }
+        project.exec {
+            commandLine nodeExecutable, verifyScript.absolutePath, '--dist', webDist.absolutePath
+        }
+    }
+    doLast {
+        project.exec {
+            commandLine nodeExecutable, verifyScript.absolutePath, '--configure-index',
+                layout.buildDirectory.dir('generated/solarisAssets').get().asFile.absolutePath,
+                '--relay-origin', relayOrigin, '--phone-url', controllerUrl
         }
     }
 }

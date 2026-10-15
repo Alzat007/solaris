@@ -28,6 +28,7 @@ export interface TrackingDependencies {
   schedule(callback: () => void, delay: number): number;
   cancel(timer: number): void;
   preferredCompatibility(): boolean;
+  frameIntervalMs: number;
 }
 const defaults: TrackingDependencies = {
   requestStream: () => {
@@ -77,6 +78,7 @@ const defaults: TrackingDependencies = {
   preferredCompatibility: () =>
     typeof window !== "undefined" &&
     new URLSearchParams(window.location.search).get("handTracking") === "cpu",
+  frameIntervalMs: 1000 / gestureConfig.CAMERA_FPS,
 };
 interface Session {
   stream: MediaStream | null;
@@ -109,6 +111,11 @@ export class HandTrackingManager {
     private inputSink: TrackingInputSink = defaultInputSink,
   ) {
     this.dependencies = { ...defaults, ...dependencies };
+    if (
+      !Number.isFinite(this.dependencies.frameIntervalMs) ||
+      this.dependencies.frameIntervalMs <= 0
+    )
+      this.dependencies.frameIntervalMs = defaults.frameIntervalMs;
   }
 
   /** Transfer commands without reopening the camera or rebuilding its detector. */
@@ -357,7 +364,7 @@ export class HandTrackingManager {
         () => this.loop(session),
         Math.max(
           0,
-          1000 / gestureConfig.CAMERA_FPS - (this.dependencies.now() - now),
+          this.dependencies.frameIntervalMs - (this.dependencies.now() - now),
         ),
       );
   }

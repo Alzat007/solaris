@@ -61,6 +61,13 @@ const directions: Readonly<Record<string, FocusDirection>> = {
 const selector =
   'button, summary, input:not([type="hidden"]), textarea, select, a[href], [tabindex]';
 const installed = new WeakMap<Document, () => void>();
+const focusDrivers = new WeakMap<
+  Document,
+  (direction: FocusDirection) => boolean
+>();
+export function moveTvFocus(document: Document, direction: FocusDirection) {
+  return focusDrivers.get(document)?.(direction) ?? false;
+}
 
 export function installTvNavigation(
   root: HTMLElement,
@@ -183,14 +190,6 @@ export function installTvNavigation(
       active?.isContentEditable;
     const direction = directions[event.key];
     if (direction) {
-      // A story dialog owns vertical reading; horizontal D-pad still moves focus.
-      if (
-        (direction === "up" || direction === "down") &&
-        active
-          ?.closest("[data-tv-scroll-keys]")
-          ?.getAttribute?.("data-tv-scroll-keys") === "vertical"
-      )
-        return;
       // Native select popups do not consistently handle D-pad keys in TV WebViews.
       if (
         select &&
@@ -201,6 +200,12 @@ export function installTvNavigation(
         moveSelect(active as HTMLSelectElement, direction === "up" ? -1 : 1);
         return;
       }
+      // Only the reading pane itself owns scrolling, not its child controls.
+      if (
+        (direction === "up" || direction === "down") &&
+        active?.getAttribute("data-tv-scroll-keys") === "vertical"
+      )
+        return;
       if (
         editing &&
         (active?.matches("textarea") ||
@@ -237,6 +242,26 @@ export function installTvNavigation(
   function focusout(event: Event) {
     if (event.target === editingSelect) stopSelectEditing();
   }
+  const moveFocus = (direction: FocusDirection) => {
+    const active = document.activeElement as HTMLElement | null;
+    if (
+      active?.matches("select") &&
+      editingSelect === active &&
+      (direction === "up" || direction === "down")
+    ) {
+      moveSelect(active as HTMLSelectElement, direction === "up" ? -1 : 1);
+      return true;
+    }
+    const elements = controls();
+    const next = findNextFocusIndex(
+      elements.map((element) => element.getBoundingClientRect()),
+      elements.indexOf(active!),
+      direction,
+    );
+    focus(elements[next]);
+    return next >= 0;
+  };
+  focusDrivers.set(document, moveFocus);
 
   const observer = new window.MutationObserver(() => {
     if (editingSelect && document.activeElement !== editingSelect)
@@ -272,6 +297,7 @@ export function installTvNavigation(
     window.removeEventListener("solaris-back", nativeBack, capture);
     observer.disconnect();
     stopSelectEditing();
+    if (focusDrivers.get(document) === moveFocus) focusDrivers.delete(document);
     if (installed.get(document) === cleanup) installed.delete(document);
   };
   installed.set(document, cleanup);

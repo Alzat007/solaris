@@ -1,0 +1,156 @@
+.tv-input-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+}
+.tv-input-tools button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid #ffffff38;
+  border-radius: 6px;
+  background: #ffffff0d;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+}
+.tv-input-tools button[aria-pressed="true"] {
+  background: #65dcca30;
+  border-color: #65dcca;
+}
+.tv-input-tools button:disabled {
+  opacity: 0.4;
+}
+.tv-input-tools :focus-visible,
+.tv-connection-panel :focus-visible {
+  outline: 3px solid #a4efdd;
+  outline-offset: 3px;
+}
+.tv-connection-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  background: #00000012;
+  backdrop-filter: blur(6px);
+}
+.tv-connection-panel {
+  position: relative;
+  width: min(640px, 100%);
+  max-height: calc(100dvh - 64px);
+  overflow: auto;
+  border: 1px solid #ffffff50;
+  border-radius: 8px;
+  padding: 40px;
+  color: #fff;
+  background: #454b5060;
+  backdrop-filter: blur(22px);
+  box-shadow:
+    inset 0 1px #ffffff45,
+    0 24px 72px #00000025;
+}
+.tv-connection-panel h2 {
+  font-size: 26px;
+  margin: 0 0 16px;
+}
+.tv-connection-panel p {
+  font-size: 20px;
+  line-height: 1.5;
+}
+.tv-connection-panel button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 1px solid #ffffff60;
+  border-radius: 6px;
+  padding: 8px 16px;
+  color: #fff;
+  background: #ffffff18;
+  font: inherit;
+  font-size: 18px;
+}
+.tv-connection-panel .tv-connection-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 8px;
+}
+.tv-pair-code {
+  display: block;
+  width: min(320px, 100%);
+  aspect-ratio: 1;
+  margin: 24px auto;
+  background: #fff;
+}
+.tv-pair-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.remote-pointer-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  pointer-events: none;
+}
+.remote-pointer-layer * {
+  pointer-events: none;
+}
+.gesture-cursor.remote-pointer-cursor {
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  color: #f2fcff;
+}
+.remote-pointer-cursor .gesture-cursor-ring {
+  border: 2px solid #c7f1ff;
+  background: #07141938;
+  box-shadow:
+    0 1px 5px #000b,
+    0 0 12px #74deff55;
+}
+.gesture-cursor.remote-pointer-cursor.has-target .gesture-cursor-ring {
+  border-color: #a4efdd;
+  box-shadow:
+    0 1px 5px #000b,
+    0 0 0 4px #a4efdd26;
+}
+.remote-pointer-cursor .gesture-target-name {
+  top: 38px;
+  left: 42px;
+  width: max-content;
+  max-width: min(260px, 40vw);
+  padding: 5px 8px;
+  border: 1px solid #ffffff38;
+  border-radius: 4px;
+  color: #fff;
+  background: #0b151be6;
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-shadow: none;
+}
+.remote-pointer-cursor[data-side="left"] .gesture-target-name {
+  left: auto;
+  right: 42px;
+}
+.remote-pointer-cursor[data-above="true"] .gesture-target-name {
+  top: auto;
+  bottom: 38px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .remote-pointer-cursor .gesture-cursor-ring {
+    transition: none;
+  }
+}

@@ -52,13 +52,9 @@ test("D-pad spatial navigation selects adjacent controls in a grid", () => {
   assert.equal(findNextFocusIndex(grid, 3, "up"), 1);
 });
 
-test("a story dialog owns vertical reading keys without changing horizontal TV navigation", () => {
+test("the focused reading pane owns vertical keys without changing horizontal TV navigation", () => {
   const context = fixture();
-  const original = context.buttons[0].closest.bind(context.buttons[0]);
-  context.buttons[0].closest = (selector: string) =>
-    selector === "[data-tv-scroll-keys]"
-      ? ({ getAttribute: () => "vertical" } as never)
-      : original(selector);
+  context.buttons[0].attributes.set("data-tv-scroll-keys", "vertical");
   const cleanup = installTvNavigation(
     context.root as unknown as HTMLElement,
     () => true,
@@ -69,6 +65,36 @@ test("a story dialog owns vertical reading keys without changing horizontal TV n
   const right = context.key("ArrowRight");
   assert.equal(right.defaultPrevented, true);
   assert.equal(context.document.activeElement, context.buttons[1]);
+  cleanup();
+});
+
+test("buttons inside a reading pane retain four-direction TV navigation", () => {
+  const context = fixture();
+  const original = context.buttons[0].closest.bind(context.buttons[0]);
+  context.buttons[0].closest = (selector: string) =>
+    selector === "[data-tv-scroll-keys]"
+      ? ({ getAttribute: () => "vertical" } as never)
+      : original(selector);
+  const cleanup = installTvNavigation(context.root, () => true);
+  assert.equal(context.key("ArrowDown").defaultPrevented, true);
+  assert.equal(context.document.activeElement, context.buttons[2]);
+  context.key("ArrowUp");
+  assert.equal(context.document.activeElement, context.buttons[0]);
+  cleanup();
+});
+
+test("event select editing inside a reading pane takes priority over scrolling", () => {
+  const context = fixture();
+  context.buttons[0].tag = "select";
+  context.buttons[0].attributes.set("data-tv-scroll-keys", "vertical");
+  const cleanup = installTvNavigation(context.root, () => true);
+  context.key("Enter");
+  assert.equal(context.buttons[0].getAttribute("data-tv-editing"), "true");
+  assert.equal(context.key("ArrowDown").defaultPrevented, true);
+  assert.equal(context.buttons[0].selectedIndex, 1);
+  assert.deepEqual(context.buttons[0].events, ["input", "change"]);
+  context.key("Enter");
+  assert.equal(context.buttons[0].getAttribute("data-tv-editing"), null);
   cleanup();
 });
 

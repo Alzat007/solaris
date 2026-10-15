@@ -20,6 +20,7 @@ import { store } from "../interaction/store";
 import { gestureConfig } from "../gesture/gestureConfig";
 import { particles } from "../particles/ParticleEngine";
 import { isPlanetStoryOpen } from "../exploration/planetAtlasState";
+import { inputOwnership } from "../input/sharedInput";
 export function SolarSystem() {
   const root = useRef<Group>(null);
   useFrame((_, dt) => {
@@ -28,8 +29,7 @@ export function SolarSystem() {
     particles.scale +=
       (particles.targetScale - particles.scale) *
       (1 - Math.exp(-dt * gestureConfig.ZOOM_RESPONSE));
-    particles.rotation +=
-      (particles.targetRotation - particles.rotation) * (1 - Math.exp(-dt * 4));
+    rotation.followTarget(dt, inputOwnership.owner === "remote");
     particles.anchor.lerp(particles.targetAnchor, 1 - Math.exp(-dt * 5));
     if (root.current) {
       // The bright entry veil covers this handoff before the camera reaches

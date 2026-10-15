@@ -23,6 +23,7 @@ import { PlanetAtlasUI } from "../exploration/EarthAtlasUI";
 import { isPlanetAtlasVisible } from "../exploration/planetAtlasState";
 import { bilingualName, uiText } from "../exploration/bilingualLabels";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { TvRemoteControls } from "../platform/TvRemoteControls";
 
 const englishTaglines = {
   mercury: "A world racing around the Sun",
@@ -118,6 +119,7 @@ export function HUD() {
           {text("向无垠宇宙，再靠近一点", "A little closer to the cosmos")}
         </span>
         <div className="top-actions">
+          <TvRemoteControls />
           <LanguageSwitcher
             language={s.language}
             onChange={(language) => store.set({ language })}

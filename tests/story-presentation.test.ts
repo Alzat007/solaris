@@ -103,6 +103,12 @@ test("all 140 stories render the same dialog, separate glass layer and right-sid
     assert.ok(html.includes(`data-story-id="${story.id}"`));
     assert.ok(html.includes('class="globe-story-glass" aria-hidden="true"'));
     assert.ok(html.includes('class="globe-story-information"'));
+    const dialog = html.match(/<div[^>]*class="globe-story-panel"[^>]*>/)?.[0];
+    assert.ok(dialog && !dialog.includes("data-tv-scroll-keys"));
+    assert.match(
+      html,
+      /<section class="globe-story-copy" data-tv-scroll-keys="vertical"/,
+    );
     assert.ok(html.includes(story.gallery[0].licenseUrl));
     const encodedSource = story.gallery[0].sourceUrl.replace(
       /[&<>"']/g,

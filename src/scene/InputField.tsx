@@ -16,6 +16,7 @@ import {
 } from "./planetPicking";
 import { PointerFallback } from "./PointerFallback";
 import { explorationModes } from "../exploration/sceneState";
+import { scenePointer } from "../input/scenePointer";
 import {
   getPlanetAtlasRotation,
   isPlanetAtlasVisible,
@@ -130,6 +131,15 @@ export function InputField() {
       },
       endDrag: () => rotation.end(),
     });
+    const unregisterRemotePointer = scenePointer.register((x, y) => {
+      const body = pick(x * window.innerWidth, y * window.innerHeight);
+      if (!body) return null;
+      return {
+        kind: "body", id: body,
+        label: body === "sun" ? "Sun" : planets.find(planet => planet.id === body)?.name ?? body,
+        activate: () => interaction.selectBody(body),
+      };
+    });
     const down = (event: PointerEvent) => {
       if (event.button !== 0 && event.pointerType !== "touch") return;
       if (fallback.down(event)) canvas.setPointerCapture?.(event.pointerId);
@@ -205,6 +215,7 @@ export function InputField() {
       Reflect.deleteProperty(window, "__SOLARIS_SCENE_QA");
       unsubscribe();
       unregisterScreen();
+      unregisterRemotePointer();
       fallback.cancel();
       canvas.removeEventListener("pointerdown", down);
       canvas.removeEventListener("pointermove", move);

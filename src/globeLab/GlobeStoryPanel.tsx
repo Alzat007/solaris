@@ -20,6 +20,7 @@ import {
 } from "../exploration/storyPresentation";
 import "./storyPanel.css";
 import { LanguageSwitcher } from "../ui/LanguageSwitcher";
+import { isTvMode } from "../platform/tvNavigation";
 import {
   useReducedStoryMotion,
   useStoryPanelMotion,
@@ -81,6 +82,7 @@ export function GlobeStoryPanel({
     ? getGalleryEvent(story, imageIndex, frames.eventId)
     : null;
   const zh = language === "zh";
+  const tv = typeof window !== "undefined" && isTvMode(window.location.search);
   const sectionTitle =
     story?.sectionTitle?.[language] ??
     (zh ? "历史与教育" : "History and learning");
@@ -201,7 +203,6 @@ export function GlobeStoryPanel({
         data-gallery-status={imageStatus}
         data-gallery-pending={frames.pendingIndex ?? ""}
         data-active-event-id={activeEvent?.id ?? ""}
-        data-tv-scroll-keys="vertical"
         lang={zh ? "zh-CN" : "en"}
       >
         {preparing && (
@@ -429,7 +430,12 @@ export function GlobeStoryPanel({
           </figure>
           <div className="globe-story-information">
             <div className="globe-story-glass" aria-hidden="true" />
-            <section className="globe-story-copy">
+            <section
+              className="globe-story-copy"
+              data-tv-scroll-keys="vertical"
+              tabIndex={tv ? 0 : undefined}
+              aria-label={zh ? "阅读地点资料" : "Read place information"}
+            >
               {onLanguageChange && (
                 <LanguageSwitcher
                   language={language}

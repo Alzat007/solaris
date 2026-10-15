@@ -26,10 +26,18 @@ jobs:
         with:
           node-version: 24
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            services/relay/package-lock.json
       - name: Read Pages URL
         id: pages
         uses: actions/configure-pages@v5
       - run: npm ci
+      - run: npm ci --prefix services/relay
+      - name: Verify relay
+        run: |
+          npm --prefix services/relay run check
+          npm --prefix services/relay test
       - run: npm test
       - name: Verify public preview content and directory
         run: |
@@ -42,6 +50,7 @@ jobs:
         run: |
           npm run build
           node scripts/verify-static-export.mjs
+          node scripts/verify-public-remote-config.mjs
       - name: Build isolated original gesture website
         env:
           VITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}/

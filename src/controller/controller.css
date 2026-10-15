@@ -1,0 +1,370 @@
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #203036;
+  background: #f2f4f5;
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+button:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+button:focus-visible,
+[role="application"]:focus-visible {
+  outline: 3px solid #187b8a;
+  outline-offset: 3px;
+}
+.controller-shell {
+  max-width: 500px;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: 0 auto;
+  padding: max(20px, env(safe-area-inset-top)) 20px
+    max(16px, env(safe-area-inset-bottom));
+}
+.controller-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 50px;
+  flex-shrink: 0;
+}
+.controller-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  margin: 4px -4px 0;
+  padding: 0 4px 12px;
+}
+.controller-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.controller-header strong {
+  font-size: 23px;
+}
+.controller-header span {
+  font-size: 13px;
+  color: #647278;
+}
+.controller-icon,
+.controller-command {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #cbd4d8;
+  background: #ffffffaa;
+  border-radius: 6px;
+  min-width: 44px;
+  min-height: 44px;
+}
+.controller-icon {
+  padding: 8px;
+  flex-shrink: 0;
+}
+.controller-command {
+  padding: 10px 14px;
+  font-size: 14px;
+}
+.controller-header .controller-icon small {
+  font-size: 11px;
+}
+.controller-connection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 78px;
+  border-bottom: 1px solid #d9e0e3;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  padding: 12px 0;
+}
+.controller-status {
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+}
+.controller-status > span {
+  width: 7px;
+  height: 7px;
+  background: #99a5ab;
+  border-radius: 50%;
+}
+.controller-status.connected > span {
+  background: #168563;
+}
+.controller-video-stage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #dce2e6;
+  border: 1px solid #cbd4d8;
+}
+.controller-video,
+.controller-video video {
+  width: 100%;
+  height: 100%;
+}
+.controller-video video {
+  display: block;
+  object-fit: contain;
+  transform: scaleX(-1);
+}
+.controller-camera-placeholder {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  color: #7c8a92;
+}
+.controller-camera-status {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  padding: 5px 8px;
+  border-radius: 4px;
+  background: #eef3f4e8;
+  color: #34444c;
+  font-size: 12px;
+}
+.controller-camera-toggle {
+  width: 100%;
+  margin-top: 10px;
+}
+.controller-gesture-status {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  background: #20343bc9;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.controller-gesture-status progress {
+  width: 60px;
+  height: 5px;
+  margin-left: auto;
+  accent-color: #8ad8d5;
+}
+.controller-reticle,
+.controller-pad-dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #188996;
+  background: #fff8;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.controller-reticle {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px #188996;
+}
+.controller-touch {
+  padding-top: 22px;
+}
+.controller-touch-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.controller-mode {
+  display: flex;
+  gap: 2px;
+  background: #dce3e6;
+  padding: 3px;
+  border-radius: 6px;
+}
+.controller-mode button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 40px;
+  border: 0;
+  background: transparent;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+.controller-mode button[aria-pressed="true"] {
+  background: #fff;
+  box-shadow: 0 1px 4px #33434e1a;
+}
+.controller-target {
+  text-align: right;
+  min-width: 0;
+  max-width: 45%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.controller-target small {
+  color: #647278;
+  font-size: 10px;
+}
+.controller-target strong {
+  font-size: 12px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.controller-touchpad {
+  position: relative;
+  aspect-ratio: 2.4 / 1;
+  background: #e4ecee;
+  border: 1px solid #bfcfd3;
+  border-radius: 6px;
+  touch-action: none;
+  overflow: hidden;
+}
+.controller-touchpad::before,
+.controller-touchpad::after {
+  content: "";
+  position: absolute;
+  background: #c6d4d8;
+  pointer-events: none;
+}
+.controller-touchpad::before {
+  left: 50%;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+}
+.controller-touchpad::after {
+  top: 50%;
+  left: 12px;
+  right: 12px;
+  height: 1px;
+}
+.controller-touchpad[aria-disabled="true"] {
+  opacity: 0.48;
+}
+.controller-pad-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: #91a5ae;
+  background: #e4ecee;
+  padding: 9px;
+}
+.controller-pad-dot {
+  z-index: 1;
+}
+.controller-tools {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+.controller-tools .controller-icon {
+  min-height: 48px;
+}
+.controller-confirm {
+  min-width: 44px;
+  min-height: 48px;
+  border: 1px solid #2b7480;
+  border-radius: 6px;
+  background: #247e89;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.controller-focus-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 44px);
+  grid-template-rows: repeat(3, 40px);
+  gap: 3px;
+  justify-content: center;
+}
+.controller-focus-pad .controller-icon {
+  min-height: 40px;
+}
+.controller-focus-pad .up {
+  grid-area: 1 / 2;
+}
+.controller-focus-pad .left {
+  grid-area: 2 / 1;
+}
+.controller-focus-pad .right {
+  grid-area: 2 / 3;
+}
+.controller-focus-pad .down {
+  grid-area: 3 / 2;
+}
+.controller-footer {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0 max(6px, env(safe-area-inset-bottom));
+  margin-top: 12px;
+  background: #f2f4f5f5;
+  border-top: 1px solid #d4dce0;
+}
+.controller-footer .controller-command {
+  flex: 1;
+}
+.controller-stop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 115px;
+  border: 1px solid #c27470;
+  border-radius: 6px;
+  background: #f4e1df;
+  color: #8c302b;
+  padding: 10px 14px;
+}
+@media (max-width: 360px) {
+  .controller-shell {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .controller-connection {
+    gap: 6px;
+  }
+  .controller-mode button {
+    padding: 6px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -152,6 +152,8 @@ export function PlanetAtlasUI() {
       pointer.current = null;
     },
     onFocus: () => {
+      if (new URLSearchParams(location.search).get("tv") === "1")
+        stopRotation();
       earthAtlasView.set({ focusId: id });
     },
     onMouseEnter: () => {

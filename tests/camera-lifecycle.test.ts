@@ -104,6 +104,7 @@ function setup(t: TestContext, options: Partial<TrackingDependencies> = {}) {
       queued.delete(id);
     },
     preferredCompatibility: () => false,
+    frameIntervalMs: 50,
     ...options,
   };
   const manager = new HandTrackingManager(deps);

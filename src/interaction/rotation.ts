@@ -27,6 +27,14 @@ export const rotation = {
     particles.dragging = false;
     particles.rotationVelocity = 0;
   },
+  followTarget(dt: number, remoteInput = false) {
+    if (!Number.isFinite(dt) || dt <= 0) return;
+    // Remote deltas are already filtered and paced before reaching the scene.
+    const response = remoteInput && particles.dragging ? 12 : 4;
+    particles.rotation +=
+      (particles.targetRotation - particles.rotation) *
+      (1 - Math.exp(-dt * response));
+  },
   update(dt: number, locked = false) {
     if (locked) this.stop();
     const elapsed = Math.min(dt, 0.05);
