@@ -212,3 +212,9 @@ HIGH 静态分配约 27 万主粒子，其中太阳 9.5 万、星尘 11.5 万、
 - 原始素材与第三方许可证信息见 `THIRD_PARTY_NOTICES.md`。
 
 WebGL 上下文丢失、渲染初始化/Shader 故障会显示可恢复提示；摄像头拒绝、缺失或模型失败会进入鼠标模式，不阻断作品。
+
+## License
+
+Original SOLARIS application source code is licensed under the [MIT License](LICENSE), copyright 2026 Alzat007.
+
+This grant does not relicense third-party code, photographs, textures, fonts, models, or geographic databases. Those materials retain their own licenses, attribution requirements, and use restrictions recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), asset source records, and content review documents. In particular, the derived Earth Directory remains under ODbL 1.0. Inclusion in this repository does not imply blanket commercial clearance of imagery or depicted works.

@@ -1,5 +1,7 @@
 # Third-party notices
 
+The root [MIT License](LICENSE) applies to original SOLARIS application source code. It does not replace or extend any third-party rights below. All existing image, font, model, database, and dependency licenses and review records remain in force.
+
 ## MediaPipe Tasks Vision / Hand Landmarker
 
 Software: https://github.com/google-ai-edge/mediapipe — Apache License 2.0.
